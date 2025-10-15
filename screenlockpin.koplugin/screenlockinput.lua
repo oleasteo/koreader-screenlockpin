@@ -48,7 +48,6 @@ function ScreenLockInput:makeButtons()
         callback = function() end,
         enabled = false,
     }
-    local action_button = self.on_disable and disable_button or noop_button
 
     local action_row = {}
 
@@ -88,7 +87,7 @@ function ScreenLockInput:makeButtons()
         { digitButton("1"), digitButton("2"), digitButton("3") },
         { digitButton("4"), digitButton("5"), digitButton("6") },
         { digitButton("7"), digitButton("8"), digitButton("9") },
-        { action_button, digitButton("0"), delete_button },
+        { noop_button,      digitButton("0"), delete_button },
         action_row
     }
 
