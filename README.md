@@ -1,19 +1,71 @@
-# A simple PIN Lock Screen for KOReader
+# ScreenLockPin — A Simple PIN Lock for KOReader
 
-<img src="/lockscreen.png" height="420">
+![Lock Screen Preview](lockscreen.png)
 
-**ScreenLockPin** allows you to secure your KOReader device with a 4–8 digit PIN code.
+**ScreenLockPin** adds a fast, minimal PIN lock screen
+to [KOReader](https://github.com/koreader/koreader), helping you protect your
+privacy.
 
-## Installation
+---
+
+## ✨ Features
+
+Just what you'd expect from a PIN lock screen 😅
+
+- 🗽 **Flexible PIN length** — supports 4–8 digits
+- 🔒 **Full-screen lock** — hides content for privacy
+- ⚡ **Instant unlock** — immediate response, no extra confirmation button
+- 🪶 **Lightweight design** — minimal overhead
+- 🔁 **Auto-lock on wake** — secures your device automatically after sleep
+
+---
+
+## 💡 Not a Feature
+
+- This plugin is designed for **privacy and casual protection**, not
+  cryptographic security.
+- The Screen Lock won't be active on boot, only when waking a sleeping device.
+  It's planned as a configurable feature: #1
+    - This allows you to reset your PIN after a reboot; if you ever forget it.
+
+---
+
+## 📦 Installation
 
 1. Clone or download this repository.
-2. Copy the `screenlockpin.koplugin` folder into the `plugins` directory of your KOReader installation.
-3. Restart KOReader.
+2. Copy the folder `screenlockpin.koplugin` into KOReader’s `plugins` directory.
+3. Restart KOReader. The plugin will appear in the *Main Menu*.
 
-## Usage
+---
 
-Click "Update ScreenLock PIN" in the main menu to set a PIN and enable the Screen Lock.
+## ⚙️ Usage
 
-In the given dialog you can set up a PIN of 4–8 digits or disable the Screen Lock.
+1. Open KOReader’s *Main Menu* › **ScreenLock PIN**.
+2. Set your desired PIN (4–8 digits) and confirm with **Save**.
+3. Once saved, KOReader will lock automatically on wake.
+4. Enter the PIN to unlock.
 
-The device will automatically enter the Screen Lock after every wake-up.
+Internally, we use the *Settings* › *Screen* › *Sleep screen* › *Wallpaper* ›
+**Postpone screen update after wake-up** setting. Changing this setting will
+disable the lock screen.
+
+---
+
+## 🧩 Compatibility
+
+Designed for and tested with **KOReader v2025.08**. Please report any
+compatibility issues for this version or newer.
+
+---
+
+## 🧑‍💻 Contributing
+
+Contributions and suggestions are welcome!  
+Feel free to open an **issue** or **pull request** to improve functionality,
+style, or compatibility.
+
+---
+
+## 📜 License
+
+MIT License — see [LICENSE](LICENSE) for details.
