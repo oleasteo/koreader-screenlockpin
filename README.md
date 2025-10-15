@@ -25,7 +25,8 @@ Just what you'd expect from a PIN lock screen 😅
 - This plugin is designed for **privacy and casual protection**, not
   cryptographic security.
 - The Screen Lock won't be active on boot, only when waking a sleeping device.
-  It's planned as a configurable feature: #1
+  It's planned as a configurable feature:
+  [#1](https://github.com/oleasteo/koreader-screenlockpin/issues/1)
     - This allows you to reset your PIN after a reboot; if you ever forget it.
 
 ---
