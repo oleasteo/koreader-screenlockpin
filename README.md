@@ -37,8 +37,11 @@ Just what you'd expect from a PIN lock screen 😅
 
 ## 📦 Installation
 
-1. Clone or download this repository.
-2. Copy the folder `screenlockpin.koplugin` into KOReader’s `plugins` directory.
+1. Download
+   the [latest release](https://github.com/oleasteo/koreader-screenlockpin/releases);
+   either archive is fine — whatever you're familiar with.
+2. Extract the archive and copy the extracted folder `screenlockpin.koplugin`
+   into KOReader’s `plugins` directory.
 3. Restart KOReader. The plugin will appear in the *Main Menu*.
 
 ---
@@ -73,4 +76,6 @@ style, or compatibility.
 
 ## 📜 License
 
-MIT License — see [LICENSE](https://github.com/oleasteo/koreader-screenlockpin/blob/main/LICENSE) for details.
+MIT License —
+see [LICENSE](https://github.com/oleasteo/koreader-screenlockpin/blob/main/LICENSE)
+for details.
