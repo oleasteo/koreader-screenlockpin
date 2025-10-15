@@ -65,7 +65,6 @@ function ScreenLock:onLockScreen()
         background = Blitbuffer.COLOR_WHITE,
         width = Screen:getWidth(),
         height = Screen:getHeight(),
-        -- todo maybe we can use modal=true and offer a transparent option (text updates will need a text background)
         -- UIManager performance hint
         covers_fullscreen = true,
 

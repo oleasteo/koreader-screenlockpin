@@ -23,7 +23,6 @@ local ScreenLockWidget = VerticalGroup:extend {
 function ScreenLockWidget:init()
     self.input = ScreenLockInput:new {
         placeholder = _("Enter PIN"),
-        -- todo make size configurable (at least discrete variants); will be interesting for transparent option
         size_factor = 2,
         on_display_update = self.on_display_update,
         on_display_update = function(__, text)

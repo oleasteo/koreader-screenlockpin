@@ -4,7 +4,6 @@ local ButtonDialog = require("ui/widget/buttondialog")
 local UIManager = require("ui/uimanager")
 local ScreenLockInput = require("screenlockinput")
 
--- todo inherit the ui widget instead, keep input as field
 local ScreenLockDialog = ScreenLockInput:extend{ widget = nil }
 
 function ScreenLockDialog:init()
