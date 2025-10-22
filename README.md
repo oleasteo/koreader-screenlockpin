@@ -17,13 +17,11 @@ privacy.
 Just what you'd expect from a PIN lock screen 😅
 
 - 🗽 **Flexible PIN length** — supports 4–8 digits
+- 🚀 **Lock on boot** — secures your device on KOReader boot (configurable)
+- 🔁 **Lock on wakeup** — secures your device after sleep (configurable)
 - 🔒 **Full-screen lock** — hides content for privacy
 - ⚡ **Instant unlock** — immediate response, no extra confirmation button
 - 🪶 **Lightweight design** — minimal overhead
-- 🔁 **Lock on wakeup** — secures your device automatically after sleep
-  (configurable)
-- 🚀 **Lock on boot** — secures your device automatically on KOReader boot
-  (configurable)
 
 ---
 
