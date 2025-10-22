@@ -3,7 +3,23 @@
 All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-[//]: # (## [Unreleased])
+## [Unreleased]
+
+### Changed
+
+- Moved the menu item into `Screen` submenu, with submenu for further options.
+
+### Added
+
+- Toggle-Options to lock on boot and / or wakeup; both are disabled by default.
+  Lock on Wakeup will be enabled when migrating from an earlier plugin version.
+- Restore the previously set lockscreen delay option when disabling lock on
+  wakeup or the plugin altogether.
+- Cleanup procedure when disabling the plugin (only once per session).
+
+### Removed
+
+- The Change PIN dialog is no longer movable; it should perform better, though.
 
 ## [v2025.10] - 2025-10-15
 

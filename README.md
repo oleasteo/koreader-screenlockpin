@@ -1,7 +1,7 @@
 # ScreenLockPin — A Simple PIN Lock for KOReader
 
 [![MIT License](https://img.shields.io/badge/License-MIT-orange.svg)](https://opensource.org/licenses/MIT)
-[![Release Version](https://img.shields.io/badge/Release-2025.10-blue.svg)](https://github.com/oleasteo/koreader-screenlockpin/releases/tag/v2025.10)
+[![Release Version](https://img.shields.io/badge/Release-2025.10--1-blue.svg)](https://github.com/oleasteo/koreader-screenlockpin/releases/tag/v2025.10)
 [![Compatibility](https://img.shields.io/badge/Comptibility-KOReader%20v2025.08-yellow.svg)](https://github.com/koreader/koreader/tree/v2025.08)
 
 **ScreenLockPin** adds a fast, minimal PIN lock screen
@@ -20,7 +20,10 @@ Just what you'd expect from a PIN lock screen 😅
 - 🔒 **Full-screen lock** — hides content for privacy
 - ⚡ **Instant unlock** — immediate response, no extra confirmation button
 - 🪶 **Lightweight design** — minimal overhead
-- 🔁 **Auto-lock on wake** — secures your device automatically after sleep
+- 🔁 **Lock on wakeup** — secures your device automatically after sleep
+  (configurable)
+- 🚀 **Lock on boot** — secures your device automatically on KOReader boot
+  (configurable)
 
 ---
 
@@ -28,34 +31,44 @@ Just what you'd expect from a PIN lock screen 😅
 
 - This plugin is designed for **privacy and casual protection**, not
   cryptographic security.
-- The Screen Lock won't be active on boot, only when waking a sleeping device.
-  It's planned as a configurable feature:
-  [#1](https://github.com/oleasteo/koreader-screenlockpin/issues/1)
-    - This allows you to reset your PIN after a reboot; if you ever forget it.
 
 ---
 
 ## 📦 Installation
 
-1. Download
-   the [latest release](https://github.com/oleasteo/koreader-screenlockpin/releases/latest);
+1. Download the
+   [latest release](https://github.com/oleasteo/koreader-screenlockpin/releases/latest);
    either archive is fine — whatever you're familiar with.
 2. Extract the archive and copy the extracted folder `screenlockpin.koplugin`
    into KOReader’s `plugins` directory.
-3. Restart KOReader. The plugin will appear in the *Main Menu*.
+3. Restart KOReader. The plugin will appear in the *Screen* submenu.
 
 ---
 
 ## ⚙️ Usage
 
-1. Open KOReader’s *Main Menu* › **ScreenLock PIN**.
-2. Set your desired PIN (4–8 digits) and confirm with **Save**.
-3. Once saved, KOReader will lock automatically on wake.
-4. Enter the PIN to unlock.
+The default PIN is `0000`
 
-Internally, we use the *Settings* › *Screen* › *Sleep screen* › *Wallpaper* ›
+1. Open KOReader’s *Screen* › **ScreenLock PIN** menu.
+2. Update your PIN (4-8 digits) and configure plugin options to your liking.
+3. Depending on your settings, the Lock Screen will now appear when booting
+   KOReader and / or when waking up from sleep mode.
+
+For the lock on wakeup, we use the *Screen* › *Sleep screen* › *Wallpaper* ›
 **Postpone screen update after wake-up** setting. Changing this setting will
-disable the lock screen.
+disable the lock on wakeup feature.
+
+### Recover KOReader without PIN
+
+In case you lost your PIN:
+
+- If you don't have *lock on boot* enabled, a hard reboot should suffice to get
+  you into the KOReader. Change your PIN from there.
+- If you do have *lock on boot* enabled, you'll need to modify the plugin files.
+  Edit the *main.lua* file inside the plugins directory on your device. Replace
+  the line `local UNSET_PIN = false` with `local UNSET_PIN = true`. Save and
+  boot into KOReader. The PIN will be reset to `0000`. Remember to revert the
+  change again after one boot.
 
 ---
 

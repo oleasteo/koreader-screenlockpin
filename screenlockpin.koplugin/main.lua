@@ -14,6 +14,24 @@ local ScreenLockDialog = require("ui/screenlockdialog")
 local ScreenLockWidget = require("ui/screenlockwidget")
 local Screen = Device.screen
 
+local UNSET_PIN = false
+
+-- migrate from 2025-10
+if G_reader_settings:has("screenlockpin") then
+    G_reader_settings:saveSetting("screenlockpin_pin", G_reader_settings:readSetting("screenlockpin"))
+    G_reader_settings:delSetting("screenlockpin")
+end
+
+-- Default settings
+if G_reader_settings:hasNot("screenlockpin_onboot") then
+    G_reader_settings:makeFalse("screenlockpin_onboot")
+end
+if UNSET_PIN or G_reader_settings:hasNot("screenlockpin_pin") then
+    G_reader_settings:saveSetting("screenlockpin_pin", "0000")
+end
+
+G_reader_settings:saveSetting("screenlockpin_version", "2025.10-1")
+
 local ScreenLock = EventListener:extend {
     overlay = nil, -- Current active overlay
     dialog = nil, -- Current active dialog
@@ -33,25 +51,86 @@ function ScreenLock:addToMainMenu(menu_items)
     menu_items.screen_lockpin_reset = {
         sorting_hint = "screen",
         text = _("ScreenLock PIN"),
-        callback = function() self:openUpdateDialog() end
+        sub_item_table = {
+            {
+                text = _("Lock on Wakeup"),
+                checked_func = function() return self:isEnabledOnResume() end,
+                callback = function() self:toggleEnabledOnResume() end,
+            },
+            {
+                text = _("Lock on Boot"),
+                checked_func = function() return G_reader_settings:isTrue("screenlockpin_onboot") end,
+                callback = function() G_reader_settings:toggle("screenlockpin_onboot") end,
+                separator = true,
+            },
+            {
+                text = _("Change PIN"),
+                callback = function() self:openUpdateDialog() end,
+            },
+        }
     }
 end
 
-function ScreenLock:storedPin()
-    local pin = G_reader_settings:readSetting("screenlockpin")
-    return pin or "0000"
+-- monkey-patch the UIManager:run method, as we don't know a better way to do
+-- very early startup code injection
+local _run = UIManager.run
+local function uiRunInjected(self)
+    ScreenLock:onStart()
+    return _run(self)
+end
+UIManager.run = uiRunInjected
+
+local autostart_cover
+
+function ScreenLock:stopPlugin()
+    -- restore UIManager:run
+    UIManager.run = _run
+    -- if for some reason, the autostart_cover is still there (no clue why it
+    -- would be, though), clean up its state
+    if autostart_cover then
+        UIManager:close(autostart_cover)
+        autostart_cover = nil
+    end
+    -- disable lock method
+    self:disableOnResume()
+    -- destroy options
+    G_reader_settings:delSetting("screenlockpin_onboot")
+    G_reader_settings:delSetting("screenlockpin_pin")
+    return true
+end
+
+function ScreenLock:onStart()
+    if not G_reader_settings:isTrue("screenlockpin_onboot") then return end
+    UIManager:nextTick(function()
+        -- the screen size is not properly set yet, so we show a white
+        -- screen (to cover any private information) until next
+        -- onScreenResize
+        autostart_cover = FrameContainer:new {
+            background = Blitbuffer.COLOR_WHITE,
+            width = Screen:getWidth(),
+            height = Screen:getHeight(),
+            covers_fullscreen = true,
+        }
+    end)
+end
+
+function ScreenLock:onScreenResize()
+    if not G_reader_settings:isTrue("screenlockpin_onboot") then return end
+    if autostart_cover then
+        self:onLockScreen()
+        UIManager:close(autostart_cover, "fast")
+        autostart_cover = nil
+    end
 end
 
 function ScreenLock:onResume()
+    if not self:isEnabledOnResume() then return end
     -- we hijack the screensaver_delay (property of ui/screensaver.lua)
     -- any unknown values will be interpreted as "tap to exit from screensaver"
     -- this enables us to create a lock screen first before closing the
     -- screensaver
-    local lock_method = G_reader_settings:readSetting("screensaver_delay")
-    if lock_method == "plugin:screenlockpin" then
-        self:onLockScreen()
-        Screensaver:close_widget()
-    end
+    self:onLockScreen()
+    Screensaver:close_widget()
 end
 
 function ScreenLock:onLockScreen()
@@ -75,7 +154,7 @@ function ScreenLock:onLockScreen()
             ScreenLockWidget:new {
                 centered_within = screen_dimen,
                 on_update = function(input)
-                    if input == self:storedPin() then
+                    if input == G_reader_settings:readSetting("screenlockpin_pin") then
                         logger.dbg("ScreenLockPin: Unlocked.")
                         UIManager:close(self.overlay, "ui")
                         self.overlay:free()
@@ -94,30 +173,39 @@ end
 function ScreenLock:openUpdateDialog()
     self.dialog = ScreenLockDialog:new {
         placeholder = _("Enter new PIN"),
-
         on_submit = function(next_pin)
             logger.dbg("ScreenLockPin: New PIN – " .. next_pin)
-            G_reader_settings:saveSetting("screenlockpin", next_pin)
-            G_reader_settings:saveSetting("screensaver_delay", "plugin:screenlockpin")
+            G_reader_settings:saveSetting("screenlockpin_pin", next_pin)
             UIManager:show(InfoMessage:new { text = _("PIN changed successfully."), timeout = 1 })
             UIManager:close(self.dialog, "ui")
             self.dialog:free()
             self.dialog = nil
         end,
-
-        on_disable = function()
-            UIManager:close(self.dialog, "ui")
-            self.dialog:free()
-            self.dialog = nil
-            local prev_value = G_reader_settings:readSetting("screensaver_delay")
-            if prev_value == "plugin:screenlockpin" then
-                logger.dbg("ScreenLockPin: Disable ScreenLock")
-                G_reader_settings:saveSetting("screensaver_delay", "disable")
-                UIManager:show(InfoMessage:new { text = _("ScreenLock disabled."), timeout = 1 })
-            end
-        end,
     }
     UIManager:show(self.dialog)
+end
+
+function ScreenLock:isEnabledOnResume()
+    return G_reader_settings:readSetting("screensaver_delay") == "plugin:screenlockpin"
+end
+
+function ScreenLock:disableOnResume()
+    if self:isEnabledOnResume() then
+        local return_value = G_reader_settings:readSetting("screenlockpin_returndelay") or "disable"
+        logger.dbg("ScreenLockPin: Disable ScreenLock to " .. return_value)
+        G_reader_settings:saveSetting("screensaver_delay", return_value)
+        return true
+    end
+    return false
+end
+
+function ScreenLock:toggleEnabledOnResume()
+    if self:isEnabledOnResume() then
+        self:disableOnResume()
+    else
+        G_reader_settings:saveSetting("screenlockpin_returndelay", G_reader_settings:readSetting("screensaver_delay"))
+        G_reader_settings:saveSetting("screensaver_delay", "plugin:screenlockpin")
+    end
 end
 
 return ScreenLock

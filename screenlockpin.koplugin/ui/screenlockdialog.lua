@@ -44,7 +44,6 @@ function ScreenLockDialog:init()
         placeholder = self.placeholder,
         size_factor = self.size_factor,
         on_submit = self.on_submit,
-        on_disable = self.on_disable,
         on_update = self.on_update,
         on_display_update = function(title)
             if not ready then return end

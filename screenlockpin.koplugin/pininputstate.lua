@@ -14,7 +14,6 @@ local PinInputState = EventListener:extend {
     on_display_update = nil, -- (display_text)
     on_update = nil, -- (value)
     on_submit = nil, -- (value)
-    on_disable = nil, -- ()
     on_valid_state = nil, -- (valid)
 
     -- internal state
@@ -52,14 +51,6 @@ function PinInputState:makeButtons()
     }
 
     local action_row = {}
-
-    if self.on_disable then
-        table.insert(action_row, {
-            text = _("Disable"),
-            height = button_height,
-            callback = function() self.on_disable() end
-        })
-    end
 
     if self.on_submit then
         table.insert(action_row, {
