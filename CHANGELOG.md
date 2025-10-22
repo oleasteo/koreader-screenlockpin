@@ -17,6 +17,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   wakeup or the plugin altogether.
 - Cleanup procedure when disabling the plugin (only once per session).
 
+### Fixed
+
+- Disabled double tap on our widget and dialog. This solves the perceived
+  *sluggish* input when locking from an open book if double tap is enabled on
+  the device.
+
 ### Removed
 
 - The Change PIN dialog is no longer movable; it should perform better, though.

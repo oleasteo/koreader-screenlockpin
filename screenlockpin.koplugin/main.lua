@@ -147,6 +147,7 @@ function ScreenLock:onLockScreen()
         height = Screen:getHeight(),
         -- UIManager performance hint
         covers_fullscreen = true,
+        disable_double_tap = true,
 
         CenterContainer:new {
             dimen = screen_dimen,
@@ -173,6 +174,7 @@ end
 function ScreenLock:openUpdateDialog()
     self.dialog = ScreenLockDialog:new {
         placeholder = _("Enter new PIN"),
+        disable_double_tap = true,
         on_submit = function(next_pin)
             logger.dbg("ScreenLockPin: New PIN – " .. next_pin)
             G_reader_settings:saveSetting("screenlockpin_pin", next_pin)
