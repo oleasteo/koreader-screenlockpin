@@ -65,10 +65,9 @@ In case you lost your PIN:
 - If you don't have *lock on boot* enabled, a hard reboot should suffice to get
   you into the KOReader. Change your PIN from there.
 - If you do have *lock on boot* enabled, you'll need to modify the plugin files.
-  Edit the *main.lua* file inside the plugins directory on your device. Replace
-  the line `local UNSET_PIN = false` with `local UNSET_PIN = true`. Save and
-  boot into KOReader. The PIN will be reset to `0000`. Remember to revert the
-  change again after one boot.
+  Edit the *settings.reader.lua* file inside the *koreader* directory on your
+  device. Find the `screenlockpin_pin` option and change if needed. Save and
+  boot into KOReader.
 
 ---
 
