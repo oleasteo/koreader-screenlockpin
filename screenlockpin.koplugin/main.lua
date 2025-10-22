@@ -79,18 +79,11 @@ local function uiRunInjected(self)
     return _run(self)
 end
 UIManager.run = uiRunInjected
-
-local autostart_cover
+logger.dbg("ScreenLockPin: Patched UIManager:run")
 
 function ScreenLock:stopPlugin()
     -- restore UIManager:run
     UIManager.run = _run
-    -- if for some reason, the autostart_cover is still there (no clue why it
-    -- would be, though), clean up its state
-    if autostart_cover then
-        UIManager:close(autostart_cover)
-        autostart_cover = nil
-    end
     -- disable lock method
     self:disableOnResume()
     -- destroy options
@@ -100,27 +93,16 @@ function ScreenLock:stopPlugin()
 end
 
 function ScreenLock:onStart()
+    logger.dbg("ScreenLockPin: Checking for lock on boot")
     if not G_reader_settings:isTrue("screenlockpin_onboot") then return end
     UIManager:nextTick(function()
-        -- the screen size is not properly set yet, so we show a white
-        -- screen (to cover any private information) until next
-        -- onScreenResize
-        autostart_cover = FrameContainer:new {
-            background = Blitbuffer.COLOR_WHITE,
-            width = Screen:getWidth(),
-            height = Screen:getHeight(),
-            covers_fullscreen = true,
-        }
+        logger.dbg("ScreenLockPin: Show lock on boot")
+        self:onLockScreen()
     end)
 end
 
 function ScreenLock:onScreenResize()
-    if not G_reader_settings:isTrue("screenlockpin_onboot") then return end
-    if autostart_cover then
-        self:onLockScreen()
-        UIManager:close(autostart_cover, "fast")
-        autostart_cover = nil
-    end
+    if self.overlay then self:resizeOverlay() end
 end
 
 function ScreenLock:onResume()
@@ -143,8 +125,6 @@ function ScreenLock:onLockScreen()
     local screen_dimen = Geom:new{x = 0, y = 0, w = Screen:getWidth(), h = Screen:getHeight()}
     self.overlay = FrameContainer:new {
         background = Blitbuffer.COLOR_WHITE,
-        width = Screen:getWidth(),
-        height = Screen:getHeight(),
         -- UIManager performance hint
         covers_fullscreen = true,
         disable_double_tap = true,
@@ -169,6 +149,17 @@ function ScreenLock:onLockScreen()
     -- pass ScreenLockWidget the container reference for performant regional updates
     self.overlay[1][1].container = self.overlay
     UIManager:show(self.overlay)
+end
+
+function ScreenLock:resizeOverlay()
+    local screen_dimen = Geom:new{x = 0, y = 0, w = Screen:getWidth(), h = Screen:getHeight()}
+    logger.dbg("ScreenLockPin: Resize Overlay " .. screen_dimen.x .. "x" .. screen_dimen.y)
+    local framecontainer = self.overlay
+    local centercontainer = framecontainer[1]
+    centercontainer.dimen = screen_dimen
+    local widget = centercontainer[1]
+    widget:onScreenResize(screen_dimen)
+    UIManager:setDirty(self.overlay, "ui")
 end
 
 function ScreenLock:openUpdateDialog()

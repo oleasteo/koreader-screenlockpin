@@ -1,3 +1,4 @@
+local logger = require("logger")
 local ButtonTable = require("ui/widget/buttontable")
 local Font = require("ui/font")
 local TextWidget = require("ui/widget/textwidget")
@@ -23,6 +24,7 @@ local ScreenLockWidget = VerticalGroup:extend {
 }
 
 function ScreenLockWidget:init()
+    logger.dbg("ScreenLockWidget: init")
     self.state = PinInputState:new {
         placeholder = _("Enter PIN"),
         size_factor = 2,
@@ -79,6 +81,17 @@ function ScreenLockWidget:calcTextRegion()
         w = text_size.w + 10,
         h = text_size.h + 10,
     }
+end
+
+function ScreenLockWidget:onScreenResize(screen_dimen)
+    self.centered_within = screen_dimen
+    self._clear_region = nil
+    local buttontable = self[3]
+    buttontable.width = nil
+    buttontable.dimen = nil
+    buttontable:free()
+    buttontable:init()
+    self:resetLayout()
 end
 
 if DEBUG_CLEAR_REGION then
