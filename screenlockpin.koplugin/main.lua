@@ -31,6 +31,7 @@ end
 
 function ScreenLock:addToMainMenu(menu_items)
     menu_items.screen_lockpin_reset = {
+        sorting_hint = "screen",
         text = _("ScreenLock PIN"),
         callback = function() self:openUpdateDialog() end
     }
