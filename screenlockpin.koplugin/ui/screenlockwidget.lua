@@ -7,12 +7,14 @@ local UIManager = require("ui/uimanager")
 local Size = require("ui/size")
 local Geom = require("ui/geometry")
 local _ = require("gettext")
-local ScreenLockInput = require("screenlockinput")
---local Blitbuffer = require("ffi/blitbuffer")
+local PinInputState = require("pininputstate")
+local Blitbuffer = require("ffi/blitbuffer")
+
+local DEBUG_CLEAR_REGION = false
 
 local ScreenLockWidget = VerticalGroup:extend {
     fit = true,
-    input = nil,
+    state = nil,
     title_face = Font:getFace("smalltfont"),
     centered_within = nil,
     container = nil,
@@ -21,11 +23,11 @@ local ScreenLockWidget = VerticalGroup:extend {
 }
 
 function ScreenLockWidget:init()
-    self.input = ScreenLockInput:new {
+    self.state = PinInputState:new {
         placeholder = _("Enter PIN"),
         size_factor = 2,
         on_display_update = self.on_display_update,
-        on_display_update = function(__, text)
+        on_display_update = function(text)
             local text_widget = self[1]
             if text_widget then
                 local prev_clear_region = self._clear_region or self:calcTextRegion()
@@ -46,7 +48,7 @@ function ScreenLockWidget:init()
         on_update = self.on_update,
     }
     self[1] = TextWidget:new {
-        text = self.input.display,
+        text = self.state.display,
         width_factor = 1.0,
         alignment = "center",
         face = self.title_face,
@@ -55,7 +57,7 @@ function ScreenLockWidget:init()
         width = Size.item.height_large * 2,
     }
     self[3] = ButtonTable:new {
-        buttons = self.input:makeButtons(),
+        buttons = self.state:makeButtons(),
         shrink_unneeded_width = not self.fit,
         width_factor = self.fit and 1.0 or nil,
         zero_sep = true,
@@ -79,11 +81,13 @@ function ScreenLockWidget:calcTextRegion()
     }
 end
 
--- show clear region for debugging
---function ScreenLockWidget:paintTo(bb, x, y)
---    local dimen = self:calcTextRegion()
---    bb:paintRect(dimen.x, dimen.y, dimen.w, dimen.h, Blitbuffer.COLOR_GRAY_9)
---    VerticalGroup.paintTo(self, bb, x, y)
---end
+if DEBUG_CLEAR_REGION then
+    function ScreenLockWidget:paintTo(bb, x, y)
+        -- show clear region for debugging
+        local dimen = self:calcTextRegion()
+        bb:paintRect(dimen.x, dimen.y, dimen.w, dimen.h, Blitbuffer.COLOR_GRAY_9)
+        VerticalGroup.paintTo(self, bb, x, y)
+    end
+end
 
 return ScreenLockWidget

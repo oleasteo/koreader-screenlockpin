@@ -10,8 +10,8 @@ local CenterContainer = require("ui/widget/container/centercontainer")
 local EventListener = require("ui/widget/eventlistener")
 local InfoMessage = require("ui/widget/infomessage")
 local _ = require("gettext")
-local ScreenLockDialog = require("screenlockdialog")
-local ScreenLockWidget = require("screenlockwidget")
+local ScreenLockDialog = require("ui/screenlockdialog")
+local ScreenLockWidget = require("ui/screenlockwidget")
 local Screen = Device.screen
 
 local ScreenLock = EventListener:extend {
@@ -73,7 +73,7 @@ function ScreenLock:onLockScreen()
 
             ScreenLockWidget:new {
                 centered_within = screen_dimen,
-                on_update = function(__, input)
+                on_update = function(input)
                     if input == self:storedPin() then
                         logger.dbg("ScreenLockPin: Unlocked.")
                         UIManager:close(self.overlay, "ui")
@@ -94,17 +94,19 @@ function ScreenLock:openUpdateDialog()
     self.dialog = ScreenLockDialog:new {
         placeholder = _("Enter new PIN"),
 
-        on_submit = function(__, next_pin)
+        on_submit = function(next_pin)
             logger.dbg("ScreenLockPin: New PIN – " .. next_pin)
             G_reader_settings:saveSetting("screenlockpin", next_pin)
             G_reader_settings:saveSetting("screensaver_delay", "plugin:screenlockpin")
             UIManager:show(InfoMessage:new { text = _("PIN changed successfully."), timeout = 1 })
-            self.dialog:dispose()
+            UIManager:close(self.dialog, "ui")
+            self.dialog:free()
             self.dialog = nil
         end,
 
         on_disable = function()
-            self.dialog:dispose()
+            UIManager:close(self.dialog, "ui")
+            self.dialog:free()
             self.dialog = nil
             local prev_value = G_reader_settings:readSetting("screensaver_delay")
             if prev_value == "plugin:screenlockpin" then
@@ -114,6 +116,7 @@ function ScreenLock:openUpdateDialog()
             end
         end,
     }
+    UIManager:show(self.dialog)
 end
 
 return ScreenLock

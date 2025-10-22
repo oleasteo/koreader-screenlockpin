@@ -1,10 +1,11 @@
 local _ = require("gettext")
+local logger = require("logger")
 local Size = require("ui/size")
 local EventListener = require("ui/widget/eventlistener")
 
 local LENGTH_RANGE = {4, 8}
 
-local ScreenLockInput = EventListener:extend {
+local PinInputState = EventListener:extend {
     -- configuration
     placeholder = "",
     size_factor = 1.25,
@@ -22,11 +23,12 @@ local ScreenLockInput = EventListener:extend {
     valid = false,
 }
 
-function ScreenLockInput:init()
+function PinInputState:init()
     self:reevaluate()
 end
 
-function ScreenLockInput:makeButtons()
+function PinInputState:makeButtons()
+    logger.dbg("PinInputState:makeButtons")
     local action_button_height = Size.item.height_large + Size.padding.buttontable
     local button_height = action_button_height * self.size_factor
 
@@ -55,7 +57,7 @@ function ScreenLockInput:makeButtons()
         table.insert(action_row, {
             text = _("Disable"),
             height = button_height,
-            callback = function() self:on_disable() end
+            callback = function() self.on_disable() end
         })
     end
 
@@ -65,7 +67,7 @@ function ScreenLockInput:makeButtons()
             text = _("Save"),
             height = action_button_height,
             enabled = self.valid,
-            callback = function() self:on_submit(self.value) end,
+            callback = function() self.on_submit(self.value) end,
         })
     end
 
@@ -82,7 +84,6 @@ function ScreenLockInput:makeButtons()
         }
     end
 
-
     local buttons = {
         { digitButton("1"), digitButton("2"), digitButton("3") },
         { digitButton("4"), digitButton("5"), digitButton("6") },
@@ -94,25 +95,26 @@ function ScreenLockInput:makeButtons()
     return buttons
 end
 
-function ScreenLockInput:reevaluate()
+function PinInputState:reevaluate()
     -- refresh display
     local next_display = #self.value > 0 and string.rep("●", #self.value) or self.placeholder
+    logger.dbg("PinInputState:reevaluate: " .. next_display)
     if not (self.display == next_display) then
         self.display = next_display
-        if self.on_display_update then self:on_display_update(next_display) end
+        if self.on_display_update then self.on_display_update(next_display) end
     end
     -- refresh valid state
     local next_valid = #self.value >= LENGTH_RANGE[1] and #self.value <= LENGTH_RANGE[2]
-    if next_valid and self.on_update then self:on_update(self.value) end
+    if next_valid and self.on_update then self.on_update(self.value) end
     if not (self.valid == next_valid) then
         self.valid = next_valid
-        if self.on_valid_state then self:on_valid_state(next_valid) end
+        if self.on_valid_state then self.on_valid_state(next_valid) end
     end
 end
 
-function ScreenLockInput:reset()
+function PinInputState:reset()
     self.value = ""
     self:reevaluate()
 end
 
-return ScreenLockInput
+return PinInputState
