@@ -14,8 +14,6 @@ local ScreenLockDialog = require("ui/screenlockdialog")
 local ScreenLockWidget = require("ui/screenlockwidget")
 local Screen = Device.screen
 
-local UNSET_PIN = false
-
 -- migrate from 2025-10
 if G_reader_settings:has("screenlockpin") then
     G_reader_settings:saveSetting("screenlockpin_pin", G_reader_settings:readSetting("screenlockpin"))
@@ -26,7 +24,7 @@ end
 if G_reader_settings:hasNot("screenlockpin_onboot") then
     G_reader_settings:makeFalse("screenlockpin_onboot")
 end
-if UNSET_PIN or G_reader_settings:hasNot("screenlockpin_pin") then
+if G_reader_settings:hasNot("screenlockpin_pin") then
     G_reader_settings:saveSetting("screenlockpin_pin", "0000")
 end
 if G_reader_settings:hasNot("screenlockpin_ratelimit") then
