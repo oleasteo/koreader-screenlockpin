@@ -117,7 +117,7 @@ end
 
 function ScreenLock:onLockScreen()
     if self.overlay then
-        self.overlay[1][1].input:reset()
+        self.overlay[1][1].state:reset()
         logger.dbg("ScreenLockPin: Overlay already present")
         return
     end
