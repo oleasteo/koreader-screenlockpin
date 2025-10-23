@@ -2,6 +2,7 @@ local _ = require("gettext")
 local logger = require("logger")
 local Size = require("ui/size")
 local EventListener = require("ui/widget/eventlistener")
+local RateLimitState = require("ratelimitstate")
 
 local LENGTH_RANGE = {4, 8}
 
@@ -20,9 +21,15 @@ local PinInputState = EventListener:extend {
     value = "",
     display = "",
     valid = false,
+    rate_limit = nil
 }
 
 function PinInputState:init()
+    if G_reader_settings:isTrue("screenlockpin_ratelimit") then
+        self.rate_limit = RateLimitState:new {
+            on_unlock = function() self:reevaluate() end
+        }
+    end
     self:reevaluate()
 end
 
@@ -35,10 +42,12 @@ function PinInputState:makeButtons()
         text = "⌫",
         height = button_height,
         callback = function()
+            if self.rate_limit and self.rate_limit:isLocked() then return end
             self.value = self.value:sub(1, -2)
             self:reevaluate()
         end,
         hold_callback = function()
+            if self.rate_limit and self.rate_limit:isLocked() then return end
             self:reset()
         end,
     }
@@ -67,6 +76,7 @@ function PinInputState:makeButtons()
             text = num,
             height = button_height,
             callback = function()
+                if self.rate_limit and self.rate_limit:isLocked() then return end
                 if #self.value < LENGTH_RANGE[2] then
                     self.value = self.value .. num
                     self:reevaluate()
@@ -86,18 +96,34 @@ function PinInputState:makeButtons()
     return buttons
 end
 
-function PinInputState:reevaluate()
-    -- refresh display
-    local next_display = #self.value > 0 and string.rep("●", #self.value) or self.placeholder
-    logger.dbg("PinInputState:reevaluate: " .. next_display)
+function PinInputState:setDisplayText(next_display)
     if not (self.display == next_display) then
         self.display = next_display
         if self.on_display_update then self.on_display_update(next_display) end
     end
-    -- refresh valid state
+end
+
+function PinInputState:incFailedCount()
+    if not self.rate_limit then return end
+    self.rate_limit:registerFailure(#self.value)
+    if self.rate_limit:isLocked() then self:reset() end
+end
+
+function PinInputState:reevaluate()
+    if self.rate_limit and self.rate_limit:isLocked() then
+        local next_display = _("Try again in " .. self.rate_limit:remainingInS() .. "s")
+        self:setDisplayText(next_display)
+        return
+    end
+
+    -- refresh display
+    local next_display = #self.value > 0 and string.rep("●", #self.value) or self.placeholder
+    logger.dbg("PinInputState:reevaluate: " .. next_display)
+    self:setDisplayText(next_display)
+    -- refresh valid state and check
     local next_valid = #self.value >= LENGTH_RANGE[1] and #self.value <= LENGTH_RANGE[2]
     if next_valid and self.on_update then self.on_update(self.value) end
-    if not (self.valid == next_valid) then
+    if self.valid ~= next_valid then
         self.valid = next_valid
         if self.on_valid_state then self.on_valid_state(next_valid) end
     end

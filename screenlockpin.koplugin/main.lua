@@ -29,6 +29,11 @@ end
 if UNSET_PIN or G_reader_settings:hasNot("screenlockpin_pin") then
     G_reader_settings:saveSetting("screenlockpin_pin", "0000")
 end
+if G_reader_settings:hasNot("screenlockpin_ratelimit") then
+    -- this setting is not provided to the UI as it's highly recommended to have
+    -- rate limiting enabled
+    G_reader_settings:makeTrue("screenlockpin_ratelimit")
+end
 
 G_reader_settings:saveSetting("screenlockpin_version", "2025.10-1")
 
@@ -135,13 +140,14 @@ function ScreenLock:onLockScreen()
             ScreenLockWidget:new {
                 centered_within = screen_dimen,
                 on_update = function(input)
-                    if input == G_reader_settings:readSetting("screenlockpin_pin") then
-                        logger.dbg("ScreenLockPin: Unlocked.")
-                        UIManager:close(self.overlay, "ui")
-                        self.overlay:free()
-                        self.overlay = nil
+                    if input ~= G_reader_settings:readSetting("screenlockpin_pin") then
+                        self.overlay[1][1].state:incFailedCount()
                         return
                     end
+                    logger.dbg("ScreenLockPin: Unlocked.")
+                    UIManager:close(self.overlay, "ui")
+                    self.overlay:free()
+                    self.overlay = nil
                 end
             }
         }

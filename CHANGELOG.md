@@ -5,6 +5,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 [//]: # (## [Unreleased])
 
+### Added
+
+- Rate Limit for PIN input. Lock for 10/30/60/60/... seconds after the 4th
+  failed attempt of any PIN length. All counters are reset after 5 minutes since
+  the last rate limit was triggered. #6
+  If you want/need to disable this feature, change the `screenlockpin_ratelimit`
+  setting in your *settings.reader.lua* (*koreader* directory) by hand. It's not
+  provided as an option in the UI.
+
 ### Fixed
 
 - Reset PIN input state on re-awake after sleep.
