@@ -10,6 +10,10 @@ find it's working just fine, despite the dynamic PIN length allowed. I've hidden
 an option to turn it off in the settings, not available via UI; just in case
 someone knows what they're doing.
 
+### Changed
+
+- Improved the menu item texts to feel consistent with KOReader menus.
+
 ### Added
 
 - [#6](https://github.com/oleasteo/koreader-screenlockpin/issues/6)

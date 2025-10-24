@@ -44,7 +44,7 @@ function ScreenLock:init()
     Dispatcher:registerAction("screenlockpin_lock", {
         category = "none",
         event    = "LockScreen",
-        title    = _("Lock Screen"),
+        title    = _("Lock screen"),
         device   = true,
     })
     self.ui.menu:registerToMainMenu(self)
@@ -53,15 +53,15 @@ end
 function ScreenLock:addToMainMenu(menu_items)
     menu_items.screen_lockpin_reset = {
         sorting_hint = "screen",
-        text = _("ScreenLock PIN"),
+        text = _("Lock screen"),
         sub_item_table = {
             {
-                text = _("Lock on Wakeup"),
+                text = _("Lock on wakeup"),
                 checked_func = function() return self:isEnabledOnResume() end,
                 callback = function() self:toggleEnabledOnResume() end,
             },
             {
-                text = _("Lock on Boot"),
+                text = _("Lock on boot"),
                 checked_func = function() return G_reader_settings:isTrue("screenlockpin_onboot") end,
                 callback = function() G_reader_settings:toggle("screenlockpin_onboot") end,
                 separator = true,

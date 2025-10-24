@@ -48,7 +48,7 @@ Just what you'd expect from a PIN lock screen 😅
 
 The default PIN is `0000`
 
-1. Open KOReader’s *Screen* › **ScreenLock PIN** menu.
+1. Open KOReader’s *Screen* › **Lock screen** menu.
 2. Update your PIN (4-8 digits) and configure plugin options to your liking.
 3. Depending on your settings, the Lock Screen will now appear when booting
    KOReader and / or when waking up from sleep mode.
@@ -66,7 +66,7 @@ In case you lost your PIN:
 - If you do have *lock on boot* enabled, you'll need to modify the plugin files.
   Edit the *settings.reader.lua* file inside the *koreader* directory on your
   device. Find the `screenlockpin_pin` option and change if needed. Save and
-  boot into KOReader.
+  reboot KOReader.
 
 ---
 
