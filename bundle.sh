@@ -10,9 +10,9 @@ id="$name--$version"
 rm -f "$target_dir/release/$id"* 2>/dev/null || true
 
 mkdir -p "$target_dir/release" "$target_dir/bundle"
-cp -r "$name" "$target_dir/bundle/"
+cp -r "$root_dir/$name" "$target_dir/bundle/"
 
-cp LICENSE README.md CHANGELOG.md "$target_dir/bundle/$name/"
+cp "$root_dir/LICENSE" "$root_dir/README.md" "$root_dir/CHANGELOG.md" "$target_dir/bundle/$name/"
 
 (
   cd "$target_dir/bundle"
