@@ -14,7 +14,7 @@ local ScreenLockDialog = require("ui/screenlockdialog")
 local ScreenLockWidget = require("ui/screenlockwidget")
 local Screen = Device.screen
 
--- migrate from 2025-10
+-- migrate from 2025.10
 if G_reader_settings:has("screenlockpin") then
     G_reader_settings:saveSetting("screenlockpin_pin", G_reader_settings:readSetting("screenlockpin"))
     G_reader_settings:delSetting("screenlockpin")
@@ -86,7 +86,7 @@ logger.dbg("ScreenLockPin: Patched UIManager:run")
 
 function ScreenLock:stopPlugin()
     -- restore UIManager:run
-    UIManager.run = _run
+    if UIManager.run == uiRunInjected then UIManager.run = _run end
     -- disable lock method
     self:disableOnResume()
     -- destroy options
