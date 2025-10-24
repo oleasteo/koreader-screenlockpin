@@ -8,7 +8,7 @@
 to [KOReader](https://github.com/koreader/koreader), helping you protect your
 privacy.
 
-![Lock Screen Preview](lockscreen.png)
+![Lock Screen Preview](https://github.com/oleasteo/koreader-screenlockpin/blob/main/lockscreen.png?raw=true)
 
 ---
 
