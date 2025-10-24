@@ -8,8 +8,8 @@ local UIManager = require("ui/uimanager")
 local Size = require("ui/size")
 local Geom = require("ui/geometry")
 local _ = require("gettext")
-local PinInputState = require("pininputstate")
 local Blitbuffer = require("ffi/blitbuffer")
+local PinInputState = require("state/pininputstate")
 
 local DEBUG_CLEAR_REGION = false
 

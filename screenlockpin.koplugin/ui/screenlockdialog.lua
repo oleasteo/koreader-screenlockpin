@@ -15,7 +15,7 @@ local TextWidget = require("ui/widget/textwidget")
 local VerticalGroup = require("ui/widget/verticalgroup")
 local Screen = Device.screen
 local util = require("util")
-local PinInputState = require("pininputstate")
+local PinInputState = require("state/pininputstate")
 
 local ScreenLockDialog = FocusManager:extend {
     placeholder = "",

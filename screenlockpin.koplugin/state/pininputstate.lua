@@ -2,7 +2,7 @@ local _ = require("gettext")
 local logger = require("logger")
 local Size = require("ui/size")
 local EventListener = require("ui/widget/eventlistener")
-local RateLimitState = require("ratelimitstate")
+local RateLimitState = require("state/ratelimitstate")
 
 local LENGTH_RANGE = {4, 8}
 
