@@ -108,6 +108,16 @@ function ScreenLock:onScreenResize()
     if self.overlay then self:resizeOverlay() end
 end
 
+function ScreenLock:onSetRotationMode(mode)
+    if not self.overlay then return end
+    local old_mode = Screen:getRotationMode()
+    logger.dbg("ScreenLockPin: update rotation (" .. mode .. "; old: " .. old_mode .. ")")
+    if mode ~= nil and mode ~= old_mode then
+        Screen:setRotationMode(mode)
+        self:resizeOverlay()
+    end
+end
+
 function ScreenLock:onResume()
     if not self:isEnabledOnResume() then return end
     -- we hijack the screensaver_delay (property of ui/screensaver.lua)
@@ -131,6 +141,8 @@ function ScreenLock:onLockScreen()
         -- UIManager performance hint
         covers_fullscreen = true,
         disable_double_tap = true,
+        -- handle rotation if not locked to orientation
+        onSetRotationMode = function (_, mode) self:onSetRotationMode(mode) end,
 
         CenterContainer:new {
             dimen = screen_dimen,

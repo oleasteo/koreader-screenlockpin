@@ -17,6 +17,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ### Fixed
 
 - Reset PIN input state on re-awake after sleep.
+- [#7](https://github.com/oleasteo/koreader-screenlockpin/issues/7) Lock Screen
+  rotation for unlocked device orientation.
 
 ## [2025.10-1] - 2025-10-22
 
