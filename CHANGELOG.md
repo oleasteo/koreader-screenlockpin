@@ -3,7 +3,9 @@
 All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## [Unreleased]
+## [2025.10-2] - 2025-10-24
+
+Yet another release with a big new feature, shortly after the last one 😅
 
 Adding a rate limiter is the last security feature on my todo list. I'm happy to
 find it's working just fine, despite the dynamic PIN length allowed. I've hidden

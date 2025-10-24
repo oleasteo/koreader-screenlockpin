@@ -33,7 +33,7 @@ if G_reader_settings:hasNot("screenlockpin_ratelimit") then
     G_reader_settings:makeTrue("screenlockpin_ratelimit")
 end
 
-G_reader_settings:saveSetting("screenlockpin_version", "2025.10-1")
+G_reader_settings:saveSetting("screenlockpin_version", "2025.10-2")
 
 local ScreenLock = EventListener:extend {
     overlay = nil, -- Current active overlay
