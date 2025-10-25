@@ -1,24 +1,24 @@
 local _ = require("gettext")
+local util = require("util")
 local Font = require("ui/font")
-local FocusManager = require("ui/widget/focusmanager")
-local UIManager = require("ui/uimanager")
+local Device = require("device")
 local Blitbuffer = require("ffi/blitbuffer")
+local Size = require("ui/size")
+local Geom = require("ui/geometry")
+local UIManager = require("ui/uimanager")
+local FocusManager = require("ui/widget/focusmanager")
 local ButtonTable = require("ui/widget/buttontable")
 local CenterContainer = require("ui/widget/container/centercontainer")
-local Device = require("device")
 local FrameContainer = require("ui/widget/container/framecontainer")
-local Geom = require("ui/geometry")
 local GestureRange = require("ui/gesturerange")
 local LineWidget = require("ui/widget/linewidget")
-local Size = require("ui/size")
 local TextWidget = require("ui/widget/textwidget")
 local VerticalGroup = require("ui/widget/verticalgroup")
 local Screen = Device.screen
-local util = require("util")
-local PinInputState = require("state/pininputstate")
+
+local PinInputState = require("plugin/state/pininput")
 
 local ScreenLockDialog = FocusManager:extend {
-    placeholder = "",
     size_factor = 1.25,
 
     title = "",
@@ -41,7 +41,7 @@ local ScreenLockDialog = FocusManager:extend {
 function ScreenLockDialog:init()
     local ready = false
     self.state = PinInputState:new {
-        placeholder = self.placeholder,
+        placeholder = _("Enter new PIN"),
         size_factor = self.size_factor,
         on_submit = self.on_submit,
         on_update = self.on_update,
@@ -78,7 +78,6 @@ function ScreenLockDialog:init()
     self.buttontable = ButtonTable:new {
         buttons = self.state:makeButtons(),
         width = width - 2 * Size.border.window - 2 * Size.padding.button,
-        show_parent = self,
     }
     local buttontable_width = self.buttontable:getSize().w
 
@@ -114,7 +113,6 @@ function ScreenLockDialog:init()
         self.buttontable,
     }
     self[1] = CenterContainer:new {
-        show_parent = self,
         dimen = Screen:getSize(),
         FrameContainer:new {
             background = Blitbuffer.COLOR_WHITE,

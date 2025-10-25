@@ -1,15 +1,15 @@
-local logger = require("logger")
-local ButtonTable = require("ui/widget/buttontable")
+local _ = require("gettext")
+local Blitbuffer = require("ffi/blitbuffer")
 local Font = require("ui/font")
+local Size = require("ui/size")
+local Geom = require("ui/geometry")
+local UIManager = require("ui/uimanager")
 local TextWidget = require("ui/widget/textwidget")
 local VerticalGroup = require("ui/widget/verticalgroup")
 local VerticalSpan = require("ui/widget/verticalspan")
-local UIManager = require("ui/uimanager")
-local Size = require("ui/size")
-local Geom = require("ui/geometry")
-local _ = require("gettext")
-local Blitbuffer = require("ffi/blitbuffer")
-local PinInputState = require("state/pininputstate")
+local ButtonTable = require("ui/widget/buttontable")
+
+local PinInputState = require("plugin/state/pininput")
 
 local DEBUG_CLEAR_REGION = false
 
@@ -18,13 +18,12 @@ local ScreenLockWidget = VerticalGroup:extend {
     state = nil,
     title_face = Font:getFace("smalltfont"),
     centered_within = nil,
-    container = nil,
+    ui_root = nil,
 
     _clear_region = nil,
 }
 
 function ScreenLockWidget:init()
-    logger.dbg("ScreenLockWidget: init")
     self.state = PinInputState:new {
         placeholder = _("Enter PIN"),
         size_factor = 2,
@@ -40,10 +39,10 @@ function ScreenLockWidget:init()
                 -- use performant method to clear text region
                 if self.centered_within then
                     local next_clear_region = self:calcTextRegion()
-                    UIManager:setDirty(self.container or "all", "fast", Geom.boundingBox({ prev_clear_region, next_clear_region }))
+                    UIManager:setDirty(self.ui_root or "all", "fast", Geom.boundingBox({ prev_clear_region, next_clear_region }))
                     self._clear_region = next_clear_region
                 else
-                    UIManager:setDirty(self.container or "all", "fast")
+                    UIManager:setDirty(self.ui_root or "all", "fast")
                 end
             end
         end,
