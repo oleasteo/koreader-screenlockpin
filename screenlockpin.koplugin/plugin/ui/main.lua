@@ -37,7 +37,7 @@ local function showOrClearLockScreen()
         covers_fullscreen = true,
         disable_double_tap = true,
         -- UIManager hook (called on ui root elements): handle rotation if not locked to orientation
-        onSetRotationMode,
+        onSetRotationMode = onSetRotationMode,
         -- UIManager hook (called on ui root elements)
         onScreenResize = function () overlay:relayout() end,
         -- LockScreenFrame
