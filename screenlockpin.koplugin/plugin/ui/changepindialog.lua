@@ -18,7 +18,9 @@ local Screen = Device.screen
 
 local PinInputState = require("plugin/state/pininput")
 
-local ScreenLockDialog = FocusManager:extend {
+local ChangePinDialog = FocusManager:extend {
+    name = "SLPChangePinDialog",
+
     size_factor = 1.25,
 
     title = "",
@@ -38,7 +40,7 @@ local ScreenLockDialog = FocusManager:extend {
     ges_events = nil,
 }
 
-function ScreenLockDialog:init()
+function ChangePinDialog:init()
     local ready = false
     self.state = PinInputState:new {
         placeholder = _("Enter new PIN"),
@@ -128,11 +130,11 @@ function ScreenLockDialog:init()
     ready = true
 end
 
-function ScreenLockDialog:getButtonById(id)
+function ChangePinDialog:getButtonById(id)
     return self.buttontable:getButtonById(id)
 end
 
-function ScreenLockDialog:setTitle(title)
+function ChangePinDialog:setTitle(title)
     self.titleWidget:setText(title)
     self.titleWidget:updateSize()
     self.titleGroup:resetLayout()
@@ -140,28 +142,28 @@ function ScreenLockDialog:setTitle(title)
     UIManager:setDirty(self, "fast")
 end
 
-function ScreenLockDialog:onShow()
+function ChangePinDialog:onShow()
     UIManager:setDirty(self, function()
         return "ui", self[1][1].dimen
     end)
 end
 
-function ScreenLockDialog:onCloseWidget()
+function ChangePinDialog:onCloseWidget()
     UIManager:setDirty(nil, function()
         return "flashui", self[1][1].dimen
     end)
 end
 
-function ScreenLockDialog:onClose()
+function ChangePinDialog:onClose()
     UIManager:close(self)
     return true
 end
 
-function ScreenLockDialog:onTapClose(_, ges)
+function ChangePinDialog:onTapClose(_, ges)
     if ges.pos:notIntersectWith(self[1][1].dimen) then
         self:onClose()
     end
     return true
 end
 
-return ScreenLockDialog
+return ChangePinDialog

@@ -12,6 +12,8 @@ local pluginSettings = require("plugin/settings")
 local ScreenLockWidget = require("plugin/ui/screenlockwidget")
 
 local LockScreenFrame = FrameContainer:extend {
+    name = "SLPLockScreen",
+
     widget = nil,
     on_unlock = nil,
 }
