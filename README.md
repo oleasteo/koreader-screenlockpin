@@ -36,7 +36,7 @@ Please leave a ⭐ if you like the plugin.
 ---
 
 ## 📦 Installation
-``
+
 1. Download the
    [latest release](https://github.com/oleasteo/koreader-screenlockpin/releases/latest);
    either archive is fine — whatever you're familiar with.
