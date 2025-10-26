@@ -2,7 +2,7 @@ local _ = require("gettext")
 local logger = require("logger")
 local Device = require("device")
 local UIManager = require("ui/uimanager")
-local InfoMessage = require("ui/widget/infomessage")
+local Notification = require("ui/widget/notification")
 local Screen = Device.screen
 
 local pluginSettings = require("plugin/settings")
@@ -62,8 +62,10 @@ local function showChangePinDialog()
         -- ChangePinDialog
         on_submit = function(next_pin)
             pluginSettings.setPin(next_pin)
-            UIManager:show(InfoMessage:new { text = _("PIN changed successfully."), timeout = 1 })
             closeChangePinDialog()
+            UIManager:nextTick(function()
+                Notification:notify(_("PIN changed."), Notification.SOURCE_DISPATCHER)
+            end)
         end,
     }
     UIManager:show(dialog)
