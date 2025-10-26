@@ -1,26 +1,19 @@
 local _ = require("gettext")
-local Blitbuffer = require("ffi/blitbuffer")
 local Font = require("ui/font")
 local Size = require("ui/size")
-local Geom = require("ui/geometry")
-local UIManager = require("ui/uimanager")
-local TextWidget = require("ui/widget/textwidget")
 local VerticalGroup = require("ui/widget/verticalgroup")
-local VerticalSpan = require("ui/widget/verticalspan")
 local ButtonTable = require("ui/widget/buttontable")
+local Screen = require("device").screen
 
 local PinInputState = require("plugin/state/pininput")
-
-local DEBUG_CLEAR_REGION = false
+local TextBoxLiteWidget = require("plugin/ui/textboxlitewidget")
 
 local ScreenLockWidget = VerticalGroup:extend {
-    fit = true,
-    state = nil,
-    title_face = Font:getFace("smalltfont"),
-    centered_within = nil,
     ui_root = nil,
-
-    _clear_region = nil,
+    state = nil,
+    width_factor = 0.9,
+    margin = 0,
+    title_face = Font:getFace("smalltfont"),
 }
 
 function ScreenLockWidget:init()
@@ -28,78 +21,47 @@ function ScreenLockWidget:init()
         placeholder = _("Enter PIN"),
         size_factor = 2,
         on_display_update = self.on_display_update,
-        on_display_update = function(text)
-            local text_widget = self[1]
-            if text_widget then
-                local prev_clear_region = self._clear_region or self:calcTextRegion()
-                text_widget:setText(text)
-                text_widget:updateSize()
-                -- re-center the text
-                self:resetLayout()
-                -- use performant method to clear text region
-                if self.centered_within then
-                    local next_clear_region = self:calcTextRegion()
-                    UIManager:setDirty(self.ui_root or "all", "fast", Geom.boundingBox({ prev_clear_region, next_clear_region }))
-                    self._clear_region = next_clear_region
-                else
-                    UIManager:setDirty(self.ui_root or "all", "fast")
-                end
-            end
-        end,
+        on_display_update = function(text) if self[1] then self[1]:setText(text) end end,
         on_update = self.on_update,
     }
-    self[1] = TextWidget:new {
+    local width = math.floor(Screen:getWidth() * self.width_factor) - 2 * self.margin
+    self[1] = TextBoxLiteWidget:new {
+        ui_root = self.ui_root,
         text = self.state.display,
-        width_factor = 1.0,
-        alignment = "center",
         face = self.title_face,
+        width = width,
+        padding = math.max(Size.item.height_default, self.margin),
     }
-    self[2] = VerticalSpan:new {
-        width = Size.item.height_large * 2,
-    }
-    self[3] = ButtonTable:new {
+    self[2] = ButtonTable:new {
         buttons = self.state:makeButtons(),
-        shrink_unneeded_width = not self.fit,
-        width_factor = self.fit and 1.0 or nil,
+        width = width,
         zero_sep = true,
     }
 end
 
-function ScreenLockWidget:calcTextRegion()
-    local center = {
-        x = self.centered_within.x + self.centered_within.w / 2,
-        y = self.centered_within.y + self.centered_within.h / 2,
-    }
-    local text_size = self[1]:getSize()
-    local self_size = self:getSize()
-
-    return {
-        x = math.floor(center.x - text_size.w / 2),
-        y = math.floor(center.y - self_size.h / 2),
-        -- for some reason, the region isn't 100% accurate :/
-        w = text_size.w + 10,
-        h = text_size.h + 10,
-    }
-end
-
 function ScreenLockWidget:onScreenResize(screen_dimen)
-    self.centered_within = screen_dimen
-    self._clear_region = nil
-    local buttontable = self[3]
-    buttontable.width = nil
+    local width = math.floor(screen_dimen.w * self.width_factor) - 2 * self.margin
+    local textbox = self[1]
+    local buttontable = self[2]
+    buttontable.width = width
     buttontable.dimen = nil
     buttontable:free()
     buttontable:init()
+    textbox:free()
+    textbox.width = width
     self:resetLayout()
 end
 
-if DEBUG_CLEAR_REGION then
-    function ScreenLockWidget:paintTo(bb, x, y)
-        -- show clear region for debugging
-        local dimen = self:calcTextRegion()
-        bb:paintRect(dimen.x, dimen.y, dimen.w, dimen.h, Blitbuffer.COLOR_GRAY_9)
-        VerticalGroup.paintTo(self, bb, x, y)
-    end
+function ScreenLockWidget:paintTo(bb, x, y)
+    VerticalGroup.paintTo(self, bb, x, y + self.margin)
+end
+
+function ScreenLockWidget:getSize()
+    local content_size = VerticalGroup.getSize(self)
+    return {
+        w = content_size.w + 2 * self.margin,
+        h = content_size.h + self.margin,
+    }
 end
 
 return ScreenLockWidget

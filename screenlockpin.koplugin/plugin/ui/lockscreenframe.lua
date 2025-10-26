@@ -17,13 +17,10 @@ local LockScreenFrame = FrameContainer:extend {
 }
 
 function LockScreenFrame:init()
-    self.background = Blitbuffer.COLOR_WHITE
-
-    local screen_dimen = Geom:new{x = 0, y = 0, w = Screen:getWidth(), h = Screen:getHeight()}
+    self.background = pluginSettings.isUiOpaque() and Blitbuffer.COLOR_WHITE or nil
 
     self.widget = ScreenLockWidget:new {
         ui_root = self,
-        centered_within = screen_dimen,
         on_update = function(input)
             if input ~= pluginSettings.readPin() then
                 self.widget.state:incFailedCount()
@@ -34,9 +31,15 @@ function LockScreenFrame:init()
         end
     }
 
-    self[1] = CenterContainer:new {
-        dimen = screen_dimen,
+    local content_container = FrameContainer:new {
+        background = Blitbuffer.COLOR_WHITE,
+        padding = 0,
         self.widget,
+    }
+
+    self[1] = CenterContainer:new {
+        dimen = Geom:new{x = 0, y = 0, w = Screen:getWidth(), h = Screen:getHeight()},
+        content_container,
     }
 end
 

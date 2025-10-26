@@ -30,6 +30,9 @@ local function mergeDefaultSettings()
     if G_reader_settings:hasNot("screenlockpin_ratelimit") then
         G_reader_settings:makeTrue("screenlockpin_ratelimit")
     end
+    if G_reader_settings:hasNot("screenlockpin_opaque") then
+        G_reader_settings:makeTrue("screenlockpin_opaque")
+    end
 end
 
 local function init()
@@ -92,6 +95,18 @@ local function toggleLockOnBoot()
 end
 
 --
+-- UI Options
+--
+
+local function isUiOpaque()
+    return G_reader_settings:isTrue("screenlockpin_opaque")
+end
+
+local function toggleUiOpaque()
+    return G_reader_settings:toggle("screenlockpin_opaque")
+end
+
+--
 -- Rate Limiter
 --
 
@@ -110,6 +125,7 @@ local function purge()
     G_reader_settings:delSetting("screenlockpin_onboot")
     G_reader_settings:delSetting("screenlockpin_pin")
     G_reader_settings:delSetting("screenlockpin_ratelimit")
+    G_reader_settings:delSetting("screenlockpin_opaque")
     G_reader_settings:delSetting("screenlockpin_restore_screensaver_delay")
     G_reader_settings:delSetting("screenlockpin_version")
 end
@@ -127,4 +143,7 @@ return {
 
     toggleLockOnBoot = toggleLockOnBoot,
     toggleLockOnWakeup = toggleLockOnWakeup,
+
+    isUiOpaque = isUiOpaque,
+    toggleUiOpaque = toggleUiOpaque,
 }
