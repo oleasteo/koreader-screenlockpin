@@ -4,8 +4,9 @@
 [![Release Version](https://img.shields.io/badge/Release-2025.10--2-blue.svg)](https://github.com/oleasteo/koreader-screenlockpin/releases/tag/v2025.10-2)
 [![Compatibility](https://img.shields.io/badge/Comptibility-KOReader%20v2025.08-yellow.svg)](https://github.com/koreader/koreader/tree/v2025.08)
 
-**ScreenLockPin**: A fast, sophisticated PIN Lock Screen for your
-[KOReader](https://github.com/koreader/koreader), to protect your privacy.
+**ScreenLockPin**: A fast, sophisticated PIN Lock Screen that protects your
+[KOReader](https://github.com/koreader/koreader) content from unauthorized
+access.
 
 ![Lock Screen Preview](lockscreen.png)
 
@@ -15,13 +16,15 @@
 
 Just what you'd expect from a PIN lock screen, and more… 😅
 
-- 🗽 **Flexible PIN length** — supports 4–8 digits
+- 🗽 **Custom PIN length** — supports 4–8 digits
+- ◻️ **Privacy first** — hides everything but your wallpaper from public eyes
 - 🚀 **Lock on boot** — secures your device on KOReader boot (configurable)
-- 🔁 **Lock on wakeup** — secures your device after sleep (configurable)
-- 🔒 **Full-screen lock** — hides content for privacy (configurable)
+- 🔒 **Lock on wakeup** — secures your device after sleep (configurable)
 - ⚡ **Instant unlock** — immediate response, no extra confirmation button
-- 🚥 **Rate Limiting** — short delay after repeated failed attempts
+- 🚥 **Rate Limiting** — short delays after repeated failed attempts
 - 🪶 **Lightweight design** — optimized for performance
+
+Please leave a ⭐ if you like the plugin.
 
 ---
 
@@ -45,34 +48,58 @@ Just what you'd expect from a PIN lock screen, and more… 😅
 
 ## ⚙️ Usage
 
-The default PIN is `0000`
+1. On your KOReader, open the new *Screen* › **Lock screen** menu.
+2. Set your PIN and configure the options to your liking.
 
-1. Open KOReader’s *Screen* › **Lock screen** menu.
-2. Update your PIN (4-8 digits) and configure plugin options to your liking.
-3. Depending on your settings, the Lock Screen will now appear when booting
-   KOReader and / or when waking up from sleep mode.
+Depending on your settings, the Lock Screen will now appear during boot and /
+or during wakeup from sleep mode.
 
-For the lock on wakeup, we use the *Screen* › *Sleep screen* › *Wallpaper* ›
-**Postpone screen update after wake-up** setting. Changing this setting will
-disable the lock on wakeup feature.
-
-### Recover KOReader without PIN
-
-In case you lost your PIN:
-
-- If you don't have *lock on boot* enabled, a hard reboot should suffice to get
-  you into the KOReader. Change your PIN from there.
-- If you do have *lock on boot* enabled, you'll need to modify the plugin files.
-  Edit the *settings.reader.lua* file inside the *koreader* directory on your
-  device. Find the `screenlockpin_pin` option and change if needed. Save and
-  reboot KOReader.
+If you enable *lock on boot*, make sure to have some way of file access without
+unlocking the KOReader, in case you forget the PIN (see FAQ below).
 
 ---
 
 ## 🧩 Compatibility
 
-Designed for and tested with **KOReader v2025.08**. Please report any
-compatibility issues for this version or newer.
+Designed for **KOReader v2025.08** and newer. Please report any compatibility
+issues you encounter.
+
+Tested devices:
+- ✅ Kindle Oasis (10th generation)
+
+If you tested this plugin on another device type, please add it to the list
+above.
+
+---
+
+## ❔ FAQ
+
+### I have lost my PIN. How do I unlock?
+
+If you don't have *lock on boot* enabled, a hard reboot should suffice to get
+you into the KOReader. Change your PIN from there.
+
+If you do have *lock on boot* enabled, you'll need access to the devices file
+system (e.g., USB or SSH). Inside the *koreader* directory, edit the
+*settings.reader.lua* file. Find the `screenlockpin_pin` option and change, if
+necessary. Make sure the value adheres the 4–8 digits constraint. Save, and
+reboot into KOReader.
+
+### How do I change the lock screen background?
+
+The lock screen is based on your configured wallpaper: *Screen* › *Sleep screen*
+› *Wallpaper*.
+
+### I enabled the lock before changing the PIN. How do I unlock?
+
+The default PIN is `0000`
+
+### I disabled the *lock on wakeup*, now the device stays on the wallpaper.
+
+On disable, we restore the *Screen* › *Sleep screen* › *Wallpaper* › **Postpone
+screen update after wake-up** setting that was set before the feature was
+enabled. You might need to tap the screen, or use your old 'exit sleep screen'
+gesture to unlock.
 
 ---
 
@@ -80,7 +107,7 @@ compatibility issues for this version or newer.
 
 Contributions and suggestions are welcome!  
 Feel free to open an **issue** or **pull request** to improve functionality,
-style, or compatibility.
+style, or compatibility. 
 
 ---
 
