@@ -24,14 +24,10 @@ Just what you'd expect from a PIN lock screen, and more… 😅
 - 🚥 **Rate Limiting** — short delays after repeated failed attempts
 - 🪶 **Lightweight design** — optimized for performance
 
+This plugin is designed for **privacy and casual protection**, not cryptographic
+security.
+
 Please leave a ⭐ if you like the plugin.
-
----
-
-## 💡 Not a Feature
-
-- This plugin is designed for **privacy and casual protection**, not
-  cryptographic security.
 
 ---
 
