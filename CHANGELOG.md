@@ -5,6 +5,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Security
+
+- Use a `full` display refresh on unlock to prevent bleeding information on
+  pressed buttons.
+
 ### Changed
 
 - PIN change uses `Notification` instead of `InfoMessage`. The notification is

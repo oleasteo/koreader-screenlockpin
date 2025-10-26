@@ -25,7 +25,7 @@ end
 local function closeLockScreen()
     if not overlay then return end
     logger.dbg("ScreenLockPin: close lock screen")
-    UIManager:close(overlay, "ui")
+    UIManager:close(overlay, "full")
     overlay = nil
 end
 
