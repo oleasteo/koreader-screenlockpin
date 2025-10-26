@@ -19,7 +19,7 @@ Just what you'd expect from a PIN lock screen 😅
 - 🗽 **Flexible PIN length** — supports 4–8 digits
 - 🚀 **Lock on boot** — secures your device on KOReader boot (configurable)
 - 🔁 **Lock on wakeup** — secures your device after sleep (configurable)
-- 🔒 **Full-screen lock** — hides content for privacy
+- 🔒 **Full-screen lock** — hides content for privacy (configurable)
 - ⚡ **Instant unlock** — immediate response, no extra confirmation button
 - 🚥 **Rate Limiting** — short delay after repeated failed attempts
 - 🪶 **Lightweight design** — minimal overhead
