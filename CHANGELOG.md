@@ -15,6 +15,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - PIN change uses `Notification` instead of `InfoMessage`. The notification is
   less obtrusive, at the top of the screen.
 
+### Added
+
+- [#3](https://github.com/oleasteo/koreader-screenlockpin/issues/3)
+  Option to disable the white background fill.
+
 ## [2025.10-2] - 2025-10-24
 
 Yet another release with a big new feature, shortly after the last one 😅
