@@ -50,7 +50,8 @@ local function readPin()
 end
 
 local function setPin(next_pin)
-    logger.dbg("ScreenLockPin: update PIN to " .. next_pin)
+    --logger.dbg("ScreenLockPin: updating PIN to " .. next_pin)
+    logger.dbg("ScreenLockPin: updating PIN to [redacted]")
     G_reader_settings:saveSetting("screenlockpin_pin", next_pin)
 end
 

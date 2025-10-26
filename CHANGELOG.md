@@ -9,6 +9,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 - Use a `full` display refresh on unlock to prevent bleeding information on
   pressed buttons.
+- Redact change pin values from logs, just in case they're somehow readable w/o
+  device access. Probably not a real security issue, but let's err on the safe
+  side.
 
 ### Changed
 

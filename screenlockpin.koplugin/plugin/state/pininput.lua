@@ -120,7 +120,8 @@ function PinInputState:reevaluate()
 
     -- refresh display
     local next_display = #self.value > 0 and string.rep("●", #self.value) or self.placeholder
-    logger.dbg("ScreenLockPin: pininput reevaluate " .. next_display)
+    --logger.dbg("ScreenLockPin: pininput reevaluate " .. next_display)
+    logger.dbg("ScreenLockPin: pininput reevaluate [redacted]")
     self:setDisplayText(next_display)
     -- refresh valid state and check
     local next_valid = #self.value >= LENGTH_RANGE[1] and #self.value <= LENGTH_RANGE[2]
