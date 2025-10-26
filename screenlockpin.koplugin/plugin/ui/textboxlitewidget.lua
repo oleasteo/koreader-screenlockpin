@@ -46,7 +46,7 @@ function TextBoxLiteWidget:setText(text)
     local center_abs = self._center_abs
     local prev_text_region = self._text_region_abs
     TextWidget.setText(self, text)
-    self:free()
+    self:free(false)
     local next_text_region = self:centerAlignedTextBounds(center_abs, TextWidget.getSize(self))
     local clear_region = Geom.boundingBox({ prev_text_region, next_text_region })
     UIManager:setDirty(self.ui_root, self.refreshtype, clear_region)
@@ -62,10 +62,12 @@ function TextBoxLiteWidget:getSize()
     return self._dimen
 end
 
-function TextBoxLiteWidget:free()
+function TextBoxLiteWidget:free(drop_position)
+    if drop_position then
+        self._center_abs = nil
+        self._text_region_abs = nil
+    end
     self._dimen = nil
-    self._center_abs = nil
-    self._text_region_abs = nil
     TextWidget.free(self)
 end
 

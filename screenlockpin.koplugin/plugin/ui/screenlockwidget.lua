@@ -47,7 +47,7 @@ function ScreenLockWidget:onScreenResize(screen_dimen)
     buttontable.dimen = nil
     buttontable:free()
     buttontable:init()
-    textbox:free()
+    textbox:free(true)
     textbox.width = width
     self:resetLayout()
 end
