@@ -36,7 +36,7 @@ Please leave a ⭐ if you like the plugin.
 ---
 
 ## 📦 Installation
-
+``
 1. Download the
    [latest release](https://github.com/oleasteo/koreader-screenlockpin/releases/latest);
    either archive is fine — whatever you're familiar with.
@@ -48,7 +48,7 @@ Please leave a ⭐ if you like the plugin.
 
 ## ⚙️ Usage
 
-1. On your KOReader, open the new *Screen* › **Lock screen** menu.
+1. On your KOReader, open the new *Screen* › **Lock screen** submenu.
 2. Set your PIN and configure the options to your liking.
 
 Depending on your settings, the Lock Screen will now appear during boot and /
