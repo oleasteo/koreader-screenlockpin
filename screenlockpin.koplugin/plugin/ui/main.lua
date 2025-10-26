@@ -44,16 +44,17 @@ local function closeLockScreen()
     logger.dbg("ScreenLockPin: close lock screen")
     screensaverUtil.unfreezeScreensaverAbi()
     screensaverUtil.totalCleanup()
-    UIManager:close(overlay, "full")
+    UIManager:close(overlay, "full", overlay:getRefreshRegion())
     overlay = nil
 end
 
 local function onSuspend()
     if not overlay then return end
     Device.screen_saver_lock = false
-    if not Screensaver.screensaver_widget then return end
-    logger.dbg("ScreenLockPin: before suspend, pull screensaver in front")
-    uiManagerUtil.pullModalToFront(Screensaver.screensaver_widget, "full")
+    local widget = Screensaver.screensaver_widget
+    if not widget then return end
+    uiManagerUtil.pullModalToFront(widget, nil)
+    UIManager:setDirty(widget, "full", overlay:getRefreshRegion())
 end
 
 local function onResume()
@@ -62,8 +63,8 @@ local function onResume()
     Device.screen_saver_lock = true
     logger.dbg("ScreenLockPin: refresh lock on resume")
     overlay:clearInput()
-    logger.dbg("ScreenLockPin: pull lock screen in front")
-    uiManagerUtil.pullModalToFront(overlay, "full")
+    uiManagerUtil.pullModalToFront(overlay, nil)
+    UIManager:setDirty(overlay, "full", overlay:getRefreshRegion())
 end
 
 local function showOrClearLockScreen(cause)
@@ -98,7 +99,7 @@ local function showOrClearLockScreen(cause)
         -- LockScreenFrame
         on_unlock = closeLockScreen,
     }
-    UIManager:show(overlay, "full")
+    UIManager:show(overlay, "full", overlay:getRefreshRegion())
 end
 
 local function closeChangePinDialog()

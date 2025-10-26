@@ -16,6 +16,8 @@ local LockScreenFrame = FrameContainer:extend {
 
     widget = nil,
     on_unlock = nil,
+
+    _refresh_region = nil,
 }
 
 function LockScreenFrame:init()
@@ -43,6 +45,24 @@ function LockScreenFrame:init()
         dimen = Geom:new{x = 0, y = 0, w = Screen:getWidth(), h = Screen:getHeight()},
         content_container,
     }
+
+    if self.background then self._refresh_region = self[1].dimen end
+end
+
+function LockScreenFrame:getRefreshRegion()
+    if self._refresh_region then return self._refresh_region end
+    if self.background then
+        self._refresh_region = self[1].dimen
+    else
+        local content_size = self[1][1]:getSize()
+        self._refresh_region = Geom:new {
+            x = math.floor((Screen:getWidth() - content_size.w)/2),
+            y = math.floor((Screen:getHeight() - content_size.h)/2),
+            w = content_size.w,
+            h = content_size.h,
+        }
+    end
+    return self._refresh_region
 end
 
 function LockScreenFrame:clearInput()
@@ -55,7 +75,8 @@ function LockScreenFrame:relayout(refreshmode)
     logger.dbg("ScreenLockPin: resize overlay to " .. screen_dimen.x .. "x" .. screen_dimen.y)
     self[1].dimen = screen_dimen
     self.widget:onScreenResize(screen_dimen)
-    UIManager:setDirty(self, refreshmode)
+    self._refresh_region = nil
+    UIManager:setDirty(self, refreshmode, self:getRefreshRegion())
 end
 
 return LockScreenFrame
