@@ -3,9 +3,9 @@ local logger = require("logger")
 local Dispatcher = require("dispatcher")
 local EventListener = require("ui/widget/eventlistener")
 
-local onBootHook = require("plugin/hook/onboot")
 local pluginMenu = require("plugin/menu")
 local pluginSettings = require("plugin/settings")
+local onBootHook = require("plugin/util/onboothook")
 local screensaverUtil = require("plugin/util/screensaverutil")
 local pluginUi = require("plugin/ui/main")
 
