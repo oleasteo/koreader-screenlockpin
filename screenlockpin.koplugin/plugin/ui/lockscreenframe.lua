@@ -48,12 +48,12 @@ function LockScreenFrame:clearInput()
     self.widget.state:clear()
 end
 
-function LockScreenFrame:relayout()
+function LockScreenFrame:relayout(refreshmode)
     local screen_dimen = Geom:new{x = 0, y = 0, w = Screen:getWidth(), h = Screen:getHeight()}
     logger.dbg("ScreenLockPin: resize overlay to " .. screen_dimen.x .. "x" .. screen_dimen.y)
     self[1].dimen = screen_dimen
     self.widget:onScreenResize(screen_dimen)
-    UIManager:setDirty(self, "ui")
+    UIManager:setDirty(self, refreshmode)
 end
 
 return LockScreenFrame

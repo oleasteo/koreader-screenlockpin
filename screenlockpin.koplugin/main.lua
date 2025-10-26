@@ -1,12 +1,12 @@
 local _ = require("gettext")
 local logger = require("logger")
 local Dispatcher = require("dispatcher")
-local Screensaver = require("ui/screensaver")
 local EventListener = require("ui/widget/eventlistener")
 
 local onBootHook = require("plugin/hook/onboot")
 local pluginMenu = require("plugin/menu")
 local pluginSettings = require("plugin/settings")
+local screensaverUtil = require("plugin/util/screensaverutil")
 local pluginUi = require("plugin/ui/main")
 
 local ScreenLockPinPlugin = EventListener:extend {}
@@ -35,7 +35,8 @@ end
 -- KOReader dispatcher action (registered in ScreenLockPinPlugin:init)
 function ScreenLockPinPlugin:onLockScreen()
     logger.dbg("ScreenLockPin: lock via action")
-    pluginUi.showOrClearLockScreen()
+    screensaverUtil.showWhileAwake("dispatcher_lockscreen")
+    pluginUi.showOrClearLockScreen("dispatcher_lockscreen")
 end
 
 -- KOReader plugin hook (on plugin disable)
@@ -49,20 +50,19 @@ end
 -- KOReader plugin hook (on wakeup after suspend)
 function ScreenLockPinPlugin.onResume()
     if not pluginSettings.shouldLockOnWakeup() then return end
-    logger.dbg("ScreenLockPin: lock on resume")
-    -- we hijack the screensaver_delay (property of ui/screensaver.lua)
+    -- we hijacked the screensaver_delay (property of ui/screensaver.lua)
     -- any unknown values will be interpreted as "tap to exit from screensaver"
     -- this enables us to create a lock screen first before closing the
-    -- screensaver. But we get the responsibility to close the widget when done.
-    pluginUi.showOrClearLockScreen()
-    Screensaver:close_widget()
+    -- screensaver. We get the responsibility to close the widget later…
+    pluginUi.showOrClearLockScreen("resume")
 end
 
 -- Monkey-patched hook (registered via onBootHook)
 function ScreenLockPinPlugin.onBoot()
     if not pluginSettings.shouldLockOnBoot() then return end
     logger.dbg("ScreenLockPin: lock on boot")
-    pluginUi.showOrClearLockScreen()
+    screensaverUtil.showWhileAwake("lockonboot")
+    pluginUi.showOrClearLockScreen("boot")
 end
 
 return ScreenLockPinPlugin
