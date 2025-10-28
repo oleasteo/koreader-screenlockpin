@@ -86,7 +86,6 @@ local function showOrClearLockScreen(cause)
     overlay = LockScreenFrame:new {
         -- UIManager performance tweaks
         modal = true,
-        covers_fullscreen = pluginSettings.isUiOpaque(),
         disable_double_tap = true,
         -- UIManager hook (called on ui root elements): handle rotation if not locked to orientation
         onSetRotationMode = onSetRotationMode,

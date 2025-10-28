@@ -19,12 +19,6 @@ return {
             separator = true,
         },
         {
-            text = _("White background"),
-            checked_func = pluginSettings.isUiOpaque,
-            callback = pluginSettings.toggleUiOpaque,
-            separator = true,
-        },
-        {
             text = _("Change PIN"),
             callback = pluginUi.showChangePinDialog,
         },

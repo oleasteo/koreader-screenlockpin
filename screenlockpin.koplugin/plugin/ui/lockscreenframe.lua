@@ -21,8 +21,6 @@ local LockScreenFrame = FrameContainer:extend {
 }
 
 function LockScreenFrame:init()
-    self.background = pluginSettings.isUiOpaque() and Blitbuffer.COLOR_WHITE or nil
-
     self.widget = ScreenLockWidget:new {
         ui_root = self,
         on_update = function(input)
