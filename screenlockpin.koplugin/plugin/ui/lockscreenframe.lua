@@ -18,6 +18,9 @@ local LockScreenFrame = FrameContainer:extend {
     on_unlock = nil,
     visible = true,
 
+    bordersize = 0,
+    padding = 0,
+
     _refresh_region = nil,
 }
 
