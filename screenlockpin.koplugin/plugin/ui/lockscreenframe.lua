@@ -16,6 +16,7 @@ local LockScreenFrame = FrameContainer:extend {
 
     widget = nil,
     on_unlock = nil,
+    visible = true,
 
     _refresh_region = nil,
 }
@@ -45,6 +46,15 @@ function LockScreenFrame:init()
     }
 
     if self.background then self._refresh_region = self[1].dimen end
+end
+
+function LockScreenFrame:setVisible(bool)
+    self.visible = bool
+end
+
+function LockScreenFrame:paintTo(bb, x, y)
+    if not self.visible then return end
+    FrameContainer.paintTo(self, bb, x, y)
 end
 
 function LockScreenFrame:getRefreshRegion()

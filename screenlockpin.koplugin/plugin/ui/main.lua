@@ -8,7 +8,6 @@ local Screen = Device.screen
 
 local pluginSettings = require("plugin/settings")
 local screensaverUtil = require("plugin/util/screensaverutil")
-local uiManagerUtil = require("plugin/util/uimanagerutil")
 local ChangePinDialog = require("plugin/ui/changepindialog")
 local LockScreenFrame = require("plugin/ui/lockscreenframe")
 
@@ -51,20 +50,22 @@ end
 local function onSuspend()
     if not overlay then return end
     Device.screen_saver_lock = false
-    local widget = Screensaver.screensaver_widget
-    if not widget then return end
-    uiManagerUtil.pullModalToFront(widget, nil)
-    UIManager:setDirty(widget, "full", overlay:getRefreshRegion())
+    overlay:setVisible(false)
+    UIManager:setDirty("all", "full", overlay:getRefreshRegion())
+end
+
+local function reuseShowOverlay()
+    logger.dbg("ScreenLockPin: clear & show lock")
+    overlay:clearInput()
+    overlay:setVisible(true)
+    UIManager:setDirty(overlay, "full", overlay:getRefreshRegion())
 end
 
 local function onResume()
     if not pluginSettings.shouldLockOnWakeup() then return end
     if not overlay then return end
     Device.screen_saver_lock = true
-    logger.dbg("ScreenLockPin: refresh lock on resume")
-    overlay:clearInput()
-    uiManagerUtil.pullModalToFront(overlay, nil)
-    UIManager:setDirty(overlay, "full", overlay:getRefreshRegion())
+    reuseShowOverlay()
 end
 
 local function showOrClearLockScreen(cause)
@@ -75,12 +76,7 @@ local function showOrClearLockScreen(cause)
         return
     end
     logger.dbg("ScreenLockPin: show lock screen (" .. cause .. ")")
-    if overlay then
-        logger.dbg("ScreenLockPin: pull lock screen in front")
-        overlay:clearInput()
-        uiManagerUtil.pullModalToFront(overlay, "full")
-        return
-    end
+    if overlay then return reuseShowOverlay() end
     logger.dbg("ScreenLockPin: create lock screen")
     screensaverUtil.freezeScreensaverAbi()
     overlay = LockScreenFrame:new {
