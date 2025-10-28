@@ -17,6 +17,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 - PIN change uses `Notification` instead of `InfoMessage`. The notification is
   less obtrusive, at the top of the screen.
+- Allow 3–12 digits for PINs.
 
 ### Added
 

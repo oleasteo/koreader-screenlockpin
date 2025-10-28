@@ -6,7 +6,7 @@ local EventListener = require("ui/widget/eventlistener")
 local pluginSettings = require("plugin/settings")
 local Throttle = require("plugin/state/throttle")
 
-local LENGTH_RANGE = {4, 8}
+local LENGTH_RANGE = {3, 12}
 
 local PinInputState = EventListener:extend {
     -- configuration

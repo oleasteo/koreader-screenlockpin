@@ -16,7 +16,7 @@ access.
 
 Just what you'd expect from a PIN lock screen, and more… 😅
 
-- 🗽 **Custom PIN length** — supports 4–8 digits
+- 🗽 **Custom PIN length** — supports 3–12 digits
 - ◻️ **Privacy first** — hides everything but your wallpaper from public eyes
 - 🚀 **Lock on boot** — secures your device on KOReader boot (configurable)
 - 🔒 **Lock on wakeup** — secures your device after sleep (configurable)
@@ -78,7 +78,7 @@ you into the KOReader. Change your PIN from there.
 If you do have *lock on boot* enabled, you'll need access to the devices file
 system (e.g., USB or SSH). Inside the *koreader* directory, edit the
 *settings.reader.lua* file. Find the `screenlockpin_pin` option and change, if
-necessary. Make sure the value adheres the 4–8 digits constraint. Save, and
+necessary. Make sure the value adheres the 3–12 digits constraint. Save, and
 reboot into KOReader.
 
 ### How do I change the lock screen background?
