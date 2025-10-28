@@ -1,7 +1,7 @@
 local _ = require("gettext")
 
 local pluginSettings = require("plugin/settings")
-local pluginUi = require("plugin/ui/main")
+local settingsCtrl = require("plugin/ui/ctrl/settingsctrl")
 
 return {
     sorting_hint = "screen",
@@ -20,7 +20,8 @@ return {
         },
         {
             text = _("Change PIN"),
-            callback = pluginUi.showChangePinDialog,
+            callback = settingsCtrl.showChangePinDialog,
+            separator = true,
         },
     }
 }

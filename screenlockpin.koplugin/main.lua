@@ -7,7 +7,7 @@ local pluginMenu = require("plugin/menu")
 local pluginSettings = require("plugin/settings")
 local onBootHook = require("plugin/util/onboothook")
 local screensaverUtil = require("plugin/util/screensaverutil")
-local pluginUi = require("plugin/ui/main")
+local lockscreenCtrl = require("plugin/ui/ctrl/lockscreenctrl")
 
 local ScreenLockPinPlugin = EventListener:extend {}
 
@@ -36,7 +36,7 @@ end
 function ScreenLockPinPlugin:onLockScreen()
     logger.dbg("ScreenLockPin: lock via action")
     screensaverUtil.showWhileAwake("dispatcher_lockscreen")
-    pluginUi.showOrClearLockScreen("dispatcher_lockscreen")
+    lockscreenCtrl.showOrClearLockScreen("dispatcher_lockscreen")
 end
 
 -- KOReader plugin hook (on plugin disable)
@@ -54,7 +54,7 @@ function ScreenLockPinPlugin.onResume()
     -- any unknown values will be interpreted as "tap to exit from screensaver"
     -- this enables us to create a lock screen first before closing the
     -- screensaver. We get the responsibility to close the widget later…
-    pluginUi.showOrClearLockScreen("resume")
+    lockscreenCtrl.showOrClearLockScreen("resume")
 end
 
 -- Monkey-patched hook (registered via onBootHook)
@@ -62,7 +62,7 @@ function ScreenLockPinPlugin.onBoot()
     if not pluginSettings.shouldLockOnBoot() then return end
     logger.dbg("ScreenLockPin: lock on boot")
     screensaverUtil.showWhileAwake("lockonboot")
-    pluginUi.showOrClearLockScreen("boot")
+    lockscreenCtrl.showOrClearLockScreen("boot")
 end
 
 return ScreenLockPinPlugin

@@ -9,7 +9,7 @@ local WidgetContainer = require("ui/widget/container/widgetcontainer")
 local Screen = Device.screen
 
 local pluginSettings = require("plugin/settings")
-local ScreenLockWidget = require("plugin/ui/screenlockwidget")
+local ScreenLockWidget = require("plugin/ui/lockscreen/screenlockwidget")
 
 local LockScreenFrame = WidgetContainer:extend {
     name = "SLPLockScreen",
