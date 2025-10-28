@@ -27,6 +27,7 @@ local LockScreenFrame = WidgetContainer:extend {
 function LockScreenFrame:init()
     self.lock_widget = ScreenLockWidget:new {
         ui_root = self,
+        scale = 0.5,
         on_update = function(input)
             if input ~= pluginSettings.readPin() then
                 self.lock_widget.state:incFailedCount()

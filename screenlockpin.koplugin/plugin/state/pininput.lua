@@ -12,6 +12,7 @@ local PinInputState = EventListener:extend {
     -- configuration
     placeholder = "",
     size_factor = 1.25,
+    font_size = nil,
 
     -- events
     on_display_update = nil, -- (display_text)
@@ -42,6 +43,7 @@ function PinInputState:makeButtons()
     local delete_button = {
         text = "⌫",
         height = button_height,
+        font_size = self.font_size,
         callback = function()
             if self.throttle and self.throttle:isPaused() then return end
             self.value = self.value:sub(1, -2)
@@ -56,6 +58,7 @@ function PinInputState:makeButtons()
     local noop_button = {
         text = " ",
         height = button_height,
+        font_size = self.font_size,
         callback = function() end,
         enabled = false,
     }
@@ -67,6 +70,7 @@ function PinInputState:makeButtons()
             id = "submit",
             text = _("Save"),
             height = action_button_height,
+            font_size = self.font_size,
             enabled = self.valid,
             callback = function() self.on_submit(self.value) end,
         })
@@ -76,6 +80,7 @@ function PinInputState:makeButtons()
         return {
             text = num,
             height = button_height,
+            font_size = self.font_size,
             callback = function()
                 if self.throttle and self.throttle:isPaused() then return end
                 if #self.value < LENGTH_RANGE[2] then
