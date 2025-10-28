@@ -22,11 +22,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ### Added
 
 - [#3](https://github.com/oleasteo/koreader-screenlockpin/issues/3)
-  Option to disable the white background fill. We do take control of the
-  Screensaver (prevent other sources to close, re-show, etc.) to ensure only one
-  widget exists at a time and it isn't destroyed until device is unlocked. This
-  way, there won't be background rotations, for example on lock from lock
-  screen.
+  The lock screen draws on top of the builtin wallpaper. The white background is
+  gone.
 
 ## [2025.10-2] - 2025-10-24
 
