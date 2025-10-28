@@ -24,6 +24,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - [#3](https://github.com/oleasteo/koreader-screenlockpin/issues/3)
   The lock screen draws on top of the builtin wallpaper. The white background is
   gone.
+- [#5](https://github.com/oleasteo/koreader-screenlockpin/issues/5)
+  The lock screen panel size can be configured.
 
 ## [2025.10-2] - 2025-10-24
 

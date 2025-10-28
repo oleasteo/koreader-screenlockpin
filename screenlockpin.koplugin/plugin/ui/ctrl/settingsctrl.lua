@@ -5,23 +5,23 @@ local Notification = require("ui/widget/notification")
 
 local pluginSettings = require("plugin/settings")
 local ChangePinDialog = require("plugin/ui/menu/changepindialog")
+local UiSettingsDialog = require("plugin/ui/menu/uisettingsdialog")
 
-local dialog
+local changePinDialog
+local uiSettingsDialog
 
 local function closeChangePinDialog()
-    if not dialog then return end
+    if not changePinDialog then return end
     logger.dbg("ScreenLockPin: close change PIN dialog")
-    UIManager:close(dialog, "ui")
-    dialog = nil
+    UIManager:close(changePinDialog, "ui")
+    changePinDialog = nil
 end
 
 local function showChangePinDialog()
-    if dialog then return end
+    if changePinDialog then return end
     logger.dbg("ScreenLockPin: create change PIN dialog")
-    dialog = ChangePinDialog:new {
-        -- UIManager performance tweak
+    changePinDialog = ChangePinDialog:new {
         disable_double_tap = true,
-        -- ChangePinDialog
         on_submit = function(next_pin)
             pluginSettings.setPin(next_pin)
             closeChangePinDialog()
@@ -30,9 +30,20 @@ local function showChangePinDialog()
             end)
         end,
     }
-    UIManager:show(dialog)
+    UIManager:show(changePinDialog)
+end
+
+local function showUiSettingsDialog()
+    uiSettingsDialog = UiSettingsDialog:new {
+        on_save = function()
+            UIManager:close(uiSettingsDialog, "ui")
+            uiSettingsDialog = nil
+        end
+    }
+    UIManager:show(uiSettingsDialog)
 end
 
 return {
     showChangePinDialog = showChangePinDialog,
+    showUiSettingsDialog = showUiSettingsDialog
 }

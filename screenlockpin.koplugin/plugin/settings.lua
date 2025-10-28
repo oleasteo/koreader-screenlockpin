@@ -21,11 +21,14 @@ local function migrateSettings()
 end
 
 local function mergeDefaultSettings()
-    if G_reader_settings:hasNot("screenlockpin_onboot") then
-        G_reader_settings:makeFalse("screenlockpin_onboot")
+    if G_reader_settings:hasNot("screenlockpin_ui_scale") then
+        G_reader_settings:saveSetting("screenlockpin_ui_scale", 0.5)
     end
     if G_reader_settings:hasNot("screenlockpin_pin") then
         G_reader_settings:saveSetting("screenlockpin_pin", "0000")
+    end
+    if G_reader_settings:hasNot("screenlockpin_onboot") then
+        G_reader_settings:makeFalse("screenlockpin_onboot")
     end
     if G_reader_settings:hasNot("screenlockpin_ratelimit") then
         G_reader_settings:makeTrue("screenlockpin_ratelimit")
@@ -36,6 +39,20 @@ local function init()
     logger.dbg("ScreenLockPin: init settings")
     migrateSettings()
     mergeDefaultSettings()
+end
+
+--
+-- Cosmetic Options
+--
+
+local function getUiSettings()
+    return {
+        scale = G_reader_settings:readSetting("screenlockpin_ui_scale")
+    }
+end
+
+local function setUiSettings(settings)
+    G_reader_settings:saveSetting("screenlockpin_ui_scale", settings.scale)
 end
 
 --
@@ -108,10 +125,10 @@ local function purge()
     -- cause restore of foreign screensaver_delay setting
     setLockOnWakeup(false)
     -- delete all our settings
-    G_reader_settings:delSetting("screenlockpin_onboot")
+    G_reader_settings:delSetting("screenlockpin_ui_scale")
     G_reader_settings:delSetting("screenlockpin_pin")
+    G_reader_settings:delSetting("screenlockpin_onboot")
     G_reader_settings:delSetting("screenlockpin_ratelimit")
-    G_reader_settings:delSetting("screenlockpin_opaque")
     G_reader_settings:delSetting("screenlockpin_restore_screensaver_delay")
     G_reader_settings:delSetting("screenlockpin_version")
 end
@@ -119,6 +136,9 @@ end
 return {
     init = init,
     purge = purge,
+
+    getUiSettings = getUiSettings,
+    setUiSettings = setUiSettings,
 
     readPin = readPin,
     setPin = setPin,

@@ -19,9 +19,13 @@ return {
             separator = true,
         },
         {
+            text = _("Lock screen panel options"),
+            callback = settingsCtrl.showUiSettingsDialog,
+            separator = true,
+        },
+        {
             text = _("Change PIN"),
             callback = settingsCtrl.showChangePinDialog,
-            separator = true,
         },
     }
 }
