@@ -3,7 +3,18 @@
 All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## [Unreleased]
+[//]: # (## [Unreleased])
+
+## [2025.10-3] - 2025-10-29
+
+The UI has received a lot of work since the last release. Instead of the plain
+white screen, you'll now see a panel on top of your configured wallpaper. Its
+size can be configured, more configurations are to follow in the upcoming weeks.
+
+Also, we now allow for 3–12 digit PINs. Choose yourself how serious you want to
+take this whole lock screen thing 😅
+
+Stay tuned! 🚀 And enjoy Halloween 👻
 
 ### Security
 

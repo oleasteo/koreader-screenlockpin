@@ -17,7 +17,7 @@ local function migrateSettings()
         G_reader_settings:saveSetting("screenlockpin_restore_screensaver_delay", G_reader_settings:readSetting("screenlockpin_returndelay"))
         G_reader_settings:delSetting("screenlockpin_returndelay")
     end
-    G_reader_settings:saveSetting("screenlockpin_version", "2025.10-2")
+    G_reader_settings:saveSetting("screenlockpin_version", "2025.10-3")
 end
 
 local function mergeDefaultSettings()

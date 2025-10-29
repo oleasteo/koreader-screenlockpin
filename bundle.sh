@@ -3,7 +3,7 @@
 root_dir="$(realpath "$(dirname "$0")")"
 target_dir="$root_dir/target"
 name="screenlockpin.koplugin"
-version="2025.10-2"
+version="2025.10-3"
 id="$name--$version"
 
 [ -d "$target_dir/bundle" ] && rm -rf "$target_dir/bundle"
