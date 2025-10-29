@@ -8,7 +8,7 @@
 [KOReader](https://github.com/koreader/koreader) content from unauthorized
 access.
 
-![Lock Screen Preview](lockscreen.png)
+![Lock Screen Preview](screenshots/preview.png)
 
 ---
 
