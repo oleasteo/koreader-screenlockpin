@@ -1,24 +1,26 @@
 local _ = require("gettext")
+local util = require("util")
 local Font = require("ui/font")
-local FocusManager = require("ui/widget/focusmanager")
-local UIManager = require("ui/uimanager")
+local Device = require("device")
 local Blitbuffer = require("ffi/blitbuffer")
+local Size = require("ui/size")
+local Geom = require("ui/geometry")
+local UIManager = require("ui/uimanager")
+local FocusManager = require("ui/widget/focusmanager")
 local ButtonTable = require("ui/widget/buttontable")
 local CenterContainer = require("ui/widget/container/centercontainer")
-local Device = require("device")
 local FrameContainer = require("ui/widget/container/framecontainer")
-local Geom = require("ui/geometry")
 local GestureRange = require("ui/gesturerange")
 local LineWidget = require("ui/widget/linewidget")
-local Size = require("ui/size")
 local TextWidget = require("ui/widget/textwidget")
 local VerticalGroup = require("ui/widget/verticalgroup")
 local Screen = Device.screen
-local util = require("util")
-local PinInputState = require("state/pininputstate")
 
-local ScreenLockDialog = FocusManager:extend {
-    placeholder = "",
+local PinInputState = require("plugin/state/pininput")
+
+local ChangePinDialog = FocusManager:extend {
+    name = "SLPChangePinDialog",
+
     size_factor = 1.25,
 
     title = "",
@@ -38,10 +40,10 @@ local ScreenLockDialog = FocusManager:extend {
     ges_events = nil,
 }
 
-function ScreenLockDialog:init()
+function ChangePinDialog:init()
     local ready = false
     self.state = PinInputState:new {
-        placeholder = self.placeholder,
+        placeholder = _("Enter new PIN"),
         size_factor = self.size_factor,
         on_submit = self.on_submit,
         on_update = self.on_update,
@@ -78,7 +80,6 @@ function ScreenLockDialog:init()
     self.buttontable = ButtonTable:new {
         buttons = self.state:makeButtons(),
         width = width - 2 * Size.border.window - 2 * Size.padding.button,
-        show_parent = self,
     }
     local buttontable_width = self.buttontable:getSize().w
 
@@ -114,7 +115,6 @@ function ScreenLockDialog:init()
         self.buttontable,
     }
     self[1] = CenterContainer:new {
-        show_parent = self,
         dimen = Screen:getSize(),
         FrameContainer:new {
             background = Blitbuffer.COLOR_WHITE,
@@ -130,11 +130,11 @@ function ScreenLockDialog:init()
     ready = true
 end
 
-function ScreenLockDialog:getButtonById(id)
+function ChangePinDialog:getButtonById(id)
     return self.buttontable:getButtonById(id)
 end
 
-function ScreenLockDialog:setTitle(title)
+function ChangePinDialog:setTitle(title)
     self.titleWidget:setText(title)
     self.titleWidget:updateSize()
     self.titleGroup:resetLayout()
@@ -142,28 +142,28 @@ function ScreenLockDialog:setTitle(title)
     UIManager:setDirty(self, "fast")
 end
 
-function ScreenLockDialog:onShow()
+function ChangePinDialog:onShow()
     UIManager:setDirty(self, function()
         return "ui", self[1][1].dimen
     end)
 end
 
-function ScreenLockDialog:onCloseWidget()
+function ChangePinDialog:onCloseWidget()
     UIManager:setDirty(nil, function()
         return "flashui", self[1][1].dimen
     end)
 end
 
-function ScreenLockDialog:onClose()
+function ChangePinDialog:onClose()
     UIManager:close(self)
     return true
 end
 
-function ScreenLockDialog:onTapClose(_, ges)
+function ChangePinDialog:onTapClose(_, ges)
     if ges.pos:notIntersectWith(self[1][1].dimen) then
         self:onClose()
     end
     return true
 end
 
-return ScreenLockDialog
+return ChangePinDialog

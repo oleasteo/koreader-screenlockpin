@@ -2,14 +2,17 @@ local _ = require("gettext")
 local logger = require("logger")
 local Size = require("ui/size")
 local EventListener = require("ui/widget/eventlistener")
-local RateLimitState = require("state/ratelimitstate")
 
-local LENGTH_RANGE = {4, 8}
+local pluginSettings = require("plugin/settings")
+local Throttle = require("plugin/state/throttle")
+
+local LENGTH_RANGE = {3, 12}
 
 local PinInputState = EventListener:extend {
     -- configuration
     placeholder = "",
     size_factor = 1.25,
+    font_size = nil,
 
     -- events
     on_display_update = nil, -- (display_text)
@@ -25,36 +28,37 @@ local PinInputState = EventListener:extend {
 }
 
 function PinInputState:init()
-    if G_reader_settings:isTrue("screenlockpin_ratelimit") then
-        self.rate_limit = RateLimitState:new {
-            on_unlock = function() self:reevaluate() end
+    if pluginSettings.shouldRateLimit() then
+        self.throttle = Throttle:new {
+            on_resume = function() self:reevaluate() end
         }
     end
     self:reevaluate()
 end
 
 function PinInputState:makeButtons()
-    logger.dbg("PinInputState:makeButtons")
     local action_button_height = Size.item.height_large + Size.padding.buttontable
     local button_height = action_button_height * self.size_factor
 
     local delete_button = {
         text = "⌫",
         height = button_height,
+        font_size = self.font_size,
         callback = function()
-            if self.rate_limit and self.rate_limit:isLocked() then return end
+            if self.throttle and self.throttle:isPaused() then return end
             self.value = self.value:sub(1, -2)
             self:reevaluate()
         end,
         hold_callback = function()
-            if self.rate_limit and self.rate_limit:isLocked() then return end
-            self:reset()
+            if self.throttle and self.throttle:isPaused() then return end
+            self:clear()
         end,
     }
 
     local noop_button = {
         text = " ",
         height = button_height,
+        font_size = self.font_size,
         callback = function() end,
         enabled = false,
     }
@@ -66,6 +70,7 @@ function PinInputState:makeButtons()
             id = "submit",
             text = _("Save"),
             height = action_button_height,
+            font_size = self.font_size,
             enabled = self.valid,
             callback = function() self.on_submit(self.value) end,
         })
@@ -75,8 +80,9 @@ function PinInputState:makeButtons()
         return {
             text = num,
             height = button_height,
+            font_size = self.font_size,
             callback = function()
-                if self.rate_limit and self.rate_limit:isLocked() then return end
+                if self.throttle and self.throttle:isPaused() then return end
                 if #self.value < LENGTH_RANGE[2] then
                     self.value = self.value .. num
                     self:reevaluate()
@@ -104,21 +110,23 @@ function PinInputState:setDisplayText(next_display)
 end
 
 function PinInputState:incFailedCount()
-    if not self.rate_limit then return end
-    self.rate_limit:registerFailure(#self.value)
-    if self.rate_limit:isLocked() then self:reset() end
+    if not self.throttle then return end
+    self.throttle:pushAt(#self.value)
+    if self.throttle:isPaused() then self:clear() end
 end
 
 function PinInputState:reevaluate()
-    if self.rate_limit and self.rate_limit:isLocked() then
-        local next_display = _("Try again in " .. self.rate_limit:remainingInS() .. "s")
+    if self.throttle and self.throttle:isPaused() then
+        local next_display = _("Try again in " .. self.throttle:remainingSeconds() .. "s")
+        logger.dbg("ScreenLockPin: pininput reevaluate " .. next_display)
         self:setDisplayText(next_display)
         return
     end
 
     -- refresh display
     local next_display = #self.value > 0 and string.rep("●", #self.value) or self.placeholder
-    logger.dbg("PinInputState:reevaluate: " .. next_display)
+    --logger.dbg("ScreenLockPin: pininput reevaluate " .. next_display)
+    logger.dbg("ScreenLockPin: pininput reevaluate [redacted]")
     self:setDisplayText(next_display)
     -- refresh valid state and check
     local next_valid = #self.value >= LENGTH_RANGE[1] and #self.value <= LENGTH_RANGE[2]
@@ -129,7 +137,7 @@ function PinInputState:reevaluate()
     end
 end
 
-function PinInputState:reset()
+function PinInputState:clear()
     self.value = ""
     self:reevaluate()
 end

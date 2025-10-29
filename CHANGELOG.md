@@ -3,6 +3,41 @@
 All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+[//]: # (## [Unreleased])
+
+## [2025.10-3] - 2025-10-29
+
+The UI has received a lot of work since the last release. Instead of the plain
+white screen, you'll now see a panel on top of your configured wallpaper. Its
+size can be configured, more configurations are to follow in the upcoming weeks.
+
+Also, we now allow for 3–12 digit PINs. Choose yourself how serious you want to
+take this whole lock screen thing 😅
+
+Stay tuned! 🚀 And enjoy Halloween 👻
+
+### Security
+
+- Use a `full` display refresh on unlock to prevent bleeding information on
+  pressed buttons.
+- Redact change pin values from logs, just in case they're somehow readable w/o
+  device access. Probably not a real security issue, but let's err on the safe
+  side.
+
+### Changed
+
+- PIN change uses `Notification` instead of `InfoMessage`. The notification is
+  less obtrusive, at the top of the screen.
+- Allow 3–12 digits for PINs.
+
+### Added
+
+- [#3](https://github.com/oleasteo/koreader-screenlockpin/issues/3)
+  The lock screen draws on top of the builtin wallpaper. The white background is
+  gone.
+- [#5](https://github.com/oleasteo/koreader-screenlockpin/issues/5)
+  The lock screen panel size can be configured.
+
 ## [2025.10-2] - 2025-10-24
 
 Yet another release with a big new feature, shortly after the last one 😅

@@ -4,9 +4,10 @@ return {
     -- KOReader meta information
     name = "screenlockpin",
     fullname = _("ScreenLock PIN"),
-    description = _([[Protect your device with a simple PIN.]]),
+    description = _([[Protect your device privacy with a PIN.]]),
 
     -- additional meta information; no effect in code
-    version = "2025.10-2",
-    repository_url = "https://github.com/oleasteo/koreader-screenlockpin",
+    version = "2025.10-3",
+    website_url = "https://github.com/oleasteo/koreader-screenlockpin",
+    repository_url = "https://github.com/oleasteo/koreader-screenlockpin.git",
 }
