@@ -104,9 +104,10 @@ Designed for **KOReader v2025.08** and newer. Please report any compatibility
 issues you encounter.
 
 Tested devices:
+- ✅ Kobo Aura (N514)
+- ✅ Kobo Clara BW (N365)
 - ✅ Kindle (10th generation)
 - ✅ Kindle Oasis (10th generation)
-- ✅ Kobo Aura (N514)
 
 If you tested this plugin on another device type, please add it to the list
 above.
