@@ -23,7 +23,12 @@ local notes
 local function relayout(refreshmode)
     overlay:relayout(nil)
     if Screensaver.screensaver_widget then
-        Screensaver.screensaver_widget:update()
+        if Screensaver.screensaver_widget.update then
+            -- KOReader up to 2025.10
+            Screensaver.screensaver_widget:update()
+        else
+            Screensaver.screensaver_widget:init()
+        end
     end
     UIManager:setDirty("all", refreshmode)
 end
