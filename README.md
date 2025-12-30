@@ -109,6 +109,7 @@ Tested devices:
 - ✅ Kindle Oasis (10th gen)
 - ✅ Kobo Aura (N514)
 - ✅ Kobo Clara BW (N365)
+- ✅ Kobo Clara Colour (N367)
 
 If you tested this plugin on another device type, please add it to the list
 above.
