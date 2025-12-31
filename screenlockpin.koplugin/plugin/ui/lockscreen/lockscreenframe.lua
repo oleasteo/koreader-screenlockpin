@@ -58,8 +58,7 @@ function LockScreenFrame:init()
         font_size = 13 + math.floor(uiSettings.scale / 100 * 7.1),
         on_change = function ()
             if not self.bottom_row then return end
-            self.bottom_row[2]:resetLayout()
-            self.bottom_row:resetLayout()
+            self:_resetStatusTextLayout()
             UIManager:setDirty(self, "fast", self:getRefreshRegion())
         end,
     }
@@ -112,6 +111,15 @@ function LockScreenFrame:init()
     }
     table.insert(self, self.outside_input)
     table.insert(self, self.panel)
+end
+
+function LockScreenFrame:_resetStatusTextLayout()
+    -- horizontal group
+    self.bottom_row[2][2]:resetLayout()
+    -- vertical group
+    self.bottom_row[2]:resetLayout()
+    -- horizontal flex group
+    self.bottom_row:resetLayout()
 end
 
 function LockScreenFrame:setVisible(bool)

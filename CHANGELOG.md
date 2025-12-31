@@ -24,6 +24,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   Make sure to show the PIN panel on wakeup in case of lock on wakeup being
   disabled, but lock screen active elsewise (e.g., dispatcher / lock on boot).
 - Screen resize handling while lock screen is active.
+- Horizontal re-layout on status text changes to keep the align right.
 
 ## [2025.12-1] - 2025-12-22
 
