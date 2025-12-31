@@ -13,68 +13,13 @@ local VerticalGroup = require("ui/widget/verticalgroup")
 local HorizontalSpan = require("ui/widget/horizontalspan")
 local HorizontalGroup = require("ui/widget/horizontalgroup")
 local IconButton = require("ui/widget/iconbutton")
-local GestureRange = require("ui/gesturerange")
 local Screen = Device.screen
 
 local pluginSettings = require("plugin/settings")
+local OutsideAreaInput = require("plugin/ui/lockscreen/outsideareainput")
 local HorizontalFlexGroup = require("plugin/ui/horizontalflexgroup")
 local ScreenLockWidget = require("plugin/ui/lockscreen/screenlockwidget")
 local LockScreenStatusText = require("plugin/ui/lockscreen/statustext")
-
--- Transparent input widget for handling taps outside the panel
-local OutsideAreaInput = InputContainer:extend {
-    name = "SLPOutsideArea",
-    content_region = nil,
-}
-
-function OutsideAreaInput:init()
-    if Device:isTouchDevice() then
-        -- use a function to adapt to screen resize
-        local range = function () return Screen:getSize() end
-        self.ges_events.TapScreen = { GestureRange:new{ ges = "tap", range = range } }
-        self.ges_events.HoldScreen = { GestureRange:new{ ges = "hold", range = range } }
-    end
-    self.screen_mid = Screen:getHeight() / 2
-    if Device:hasFrontlight() then
-        self.brightness_step = math.floor(Device.powerd.fl_max / 5 + 0.5)
-    end
-end
-
-local function clamp(value, min, max)
-    return math.min(math.max(value, min), max)
-end
-
-local function isOutside(pos, rect)
-    return pos.x < rect.x or pos.x > rect.x + rect.w or
-            pos.y < rect.y or pos.y > rect.y + rect.h
-end
-
-function OutsideAreaInput:nextBrightness(direction)
-    if not self.brightness_step then return end
-    local brightness = Device.powerd:frontlightIntensity()
-    local step = direction >= 0 and self.brightness_step or -self.brightness_step
-    Device.powerd:setIntensity(clamp(brightness + step, Device.powerd.fl_min, Device.powerd.fl_max))
-end
-
-function OutsideAreaInput:maxBrightness(direction)
-    Device.powerd:setIntensity(direction >= 0 and Device.powerd.fl_max or Device.powerd.fl_min)
-end
-
-function OutsideAreaInput:onTapScreen(_, ges)
-    if not ges or not ges.pos or not self.content_region then return false end
-    if not isOutside(ges.pos, self.content_region) then return false end
-    self:nextBrightness(self.screen_mid - ges.pos.y)
-    -- consume event
-    return true
-end
-
-function OutsideAreaInput:onHoldScreen(_, ges)
-    if not ges or not ges.pos or not self.content_region then return false end
-    if not isOutside(ges.pos, self.content_region) then return false end
-    self:maxBrightness(self.screen_mid - ges.pos.y)
-    -- consume event
-    return true
-end
 
 local LockScreenFrame = InputContainer:extend {
     name = "SLPLockScreen",
