@@ -30,7 +30,11 @@ local OutsideAreaInput = InputContainer:extend {
 function OutsideAreaInput:init()
     if Device:isTouchDevice() then
         self.ges_events.TapOutside = {
-            GestureRange:new{ ges = "tap", range = Screen:getSize() }
+            GestureRange:new{
+                ges = "tap",
+                -- use a function to adapt to screen resize
+                range = function () return Screen:getSize() end,
+            }
         }
     end
     self.screen_mid = Screen:getHeight() / 2
