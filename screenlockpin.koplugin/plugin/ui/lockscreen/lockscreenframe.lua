@@ -222,10 +222,10 @@ end
 
 function LockScreenFrame:relayout(refreshmode)
     local screen_dimen = Geom:new{x = 0, y = 0, w = Screen:getWidth(), h = Screen:getHeight()}
-    logger.dbg("ScreenLockPin: resize overlay to " .. screen_dimen.x .. "x" .. screen_dimen.y)
-    self.panel.dimen = screen_dimen
+    logger.dbg("ScreenLockPin: resize overlay (screen: " .. screen_dimen.w .. "x" .. screen_dimen.h .. ")")
     self.lock_widget:onScreenResize(screen_dimen)
     self.bottom_row:setWidth(self.lock_widget._width)
+    self.panel[1]:resetLayout()
     self.outside_input.screen_mid = screen_dimen.h / 2
     self._refresh_region = nil
     self._content_region = nil
