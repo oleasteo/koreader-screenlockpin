@@ -29,13 +29,10 @@ local OutsideAreaInput = InputContainer:extend {
 
 function OutsideAreaInput:init()
     if Device:isTouchDevice() then
-        self.ges_events.TapOutside = {
-            GestureRange:new{
-                ges = "tap",
-                -- use a function to adapt to screen resize
-                range = function () return Screen:getSize() end,
-            }
-        }
+        -- use a function to adapt to screen resize
+        local range = function () return Screen:getSize() end
+        self.ges_events.TapScreen = { GestureRange:new{ ges = "tap", range = range } }
+        self.ges_events.HoldScreen = { GestureRange:new{ ges = "hold", range = range } }
     end
     self.screen_mid = Screen:getHeight() / 2
     if Device:hasFrontlight() then
@@ -43,34 +40,40 @@ function OutsideAreaInput:init()
     end
 end
 
-function OutsideAreaInput:onTapOutside(_, ges)
-    if not ges or not ges.pos or not self.content_region then
-        return false  -- Let event propagate to keypad
-    end
-    
-    local tap_pos = ges.pos
-    local cr = self.content_region
-    
-    if tap_pos.x < cr.x or tap_pos.x > cr.x + cr.w or
-       tap_pos.y < cr.y or tap_pos.y > cr.y + cr.h then
-        
-        -- Adjust frontlight brightness based on tap position
-        if self.brightness_step then
-            local brightness = Device.powerd:frontlightIntensity()
-            local new_brightness
-            
-            if tap_pos.y < self.screen_mid then
-                new_brightness = math.min(Device.powerd.fl_max, brightness + self.brightness_step)
-            else
-                new_brightness = math.max(Device.powerd.fl_min, brightness - self.brightness_step)
-            end
-            
-            Device.powerd:setIntensity(new_brightness)
-        end
-        return true  -- Consume event
-    end
-    
-    return false  -- Let event propagate to keypad
+local function clamp(value, min, max)
+    return math.min(math.max(value, min), max)
+end
+
+local function isOutside(pos, rect)
+    return pos.x < rect.x or pos.x > rect.x + rect.w or
+            pos.y < rect.y or pos.y > rect.y + rect.h
+end
+
+function OutsideAreaInput:nextBrightness(direction)
+    if not self.brightness_step then return end
+    local brightness = Device.powerd:frontlightIntensity()
+    local step = direction >= 0 and self.brightness_step or -self.brightness_step
+    Device.powerd:setIntensity(clamp(brightness + step, Device.powerd.fl_min, Device.powerd.fl_max))
+end
+
+function OutsideAreaInput:maxBrightness(direction)
+    Device.powerd:setIntensity(direction >= 0 and Device.powerd.fl_max or Device.powerd.fl_min)
+end
+
+function OutsideAreaInput:onTapScreen(_, ges)
+    if not ges or not ges.pos or not self.content_region then return false end
+    if not isOutside(ges.pos, self.content_region) then return false end
+    self:nextBrightness(self.screen_mid - ges.pos.y)
+    -- consume event
+    return true
+end
+
+function OutsideAreaInput:onHoldScreen(_, ges)
+    if not ges or not ges.pos or not self.content_region then return false end
+    if not isOutside(ges.pos, self.content_region) then return false end
+    self:maxBrightness(self.screen_mid - ges.pos.y)
+    -- consume event
+    return true
 end
 
 local LockScreenFrame = InputContainer:extend {

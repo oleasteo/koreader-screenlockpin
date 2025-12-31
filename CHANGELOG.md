@@ -13,6 +13,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 - [#35](https://github.com/oleasteo/koreader-screenlockpin/issues/35)
   Add "Lock" action to exit menu.
+- On long tap outside the panel, set frontlight to min/max possible value.
 
 ### Fixed
 
