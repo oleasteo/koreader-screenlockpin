@@ -14,6 +14,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - [#35](https://github.com/oleasteo/koreader-screenlockpin/issues/35)
   Add "Lock" action to exit menu.
 - On long tap outside the panel, set frontlight to min/max possible value.
+- [#40](https://github.com/oleasteo/koreader-screenlockpin/issues/40)
+  Global keyboard shortcuts to trigger the lock action: `Ctrl+Alt+L` and
+  `Alt+Shift+L`.
 
 ### Fixed
 
