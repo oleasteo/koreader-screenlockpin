@@ -23,6 +23,10 @@
 --[[
 An easy way to compare your version with upstream.
 
+You can also subscribe to
+[this GitHub discussion](https://github.com/oleasteo/koreader-screenlockpin/discussions/44)
+to get notified on updates.
+
 # Changelog
 
 ## [v3] - 2026-01-02
