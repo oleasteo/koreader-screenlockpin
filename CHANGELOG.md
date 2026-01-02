@@ -3,7 +3,16 @@
 All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## [Unreleased]
+[//]: # (## [Unreleased])
+
+## [2026.01] - 2026-01-02
+
+A couple of stability and a bunch of user experience improvements. Notably, a
+new "Lock" menu item for those who prefer to lock by hand. Also, the desktop
+support has improved a lot: global lock shortcuts `Ctrl+Alt+L` and
+`Alt+Shift+L`, as well as proper keyboard PIN input on the lock screen.
+
+Have a great 2026, folks 🎇💫
 
 ### Changed
 
