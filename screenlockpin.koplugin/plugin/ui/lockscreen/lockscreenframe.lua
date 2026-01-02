@@ -37,6 +37,15 @@ local LockScreenFrame = InputContainer:extend {
     _content_region = nil,
     outside_input = nil,
     panel = nil,
+
+    key_events = {
+        KbdNumber = { { { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" } } },
+        KbdDel = {
+            { "Ctrl", "Del" }, { "Shift", "Del" },
+            { "Ctrl", "Backspace" }, { "Shift", "Backspace" },
+            { { "Del", "Backspace" } },
+        },
+    },
 }
 
 function LockScreenFrame:init()
@@ -111,6 +120,14 @@ function LockScreenFrame:init()
     }
     table.insert(self, self.outside_input)
     table.insert(self, self.panel)
+end
+
+function LockScreenFrame:onKbdNumber(_, evt)
+    self.lock_widget.state:appendInput(evt.key)
+end
+
+function LockScreenFrame:onKbdDel(_, evt)
+    self.lock_widget.state:delInput(evt.Ctrl or evt.Shift)
 end
 
 function LockScreenFrame:_resetStatusTextLayout()

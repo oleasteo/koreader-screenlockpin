@@ -36,6 +36,24 @@ function PinInputState:init()
     self:reevaluate()
 end
 
+function PinInputState:appendInput(val)
+    if self.throttle and self.throttle:isPaused() then return end
+    if #self.value < LENGTH_RANGE[2] then
+        self.value = self.value .. val
+        self:reevaluate()
+    end
+end
+
+function PinInputState:delInput(everything)
+    if self.throttle and self.throttle:isPaused() then return end
+    if everything then
+        self:clear()
+    else
+        self.value = self.value:sub(1, -2)
+        self:reevaluate()
+    end
+end
+
 function PinInputState:makeButtons()
     local action_button_height = Size.item.height_large + Size.padding.buttontable
     local button_height = action_button_height * self.size_factor
@@ -44,15 +62,8 @@ function PinInputState:makeButtons()
         text = "⌫",
         height = button_height,
         font_size = self.font_size,
-        callback = function()
-            if self.throttle and self.throttle:isPaused() then return end
-            self.value = self.value:sub(1, -2)
-            self:reevaluate()
-        end,
-        hold_callback = function()
-            if self.throttle and self.throttle:isPaused() then return end
-            self:clear()
-        end,
+        callback = function() self:delInput(false) end,
+        hold_callback = function() self:delInput(true) end,
     }
 
     local noop_button = {
@@ -81,13 +92,7 @@ function PinInputState:makeButtons()
             text = num,
             height = button_height,
             font_size = self.font_size,
-            callback = function()
-                if self.throttle and self.throttle:isPaused() then return end
-                if #self.value < LENGTH_RANGE[2] then
-                    self.value = self.value .. num
-                    self:reevaluate()
-                end
-            end
+            callback = function() self:appendInput(num) end
         }
     end
 
