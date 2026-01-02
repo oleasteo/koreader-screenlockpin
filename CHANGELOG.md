@@ -20,6 +20,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Fixed
 
+- [#43](https://github.com/oleasteo/koreader-screenlockpin/issues/43)
+  Properly close update manager background widget for KOReader exit and restart.
 - [#41](https://github.com/oleasteo/koreader-screenlockpin/issues/41)
   Make sure to show the PIN panel on wakeup in case of lock on wakeup being
   disabled, but lock screen active elsewise (e.g., dispatcher / lock on boot).

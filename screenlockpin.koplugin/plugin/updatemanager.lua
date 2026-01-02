@@ -20,8 +20,17 @@
 -- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 -- SOFTWARE.
 
---- A trivial way to compare your version with upstream
-local UPDATER_VERSION = 2 -- 2025-12
+--[[
+An easy way to compare your version with upstream.
+
+# Changelog
+
+## [v3] - 2026-01-02
+- Fixed background widget (global pings on resume and network connection)
+  lifecycle. Prior to this, it caused KOReader exit / restart not to work in all
+  cases (UIManager shutdown is only complete once all widgets are closed).
+--]]
+local UPDATER_VERSION = 3
 
 --[[
 
@@ -87,12 +96,36 @@ if share_authority then
             end
         end,
     }
-    -- Register common event listener for global pings
-    UIManager:show(Widget:new {
+
+    -- Register background event listener for global pings
+
+    local BackgroundWidget = Widget:extend {
+        toast = true,
+        is_always_active = true,
         invisible = true,
+        stopped = false,
+    }
+
+    function BackgroundWidget:init()
+        logger.dbg("Initializing background widget:", self.name)
+        UIManager:show(self)
+    end
+
+    function BackgroundWidget:onClose(cause)
+        if self.stopped then return end
+        logger.dbg("Closing background widget ( cause =", cause, "):", self.name)
+        UIManager:close(self)
+        self.stopped = true
+    end
+
+    function BackgroundWidget:onExit() self:onClose("exit event") end
+    function BackgroundWidget:onRestart() self:onClose("restart event") end
+
+    BackgroundWidget:new {
+        name = "plugin_updater_v1:bg_widget",
         onNetworkConnected = PluginShare.plugin_updater_v1.ping,
         onResume = PluginShare.plugin_updater_v1.ping,
-    })
+    }
 end
 
 --endregion

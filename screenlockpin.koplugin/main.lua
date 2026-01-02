@@ -1,9 +1,7 @@
 local _ = require("gettext")
 local logger = require("logger")
-local Device = require("device")
 local Dispatcher = require("dispatcher")
 local PluginShare = require("pluginshare")
-local UIManager = require("ui/uimanager")
 local Notification = require("ui/widget/notification")
 local EventListener = require("ui/widget/eventlistener")
 
@@ -16,9 +14,7 @@ local onBootHook = require("plugin/util/onboothook")
 local screensaverUtil = require("plugin/util/screensaverutil")
 local lockscreenCtrl = require("plugin/ui/ctrl/lockscreenctrl")
 
-local ScreenLockPinPlugin = EventListener:extend {
-    stopped = false
-}
+local ScreenLockPinPlugin = EventListener:extend { stopped = false }
 
 pluginSettings.init()
 
@@ -78,7 +74,7 @@ function ScreenLockPinPlugin:init()
         between_remind = pluginSettings.getUpdateReminderInterval(),
     }
 
-    self:rewireGlobalHotkeys()
+    PluginKeyListener.rewireHotkeys()
 end
 
 -- KOReader dispatcher actions (registered in ScreenLockPinPlugin:init)
@@ -124,6 +120,7 @@ function ScreenLockPinPlugin:stopPlugin()
     PluginShare.screen_lock_pin = nil
     PluginUpdateMgr.instance:free()
     PluginUpdateMgr.instance = nil
+    PluginKeyListener.dropHotkeys()
     self.public_api = nil
     self.stopped = true
     return true
@@ -156,25 +153,10 @@ function ScreenLockPinPlugin.onBoot()
     lockscreenCtrl.showOrClearLockScreen("boot")
 end
 
--- Hotkey register
+-- Wire keyboard related hooks
 
-function ScreenLockPinPlugin:rewireGlobalHotkeys()
-    if not Device:hasKeyboard() then
-        if PluginKeyListener.instance ~= nil then
-            logger.dbg("ScreenLockPin: unregister keyboard hotkeys (keyboard disconnected)")
-            UIManager:close(PluginKeyListener.instance)
-            PluginKeyListener.instance = nil
-        end
-        return
-    end
-    if PluginKeyListener.instance ~= nil then return end
-    PluginKeyListener.instance = PluginKeyListener:new()
-    logger.dbg("ScreenLockPin: register keyboard hotkeys (keyboard detected)")
-    UIManager:show(PluginKeyListener.instance)
-end
-
-ScreenLockPinPlugin.onPhysicalKeyboardConnected = ScreenLockPinPlugin.rewireGlobalHotkeys
-ScreenLockPinPlugin.onPhysicalKeyboardDisconnected = ScreenLockPinPlugin.rewireGlobalHotkeys
+ScreenLockPinPlugin.onPhysicalKeyboardConnected = PluginKeyListener.rewireHotkeys
+ScreenLockPinPlugin.onPhysicalKeyboardDisconnected = PluginKeyListener.rewireHotkeys
 
 --
 
