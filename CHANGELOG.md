@@ -3,7 +3,35 @@
 All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-[//]: # (## [Unreleased])
+## [Unreleased]
+
+### Changed
+
+- The menu entry is moved close to the "Sleep screen" entry for better grouping.
+
+### Added
+
+- [#35](https://github.com/oleasteo/koreader-screenlockpin/issues/35)
+  Add "Lock" action to exit menu.
+- On long tap outside the panel, set frontlight to min/max possible value.
+- [#34](https://github.com/oleasteo/koreader-screenlockpin/issues/34)
+  Handle keyboard PIN input.
+- [#40](https://github.com/oleasteo/koreader-screenlockpin/issues/40)
+  Global keyboard shortcuts to trigger the lock action: `Ctrl+Alt+L` and
+  `Alt+Shift+L`.
+
+### Fixed
+
+- [#43](https://github.com/oleasteo/koreader-screenlockpin/issues/43)
+  Properly close update manager background widget for KOReader exit and restart.
+- [#41](https://github.com/oleasteo/koreader-screenlockpin/issues/41)
+  Make sure to show the PIN panel on wakeup in case of lock on wakeup being
+  disabled, but lock screen active elsewise (e.g., dispatcher / lock on boot).
+- Screen resize handling while lock screen is active.
+- [#31](https://github.com/oleasteo/koreader-screenlockpin/issues/31)
+  Initial bottom config tab change now properly hides prior tab for smaller next
+  tab.
+- Horizontal re-layout on status text changes to keep the align right.
 
 ## [2025.12-1] - 2025-12-22
 

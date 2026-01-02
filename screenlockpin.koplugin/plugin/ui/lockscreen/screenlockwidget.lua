@@ -24,7 +24,7 @@ local ScreenLockWidget = VerticalGroup:extend {
 }
 
 function ScreenLockWidget:init()
-    local scaling = self:scaling(Screen:getWidth())
+    local scaling = self:_scaling(Screen:getWidth())
     self._width = scaling.width
     self.state = PinInputState:new {
         placeholder = _("Enter PIN"),
@@ -50,7 +50,7 @@ function ScreenLockWidget:init()
     }
 end
 
-function ScreenLockWidget:scaling(full_width)
+function ScreenLockWidget:_scaling(full_width)
     local scale = math.max(0, math.min(1, self.scale))
     local max_item_width = math.floor(full_width / COLS * self.max_width_factor)
     local item_width = self.min_item_width + (max_item_width - self.min_item_width) * scale
@@ -63,18 +63,18 @@ function ScreenLockWidget:scaling(full_width)
 end
 
 function ScreenLockWidget:onScreenResize(screen_dimen)
-    local scaling = self:scaling(screen_dimen.w)
+    local scaling = self:_scaling(screen_dimen.w)
     self._width = scaling.width
     local textbox = self[1]
     local buttontable = self[2]
-    buttontable.width = scaling.width
-    buttontable.dimen = nil
     -- todo update buttons font size & input state size factor
     buttontable:free()
+    buttontable.dimen = nil
+    buttontable.width = scaling.width
     buttontable:init()
+    textbox.box_padding = scaling.display_box_padding
     textbox:setWidth(scaling.width)
     textbox.face = Font:getFace(self.title_font, scaling.display_font_size)
-    textbox.box_padding = scaling.display_box_padding
     self:resetLayout()
 end
 

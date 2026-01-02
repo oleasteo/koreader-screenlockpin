@@ -23,7 +23,12 @@ local notes
 local function relayout(refreshmode)
     overlay:relayout(nil)
     if Screensaver.screensaver_widget then
-        Screensaver.screensaver_widget:update()
+        if Screensaver.screensaver_widget.update then
+            -- KOReader up to 2025.10
+            Screensaver.screensaver_widget:update()
+        else
+            Screensaver.screensaver_widget:init()
+        end
     end
     UIManager:setDirty("all", refreshmode)
 end
@@ -108,9 +113,11 @@ local function reuseShowOverlay()
 end
 
 local function onResume()
-    if not pluginSettings.getEnabled() then return end
-    if not pluginSettings.shouldLockOnWakeup() then return end
     if not overlay then return end
+    if not pluginSettings.getEnabled() then
+        unlockScreen("plugin_disabled")
+        return
+    end
     Device.screen_saver_lock = true
     reuseShowOverlay()
 end
@@ -135,7 +142,7 @@ local function showOrClearLockScreen(cause)
     if cause == "resume" and overlay then
         logger.dbg("ScreenLockPin: ignoring duplicate resume trigger")
         -- ignore duplicate resume (triggered by plugin:onResume), it's already
-        -- been handled by widget:onResume (while overlay is shown)
+        -- been handled by overlay:onResume
         return
     end
     logger.dbg("ScreenLockPin: show lock screen (" .. cause .. ")")
