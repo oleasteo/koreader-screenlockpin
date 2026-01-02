@@ -1,7 +1,7 @@
 # ScreenLockPin — Protect your KOReader with a PIN
 
 [![MIT License](https://img.shields.io/badge/License-MIT-orange.svg)](https://opensource.org/licenses/MIT)
-[![Release Version](https://img.shields.io/badge/Release-2025.12--1-blue.svg)](https://github.com/oleasteo/koreader-screenlockpin/releases/tag/v2025.12)
+[![Release Version](https://img.shields.io/badge/Release-2026.01-blue.svg)](https://github.com/oleasteo/koreader-screenlockpin/releases/tag/v2026.01)
 [![Compatibility](https://img.shields.io/badge/Comptibility-KOReader%20v2025.10-yellow.svg)](https://github.com/koreader/koreader/tree/v2025.10)
 
 **ScreenLockPin**: A fast, sophisticated PIN Lock Screen that protects your
@@ -105,10 +105,12 @@ Designed for **KOReader v2025.08** and newer. Please report any compatibility
 issues you encounter.
 
 Tested devices:
-- ✅ Kindle (10th generation)
-- ✅ Kindle Oasis (10th generation)
+- ✅ Kindle (10th, 12th gen)
+- ✅ Kindle Oasis (10th gen)
 - ✅ Kobo Aura (N514)
 - ✅ Kobo Clara BW (N365)
+- ✅ Kobo Clara Colour (N367)
+- ✅ KOReader Desktop
 
 If you tested this plugin on another device type, please add it to the list
 above.

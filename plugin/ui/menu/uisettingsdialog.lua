@@ -9,6 +9,7 @@ local DEBUG_OPTIONS = Device:isEmulator()
 --DEBUG_OPTIONS = true
 
 local UiSettingsDialog = ConfigDialog:extend {
+    is_fresh = false,
     config_options = {
         prefix = "screenlockpin",
         {

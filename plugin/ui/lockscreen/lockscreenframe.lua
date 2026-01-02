@@ -13,61 +13,13 @@ local VerticalGroup = require("ui/widget/verticalgroup")
 local HorizontalSpan = require("ui/widget/horizontalspan")
 local HorizontalGroup = require("ui/widget/horizontalgroup")
 local IconButton = require("ui/widget/iconbutton")
-local GestureRange = require("ui/gesturerange")
 local Screen = Device.screen
 
 local pluginSettings = require("plugin/settings")
+local OutsideAreaInput = require("plugin/ui/lockscreen/outsideareainput")
 local HorizontalFlexGroup = require("plugin/ui/horizontalflexgroup")
 local ScreenLockWidget = require("plugin/ui/lockscreen/screenlockwidget")
 local LockScreenStatusText = require("plugin/ui/lockscreen/statustext")
-
--- Transparent input widget for handling taps outside the panel
-local OutsideAreaInput = InputContainer:extend {
-    name = "SLPOutsideArea",
-    content_region = nil,
-}
-
-function OutsideAreaInput:init()
-    if Device:isTouchDevice() then
-        self.ges_events.TapOutside = {
-            GestureRange:new{ ges = "tap", range = Screen:getSize() }
-        }
-    end
-    self.screen_mid = Screen:getHeight() / 2
-    if Device:hasFrontlight() then
-        self.brightness_step = math.floor(Device.powerd.fl_max / 5 + 0.5)
-    end
-end
-
-function OutsideAreaInput:onTapOutside(_, ges)
-    if not ges or not ges.pos or not self.content_region then
-        return false  -- Let event propagate to keypad
-    end
-    
-    local tap_pos = ges.pos
-    local cr = self.content_region
-    
-    if tap_pos.x < cr.x or tap_pos.x > cr.x + cr.w or
-       tap_pos.y < cr.y or tap_pos.y > cr.y + cr.h then
-        
-        -- Adjust frontlight brightness based on tap position
-        if self.brightness_step then
-            local brightness = Device.powerd:frontlightIntensity()
-            local new_brightness
-            
-            if tap_pos.y < self.screen_mid then
-                new_brightness = math.min(Device.powerd.fl_max, brightness + self.brightness_step)
-            else
-                new_brightness = math.max(Device.powerd.fl_min, brightness - self.brightness_step)
-            end
-            
-            Device.powerd:setIntensity(new_brightness)
-        end
-        return true  -- Consume event
-    end
-    
-    return false  -- Let event propagate to keypad
-end
 
 local LockScreenFrame = InputContainer:extend {
     name = "SLPLockScreen",
@@ -85,6 +37,15 @@ local LockScreenFrame = InputContainer:extend {
     _content_region = nil,
     outside_input = nil,
     panel = nil,
+
+    key_events = {
+        KbdNumber = { { { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" } } },
+        KbdDel = {
+            { "Ctrl", "Del" }, { "Shift", "Del" },
+            { "Ctrl", "Backspace" }, { "Shift", "Backspace" },
+            { { "Del", "Backspace" } },
+        },
+    },
 }
 
 function LockScreenFrame:init()
@@ -106,8 +67,7 @@ function LockScreenFrame:init()
         font_size = 13 + math.floor(uiSettings.scale / 100 * 7.1),
         on_change = function ()
             if not self.bottom_row then return end
-            self.bottom_row[2]:resetLayout()
-            self.bottom_row:resetLayout()
+            self:_resetStatusTextLayout()
             UIManager:setDirty(self, "fast", self:getRefreshRegion())
         end,
     }
@@ -160,6 +120,23 @@ function LockScreenFrame:init()
     }
     table.insert(self, self.outside_input)
     table.insert(self, self.panel)
+end
+
+function LockScreenFrame:onKbdNumber(_, evt)
+    self.lock_widget.state:appendInput(evt.key)
+end
+
+function LockScreenFrame:onKbdDel(_, evt)
+    self.lock_widget.state:delInput(evt.Ctrl or evt.Shift)
+end
+
+function LockScreenFrame:_resetStatusTextLayout()
+    -- horizontal group
+    self.bottom_row[2][2]:resetLayout()
+    -- vertical group
+    self.bottom_row[2]:resetLayout()
+    -- horizontal flex group
+    self.bottom_row:resetLayout()
 end
 
 function LockScreenFrame:setVisible(bool)
@@ -222,10 +199,10 @@ end
 
 function LockScreenFrame:relayout(refreshmode)
     local screen_dimen = Geom:new{x = 0, y = 0, w = Screen:getWidth(), h = Screen:getHeight()}
-    logger.dbg("ScreenLockPin: resize overlay to " .. screen_dimen.x .. "x" .. screen_dimen.y)
-    self.panel.dimen = screen_dimen
+    logger.dbg("ScreenLockPin: resize overlay (screen: " .. screen_dimen.w .. "x" .. screen_dimen.h .. ")")
     self.lock_widget:onScreenResize(screen_dimen)
     self.bottom_row:setWidth(self.lock_widget._width)
+    self.panel[1]:resetLayout()
     self.outside_input.screen_mid = screen_dimen.h / 2
     self._refresh_region = nil
     self._content_region = nil
