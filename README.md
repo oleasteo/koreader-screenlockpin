@@ -111,6 +111,7 @@ Tested devices:
 - ✅ Kobo Clara BW (N365)
 - ✅ Kobo Clara Colour (N367)
 - ✅ KOReader Desktop
+- ✅ KOReader Android
 
 If you tested this plugin on another device type, please add it to the list
 above.
