@@ -108,6 +108,7 @@ Tested devices:
 - ✅ Kindle (10th, 12th gen)
 - ✅ Kindle Oasis (10th gen)
 - ✅ Kobo Aura (N514)
+- ✅ Kobo Libra 2 (N418)
 - ✅ Kobo Clara BW (N365)
 - ✅ Kobo Clara Colour (N367)
 - ✅ KOReader Desktop
@@ -146,9 +147,9 @@ gesture to unlock.
 
 ## 🧑‍💻 Contributing
 
-Contributions and suggestions are welcome!  
+Contributions and suggestions are welcome!
 Feel free to open an **issue** or **pull request** to improve functionality,
-style, or compatibility. 
+style, or compatibility.
 
 ---
 
