@@ -109,8 +109,8 @@ Please report any compatibility issues you encounter.
 
 Note that we cannot force KOReader to stay in the foreground (e.g., Android and
 PocketBook), nor can we block other system actions like forced reboot (long
-press power button). We recommend to enable an OEM firmware in addition to
-prevent any OEM device access outside KOReader.
+press power button). We recommend to enable an OEM firmware lock screen as
+well, to prevent any device access outside KOReader.
 
 ---
 
