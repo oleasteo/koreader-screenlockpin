@@ -99,6 +99,7 @@ if not Device:canSuspend() then
 end
 
 local function insert_order_item(category, pos_item, rel, ...)
+    if not category then return end
     local idx = index_of(category, pos_item) + rel
     for _, name in ipairs(table.pack(...)) do
         idx = idx + 1
@@ -109,7 +110,16 @@ end
 insert_order_item(reader_order.screen, "screensaver", 0, "screenlockpin_config")
 insert_order_item(fm_order.screen, "screensaver", 0, "screenlockpin_config")
 
-insert_order_item(reader_order.exit_menu, "sleep", -1, "screenlockpin_action")
-insert_order_item(fm_order.exit_menu, "sleep", -1, "screenlockpin_action")
+-- on android the exit menu isn't available, as it's just an exit button
+if not reader_order.exit_menu then
+    insert_order_item(reader_order.main, "exit_menu", -1, "screenlockpin_action")
+else
+    insert_order_item(reader_order.exit_menu, "sleep", -1, "screenlockpin_action")
+end
+if not fm_order.exit_menu then
+    insert_order_item(fm_order.main, "exit_menu", -1, "screenlockpin_action")
+else
+    insert_order_item(fm_order.exit_menu, "sleep", -1, "screenlockpin_action")
+end
 
 return menus

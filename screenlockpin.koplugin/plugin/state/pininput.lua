@@ -1,6 +1,5 @@
 local _ = require("gettext")
 local logger = require("logger")
-local Size = require("ui/size")
 local EventListener = require("ui/widget/eventlistener")
 
 local pluginSettings = require("plugin/settings")
@@ -11,8 +10,6 @@ local LENGTH_RANGE = {3, 12}
 local PinInputState = EventListener:extend {
     -- configuration
     placeholder = "",
-    size_factor = 1.25,
-    font_size = nil,
 
     -- events
     on_display_update = nil, -- (display_text)
@@ -52,59 +49,6 @@ function PinInputState:delInput(everything)
         self.value = self.value:sub(1, -2)
         self:reevaluate()
     end
-end
-
-function PinInputState:makeButtons()
-    local action_button_height = Size.item.height_large + Size.padding.buttontable
-    local button_height = action_button_height * self.size_factor
-
-    local delete_button = {
-        text = "⌫",
-        height = button_height,
-        font_size = self.font_size,
-        callback = function() self:delInput(false) end,
-        hold_callback = function() self:delInput(true) end,
-    }
-
-    local noop_button = {
-        text = " ",
-        height = button_height,
-        font_size = self.font_size,
-        callback = function() end,
-        enabled = false,
-    }
-
-    local action_row = {}
-
-    if self.on_submit then
-        table.insert(action_row, {
-            id = "submit",
-            text = _("Save"),
-            height = action_button_height,
-            font_size = self.font_size,
-            enabled = self.valid,
-            callback = function() self.on_submit(self.value) end,
-        })
-    end
-
-    local function digitButton(num)
-        return {
-            text = num,
-            height = button_height,
-            font_size = self.font_size,
-            callback = function() self:appendInput(num) end
-        }
-    end
-
-    local buttons = {
-        { digitButton("1"), digitButton("2"), digitButton("3") },
-        { digitButton("4"), digitButton("5"), digitButton("6") },
-        { digitButton("7"), digitButton("8"), digitButton("9") },
-        { noop_button,      digitButton("0"), delete_button },
-        action_row
-    }
-
-    return buttons
 end
 
 function PinInputState:setDisplayText(next_display)

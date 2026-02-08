@@ -5,6 +5,29 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 [//]: # (## [Unreleased])
 
+## [2026.02] - 2026-02-08
+
+Minor update with a fix for transparent wallpaper support. Also, I've added an
+option to disable the button feedback (flash on tap) for a slight input
+performance gain. This way it doesn't need to be disabled system-wide.
+
+All essential features for myself are complete now, and based on the lack of
+reported issues I'd say we reached a stable state. Thus, the update releases
+will probably continue to slow down 🤞
+
+Enjoy 📚
+
+### Fixed
+
+- Repaint content behind the panel for translucent background images.
+
+### Added
+
+- Support KOReader on Android devices.
+- [#21](https://github.com/oleasteo/koreader-screenlockpin/issues/21)
+  Add option to disable button feedback flash on tap for improved input
+  performance (e.g., fewer missed taps).
+
 ## [2026.01] - 2026-01-02
 
 A couple of stability and a bunch of user experience improvements. Notably, a

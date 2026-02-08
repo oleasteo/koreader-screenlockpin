@@ -17,10 +17,12 @@ local VerticalGroup = require("ui/widget/verticalgroup")
 local Screen = Device.screen
 
 local PinInputState = require("plugin/state/pininput")
+local PinButtonTable = require("plugin/ui/lockscreen/pinbuttontable")
 
 local ChangePinDialog = FocusManager:extend {
     name = "SLPChangePinDialog",
 
+    font_size = 16,
     size_factor = 1.25,
 
     title = "",
@@ -44,7 +46,6 @@ function ChangePinDialog:init()
     local ready = false
     self.state = PinInputState:new {
         placeholder = _("Enter new PIN"),
-        size_factor = self.size_factor,
         on_submit = self.on_submit,
         on_update = self.on_update,
         on_display_update = function(title)
@@ -78,7 +79,7 @@ function ChangePinDialog:init()
     end
 
     self.buttontable = ButtonTable:new {
-        buttons = self.state:makeButtons(),
+        buttons = PinButtonTable.makeButtonTemplates(self),
         width = width - 2 * Size.border.window - 2 * Size.padding.button,
     }
     local buttontable_width = self.buttontable:getSize().w
