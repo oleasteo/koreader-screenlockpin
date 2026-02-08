@@ -138,6 +138,16 @@ local function showNotes()
     UIManager:show(notes, "ui", notes.region)
 end
 
+--- In case of translucent image wallpapers, we need to drop the
+--- `covers_fullscreen` flag of the screensaver widget in order to re-draw
+--- content below on re-suspend as our overlay panel region must be fully
+--- re-drawn.
+local function ditherScreensaverFixup()
+    if not Screensaver:modeIsImage() then return end
+    if G_reader_settings:readSetting("screensaver_img_background") ~= "none" then return end
+    Screensaver.screensaver_widget.covers_fullscreen = false
+end
+
 local function showOrClearLockScreen(cause)
     if cause == "resume" and overlay then
         logger.dbg("ScreenLockPin: ignoring duplicate resume trigger")
@@ -152,6 +162,7 @@ local function showOrClearLockScreen(cause)
     if pluginSettings.getPreventScreenshots() then
         screenshoterUtil.freezeScreenshoterAbi()
     end
+    ditherScreensaverFixup()
     overlay = LockScreenFrame:new {
         -- UIManager performance tweaks
         modal = true,

@@ -3,11 +3,11 @@ local Blitbuffer = require("ffi/blitbuffer")
 local Font = require("ui/font")
 local Size = require("ui/size")
 local VerticalGroup = require("ui/widget/verticalgroup")
-local ButtonTable = require("ui/widget/buttontable")
 local Screen = require("device").screen
 
 local PinInputState = require("plugin/state/pininput")
 local TextBoxLiteWidget = require("plugin/ui/textboxlitewidget")
+local PinButtonTable = require("plugin/ui/lockscreen/pinbuttontable")
 
 local COLS = 3
 
@@ -28,8 +28,6 @@ function ScreenLockWidget:init()
     self._width = scaling.width
     self.state = PinInputState:new {
         placeholder = _("Enter PIN"),
-        size_factor = 0.85 + 1.15 * self.scale,
-        font_size = scaling.font_size,
         on_display_update = self.on_display_update,
         on_display_update = function(text) if self[1] then self[1]:setText(text) end end,
         on_update = self.on_update,
@@ -43,10 +41,11 @@ function ScreenLockWidget:init()
         padding = Size.item.height_default,
         box_padding = scaling.display_box_padding,
     }
-    self[2] = ButtonTable:new {
-        buttons = self.state:makeButtons(),
+    self[2] = PinButtonTable:new {
+        state = self.state,
+        font_size = scaling.font_size,
+        size_factor = 0.85 + 1.15 * self.scale,
         width = scaling.width,
-        zero_sep = true,
     }
 end
 
@@ -67,11 +66,7 @@ function ScreenLockWidget:onScreenResize(screen_dimen)
     self._width = scaling.width
     local textbox = self[1]
     local buttontable = self[2]
-    -- todo update buttons font size & input state size factor
-    buttontable:free()
-    buttontable.dimen = nil
-    buttontable.width = scaling.width
-    buttontable:init()
+    buttontable:rescale(scaling)
     textbox.box_padding = scaling.display_box_padding
     textbox:setWidth(scaling.width)
     textbox.face = Font:getFace(self.title_font, scaling.display_font_size)

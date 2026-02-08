@@ -1,7 +1,7 @@
 # ScreenLockPin — Protect your KOReader with a PIN
 
 [![MIT License](https://img.shields.io/badge/License-MIT-orange.svg)](https://opensource.org/licenses/MIT)
-[![Release Version](https://img.shields.io/badge/Release-2026.01-blue.svg)](https://github.com/oleasteo/koreader-screenlockpin/releases/tag/v2026.01)
+[![Release Version](https://img.shields.io/badge/Release-2026.02-blue.svg)](https://github.com/oleasteo/koreader-screenlockpin/releases/tag/v2026.02)
 [![Compatibility](https://img.shields.io/badge/Comptibility-KOReader%20v2025.10-yellow.svg)](https://github.com/koreader/koreader/tree/v2025.10)
 
 **ScreenLockPin**: A fast, sophisticated PIN Lock Screen that protects your
@@ -101,19 +101,16 @@ to list it here for others to find.
 
 ## 🧩 Compatibility
 
-Designed for **KOReader v2025.08** and newer. Please report any compatibility
-issues you encounter.
+Designed for **KOReader v2025.08** and newer. We received reports of working
+properly on numerous devices (Kindle, Kobo, Desktop, Android, PocketBook) and
+try to support all which KOReader works on.
 
-Tested devices:
-- ✅ Kindle (10th, 12th gen)
-- ✅ Kindle Oasis (10th gen)
-- ✅ Kobo Aura (N514)
-- ✅ Kobo Clara BW (N365)
-- ✅ Kobo Clara Colour (N367)
-- ✅ KOReader Desktop
+Please report any compatibility issues you encounter.
 
-If you tested this plugin on another device type, please add it to the list
-above.
+Note that we cannot force KOReader to stay in the foreground (e.g., Android and
+PocketBook), nor can we block other system actions like forced reboot (long
+press power button). We recommend to enable an OEM firmware in addition to
+prevent any OEM device access outside KOReader.
 
 ---
 
@@ -142,13 +139,19 @@ screen update after wake-up** setting that was set before the feature was
 enabled. You might need to tap the screen, or use your old 'exit sleep screen'
 gesture to unlock.
 
+### Any way to prevent home button on my PocketBook?
+
+Unfortunately, no. This plugin cannot prevent hiding the KOReader app on press
+of the home button. For a device lock outside the KOReader, you'll have to rely
+on the OEM PIN lock.
+
 ---
 
 ## 🧑‍💻 Contributing
 
-Contributions and suggestions are welcome!  
+Contributions and suggestions are welcome!
 Feel free to open an **issue** or **pull request** to improve functionality,
-style, or compatibility. 
+style, or compatibility.
 
 ---
 

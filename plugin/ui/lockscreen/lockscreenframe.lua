@@ -151,7 +151,7 @@ end
 
 function LockScreenFrame:paintTo(bb, x, y)
     if not self.visible then return end
-    if Device:isDesktop() then
+    if not Device:supportsScreensaver() then
         bb:paintRect(x, y, Screen:getWidth(), Screen:getHeight(), Blitbuffer.COLOR_GRAY_E)
     end
     local region = self:getContentRegion()

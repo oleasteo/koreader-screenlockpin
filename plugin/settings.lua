@@ -78,6 +78,9 @@ local function mergeDefaultSettings()
     if G_reader_settings:hasNot("screenlockpin_prevent_screenshots") then
         G_reader_settings:saveSetting("screenlockpin_prevent_screenshots", true)
     end
+    if G_reader_settings:hasNot("screenlockpin_button_feedback_mode") then
+        G_reader_settings:saveSetting("screenlockpin_button_feedback_mode", "system")
+    end
 end
 
 local function init()
@@ -183,6 +186,18 @@ local function setUpdateReminderInterval(seconds)
         PluginUpdateMgr.instance.between_remind = seconds
         PluginUpdateMgr.instance:ping()
     end
+end
+
+--
+-- Suppress Button Feedback
+--
+
+local function getButtonFeedback()
+    return G_reader_settings:readSetting("screenlockpin_button_feedback_mode")
+end
+
+local function setButtonFeedback(mode)
+    G_reader_settings:saveSetting("screenlockpin_button_feedback_mode", mode)
 end
 
 --
@@ -328,6 +343,9 @@ return {
     setCheckUpdateInterval = setCheckUpdateInterval,
     getUpdateReminderInterval = getUpdateReminderInterval,
     setUpdateReminderInterval = setUpdateReminderInterval,
+
+    getButtonFeedback = getButtonFeedback,
+    setButtonFeedback = setButtonFeedback,
 
     getPreventScreenshots = getPreventScreenshots,
     setPreventScreenshots = setPreventScreenshots,
