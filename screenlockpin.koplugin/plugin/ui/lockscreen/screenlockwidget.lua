@@ -28,8 +28,6 @@ function ScreenLockWidget:init()
     self._width = scaling.width
     self.state = PinInputState:new {
         placeholder = _("Enter PIN"),
-        size_factor = 0.85 + 1.15 * self.scale,
-        font_size = scaling.font_size,
         on_display_update = self.on_display_update,
         on_display_update = function(text) if self[1] then self[1]:setText(text) end end,
         on_update = self.on_update,
@@ -45,6 +43,8 @@ function ScreenLockWidget:init()
     }
     self[2] = PinButtonTable:new {
         state = self.state,
+        font_size = scaling.font_size,
+        size_factor = 0.85 + 1.15 * self.scale,
         width = scaling.width,
     }
 end
@@ -66,8 +66,7 @@ function ScreenLockWidget:onScreenResize(screen_dimen)
     self._width = scaling.width
     local textbox = self[1]
     local buttontable = self[2]
-    -- todo update buttons font size & input state size factor
-    buttontable:rescale(scaling.width)
+    buttontable:rescale(scaling)
     textbox.box_padding = scaling.display_box_padding
     textbox:setWidth(scaling.width)
     textbox.face = Font:getFace(self.title_font, scaling.display_font_size)
