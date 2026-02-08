@@ -1,6 +1,7 @@
 local _ = require("gettext")
 local Device = require("device")
 local ConfigDialog = require("ui/widget/configdialog")
+local Notification = require("ui/widget/notification")
 local C_ = _.pgettext
 
 local pluginSettings = require("plugin/settings")
@@ -105,6 +106,14 @@ local UiSettingsDialog = ConfigDialog:extend {
                     event = "SetScreenshotsMode",
                 },
                 {
+                    name = "button_feedback_mode",
+                    name_text = _("Flash buttons"),
+                    toggle = { C_("Flash buttons", "off"), C_("Lock screen screenshots", "system") },
+                    args = { "off", "system" },
+                    values = { "off", "system" },
+                    event = "SetButtonFeedbackMode",
+                },
+                {
                     name = "check_update_interval",
                     name_text = _("Check for updates"),
                     toggle = {
@@ -165,8 +174,8 @@ if DEBUG_OPTIONS then
         table.insert(config.args, pos, value)
     end
 
-    local update_interval = triangleOpts[2]
-    local dismiss_reminder = triangleOpts[3]
+    local update_interval = triangleOpts[3]
+    local dismiss_reminder = triangleOpts[4]
     insertToggle(update_interval, "15 s", 15)
     insertToggle(dismiss_reminder, "15 s", 15)
 end
@@ -187,6 +196,7 @@ function UiSettingsDialog:init()
         ui_pos_y = 100 - uiSettings.pos_y,
         note_mode = noteSettings.mode,
         note_text = noteSettings.text,
+        button_feedback_mode = pluginSettings.getButtonFeedback(),
         screenshots_mode = prevent_screenshots and "prevent" or "allow",
         check_update_interval = pluginSettings.getCheckUpdateInterval(),
         update_reminder_interval = pluginSettings.getUpdateReminderInterval(),
@@ -274,6 +284,19 @@ end
 function UiSettingsDialog:onSetScreenshotsMode(mode)
     pluginSettings.setPreventScreenshots(mode == "prevent")
     self.configurable.screenshots_mode = mode
+    return true
+end
+
+function UiSettingsDialog:onSetButtonFeedbackMode(mode)
+    pluginSettings.setButtonFeedback(mode)
+    self.configurable.button_feedback_mode = mode
+    local info_text
+    if mode == "off" then
+        info_text = _("No flash on button tap (high input performance)");
+    else
+        info_text = _("Flash on button tap as per system: Screen / E-Ink settings")
+    end
+    Notification:notify(info_text, Notification.SOURCE_DISPATCHER)
     return true
 end
 

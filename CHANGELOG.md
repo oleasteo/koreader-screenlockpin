@@ -12,6 +12,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ### Added
 
 - Support KOReader on Android devices.
+- [#21](https://github.com/oleasteo/koreader-screenlockpin/issues/21)
+  Add option to disable button feedback flash on tap for improved input
+  performance (e.g., fewer missed taps).
 
 ## [2026.01] - 2026-01-02
 
