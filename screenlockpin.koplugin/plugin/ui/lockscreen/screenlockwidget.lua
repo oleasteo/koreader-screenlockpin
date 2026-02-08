@@ -3,11 +3,11 @@ local Blitbuffer = require("ffi/blitbuffer")
 local Font = require("ui/font")
 local Size = require("ui/size")
 local VerticalGroup = require("ui/widget/verticalgroup")
-local ButtonTable = require("ui/widget/buttontable")
 local Screen = require("device").screen
 
 local PinInputState = require("plugin/state/pininput")
 local TextBoxLiteWidget = require("plugin/ui/textboxlitewidget")
+local PinButtonTable = require("plugin/ui/lockscreen/pinbuttontable")
 
 local COLS = 3
 
@@ -43,10 +43,9 @@ function ScreenLockWidget:init()
         padding = Size.item.height_default,
         box_padding = scaling.display_box_padding,
     }
-    self[2] = ButtonTable:new {
-        buttons = self.state:makeButtons(),
+    self[2] = PinButtonTable:new {
+        state = self.state,
         width = scaling.width,
-        zero_sep = true,
     }
 end
 
@@ -68,10 +67,7 @@ function ScreenLockWidget:onScreenResize(screen_dimen)
     local textbox = self[1]
     local buttontable = self[2]
     -- todo update buttons font size & input state size factor
-    buttontable:free()
-    buttontable.dimen = nil
-    buttontable.width = scaling.width
-    buttontable:init()
+    buttontable:rescale(scaling.width)
     textbox.box_padding = scaling.display_box_padding
     textbox:setWidth(scaling.width)
     textbox.face = Font:getFace(self.title_font, scaling.display_font_size)
