@@ -65,6 +65,7 @@ local menus = {
             {
                 text = _("Change PIN"),
                 enabled_func = change_pin_enabled,
+                keep_menu_open = true,
                 callback = settingsCtrl.showChangePinDialog,
             },
         },

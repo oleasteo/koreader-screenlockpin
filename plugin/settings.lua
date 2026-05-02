@@ -13,6 +13,25 @@ local isEnabled, hasPin, isScreensaverDelay, shouldLockOnWakeup,
 -- Init
 --
 
+local pluginSettingsKeys = {
+    "screenlockpin_button_feedback_mode",
+    "screenlockpin_cache",
+    "screenlockpin_check_updates_interval",
+    "screenlockpin_enabled",
+    "screenlockpin_note_mode",
+    "screenlockpin_note_text",
+    "screenlockpin_onboot",
+    "screenlockpin_onwakeup",
+    "screenlockpin_pin",
+    "screenlockpin_prevent_screenshots",
+    "screenlockpin_ratelimit",
+    "screenlockpin_restore_screensaver_delay",
+    "screenlockpin_ui_pos_x",
+    "screenlockpin_ui_pos_y",
+    "screenlockpin_ui_scale",
+    "screenlockpin_update_reminder_interval",
+}
+
 local function migrateSettings()
     -- migrate from 2025.10
     if G_reader_settings:has("screenlockpin") then
@@ -322,10 +341,15 @@ local function destruct()
     G_reader_settings:delSetting("screenlockpin_pin")
 end
 
+local function dropAll()
+    for _, key in ipairs(pluginSettingsKeys) do G_reader_settings:delSetting(key) end
+end
+
 return {
     init = init,
     hasPin = hasPin,
     destruct = destruct,
+    dropAll = dropAll,
 
     getEnabled = isEnabled,
     setEnabled = setEnabled,

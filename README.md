@@ -1,10 +1,6 @@
 # ScreenLockPin — Protect your KOReader with a PIN
 
-[![MIT License](https://img.shields.io/badge/License-MIT-orange.svg)](https://opensource.org/licenses/MIT)
-[![Release Version](https://img.shields.io/badge/Release-2026.02-blue.svg)](https://github.com/oleasteo/koreader-screenlockpin/releases/tag/v2026.02)
-[![Compatibility](https://img.shields.io/badge/Comptibility-KOReader%20v2025.10-yellow.svg)](https://github.com/koreader/koreader/tree/v2025.10)
-
-**ScreenLockPin**: A fast, sophisticated PIN Lock Screen that protects your
+A fast, sophisticated PIN Lock Screen that protects your
 [KOReader](https://github.com/koreader/koreader) content from unauthorized
 access.
 
@@ -109,8 +105,8 @@ Please report any compatibility issues you encounter.
 
 Note that we cannot force KOReader to stay in the foreground (e.g., Android and
 PocketBook), nor can we block other system actions like forced reboot (long
-press power button). We recommend to enable an OEM firmware in addition to
-prevent any OEM device access outside KOReader.
+press power button). We recommend to enable an OEM firmware lock screen as
+well, to prevent any device access outside KOReader.
 
 ---
 

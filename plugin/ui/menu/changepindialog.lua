@@ -40,6 +40,9 @@ local ChangePinDialog = FocusManager:extend {
     buttontable = nil,
     key_events = nil,
     ges_events = nil,
+
+    on_submit = nil,
+    on_close = nil,
 }
 
 function ChangePinDialog:init()
@@ -149,14 +152,8 @@ function ChangePinDialog:onShow()
     end)
 end
 
-function ChangePinDialog:onCloseWidget()
-    UIManager:setDirty(nil, function()
-        return "flashui", self[1][1].dimen
-    end)
-end
-
 function ChangePinDialog:onClose()
-    UIManager:close(self)
+    self.on_close()
     return true
 end
 

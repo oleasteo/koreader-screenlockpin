@@ -13,11 +13,11 @@ local uiSettingsDialog
 local function closeChangePinDialog()
     if not changePinDialog then return end
     logger.dbg("ScreenLockPin: close change PIN dialog")
-    UIManager:close(changePinDialog, "ui")
+    UIManager:close(changePinDialog, "flashui")
     changePinDialog = nil
 end
 
-local function showChangePinDialog()
+local function showChangePinDialog(menu_instance)
     if changePinDialog then return end
     logger.dbg("ScreenLockPin: create change PIN dialog")
     changePinDialog = ChangePinDialog:new {
@@ -25,10 +25,12 @@ local function showChangePinDialog()
         on_submit = function(next_pin)
             pluginSettings.setPin(next_pin)
             closeChangePinDialog()
+            menu_instance:updateItems()
             UIManager:nextTick(function()
                 Notification:notify(_("PIN changed."), Notification.SOURCE_DISPATCHER)
             end)
         end,
+        on_close = closeChangePinDialog,
     }
     UIManager:show(changePinDialog)
 end
@@ -36,7 +38,7 @@ end
 local function showUiSettingsDialog()
     uiSettingsDialog = UiSettingsDialog:new {
         close_callback = function()
-            UIManager:close(uiSettingsDialog, "ui")
+            UIManager:close(uiSettingsDialog, "flashui")
             uiSettingsDialog = nil
         end,
     }

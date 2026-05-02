@@ -110,7 +110,7 @@ function ScreenLockPinPlugin:onUnlockScreen()
     return true
 end
 
--- KOReader plugin hook (on plugin disable)
+-- KOReader plugin hooks (on plugin disable)
 
 function ScreenLockPinPlugin:stopPlugin()
     if self.stopped then return end
@@ -124,6 +124,12 @@ function ScreenLockPinPlugin:stopPlugin()
     self.public_api = nil
     self.stopped = true
     return true
+end
+
+function ScreenLockPinPlugin:deletePluginSettings()
+    logger.dbg("ScreenLockPin: deleting plugin settings")
+    pluginSettings.dropAll()
+    PluginUpdateMgr.dropPluginCache()
 end
 
 -- KOReader plugin hook (on wakeup after suspend)
