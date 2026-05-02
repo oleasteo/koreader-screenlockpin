@@ -29,12 +29,17 @@ to get notified on updates.
 
 # Changelog
 
+## [v4] - 2026-05-02
+- Added `PluginUpdateMgr.dropPluginCache` function. This can be used to drop any cache remnants on
+  the device, e.g. within the new
+  [`Plugin:deletePluginSettings`](https://github.com/koreader/koreader/pull/15240) hook.
+
 ## [v3] - 2026-01-02
 - Fixed background widget (global pings on resume and network connection)
   lifecycle. Prior to this, it caused KOReader exit / restart not to work in all
   cases (UIManager shutdown is only complete once all widgets are closed).
 --]]
-local UPDATER_VERSION = 3
+local UPDATER_VERSION = 4
 
 --[[
 
@@ -145,6 +150,12 @@ local KEY_SUFFIX = "plugin_updater#" .. meta.name
 local KEY_CHECKED_AT = KEY_SUFFIX .. ":checked_at"
 local KEY_DISMISSED_AT = KEY_SUFFIX .. ":dismissed_at"
 local KEY_DISMISSED_V = KEY_SUFFIX .. ":dismissed"
+
+local pluginCacheKeys = {
+    KEY_CHECKED_AT,
+    KEY_DISMISSED_AT,
+    KEY_DISMISSED_V,
+}
 
 --endregion
 --region Utilities
@@ -346,6 +357,12 @@ function PluginUpdateMgr:free()
     self._updater = nil
     self._pause_predicates = {}
     if not self:isClosed() then self._state = "freed" end
+end
+
+--- Deletes all reader settings (updater information)
+function PluginUpdateMgr.dropPluginCache()
+    dbg("deleting plugin cache of " .. KEY_SUFFIX)
+    for _, key in ipairs(pluginCacheKeys) do G_reader_settings:delSetting(key) end
 end
 
 -- wrapper function so that other pings aren't unscheduled by us

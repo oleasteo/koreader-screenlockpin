@@ -5,6 +5,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 [//]: # (## [Unreleased])
 
+### Added
+
+- [#48](https://github.com/oleasteo/koreader-screenlockpin/issues/48)
+  Support the new "Also delete plugin settings" option on plugin disable.
+
 ## [2026.02] - 2026-02-08
 
 Minor update with a fix for transparent wallpaper support. Also, I've added an
