@@ -1,10 +1,6 @@
 # ScreenLockPin — Protect your KOReader with a PIN
 
-[![MIT License](https://img.shields.io/badge/License-MIT-orange.svg)](https://opensource.org/licenses/MIT)
-[![Release Version](https://img.shields.io/badge/Release-2026.02-blue.svg)](https://github.com/oleasteo/koreader-screenlockpin/releases/tag/v2026.02)
-[![Compatibility](https://img.shields.io/badge/Comptibility-KOReader%20v2026.03-yellow.svg)](https://github.com/koreader/koreader/tree/v2026.03)
-
-**ScreenLockPin**: A fast, sophisticated PIN Lock Screen that protects your
+A fast, sophisticated PIN Lock Screen that protects your
 [KOReader](https://github.com/koreader/koreader) content from unauthorized
 access.
 
