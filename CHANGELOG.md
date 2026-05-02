@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 [//]: # (## [Unreleased])
 
+## [2026.05] - 2026-05-02
+
 ### Fixed
 
 - Free change PIN dialog on click outside the dialog. This fixes it not
