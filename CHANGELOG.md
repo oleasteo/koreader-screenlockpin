@@ -5,10 +5,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 [//]: # (## [Unreleased])
 
+### Fixed
+
+- Free change PIN dialog on click outside the dialog. This fixes it not
+  opening again after closing in such a way.
+
 ### Added
 
 - [#48](https://github.com/oleasteo/koreader-screenlockpin/issues/48)
   Support the new "Also delete plugin settings" option on plugin disable.
+- Keep menu open while changing the PIN.
 
 ## [2026.02] - 2026-02-08
 
