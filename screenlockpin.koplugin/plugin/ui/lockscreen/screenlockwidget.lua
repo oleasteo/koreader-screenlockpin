@@ -28,8 +28,15 @@ function ScreenLockWidget:init()
     self._width = scaling.width
     self.state = PinInputState:new {
         placeholder = _("Enter PIN"),
-        on_display_update = self.on_display_update,
-        on_display_update = function(text) if self[1] then self[1]:setText(text) end end,
+        on_display_update = function(text, options)
+            local textbox = self[1];
+            if not textbox then return end
+            require("logger").warn(require("dump")(options))
+            local use_black = not (options.placeholder or options.throttle)
+            textbox.fgcolor = use_black and Blitbuffer.COLOR_BLACK or Blitbuffer.COLOR_GRAY_6;
+            textbox.refreshtype = use_black and "fast" or "ui";
+            textbox:setText(text)
+        end,
         on_update = self.on_update,
     }
     self[1] = TextBoxLiteWidget:new {

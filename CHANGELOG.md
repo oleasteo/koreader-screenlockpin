@@ -3,7 +3,13 @@
 All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-[//]: # (## [Unreleased])
+## [Unreleased]
+
+### Fixed
+
+- [#51](https://github.com/oleasteo/koreader-screenlockpin/issues/51)
+  Use proper color / refresh type for pin dots and placeholder texts. Before, some devices chose
+  white, some black for grayscale text (with "fast" refresh type).
 
 ## [2026.05] - 2026-05-02
 
