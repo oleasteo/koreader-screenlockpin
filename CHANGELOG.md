@@ -24,6 +24,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - [#20](https://github.com/oleasteo/koreader-screenlockpin/issues/20)
   Option to disable frontlight controls, or have long-press steps instead (accidental touch
   protection).
+- [#49](https://github.com/oleasteo/koreader-screenlockpin/issues/49)
+  An initial setup guide will now ask for opt in to the auto update checker. This way, no requests
+  to foreign servers will happen without explicit consent.
+- The initial setup will also offer to set a PIN and enable all available hooks once done.
 
 ## [2026.05] - 2026-05-02
 

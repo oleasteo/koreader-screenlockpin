@@ -66,7 +66,16 @@ local menus = {
                 text = _("Change PIN"),
                 enabled_func = change_pin_enabled,
                 keep_menu_open = true,
-                callback = settingsCtrl.showChangePinDialog,
+                callback = function(menu_instance)
+                    settingsCtrl.showChangePinDialog({
+                        callback = function (changed)
+                            if changed then
+                                menu_instance:updateItems()
+                                Notification:notify(_("PIN changed."), Notification.SOURCE_DISPATCHER)
+                            end
+                        end,
+                    })
+                end,
             },
         },
     },
