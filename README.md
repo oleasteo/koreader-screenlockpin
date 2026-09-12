@@ -59,6 +59,14 @@ unlocking the KOReader, in case you forget the PIN (see FAQ below).
 Actions for the dispatcher (e.g., Gesture manager) can be found in the *Device*
 group.
 
+### Frontlight Control
+
+If frontlight controls are enabled (the default), tapping the lock screen outside the visible frame
+area adjusts the frontlight brightness. Tapping the upper half of the screen increases brightness,
+while tapping the lower half decreases it. Long-pressing the upper half sets the brightness to
+maximum; long-pressing the lower half turns the frontlight off. If frontlight controls is set to
+long-press only mode, the long-press will use steps instead (like tapping in normal mode).
+
 ---
 
 ## 🛠️ Public API

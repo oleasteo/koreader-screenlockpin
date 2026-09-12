@@ -1,7 +1,6 @@
 local _ = require("gettext")
 local logger = require("logger")
 local UIManager = require("ui/uimanager")
-local Notification = require("ui/widget/notification")
 
 local pluginSettings = require("plugin/settings")
 local ChangePinDialog = require("plugin/ui/menu/changepindialog")
@@ -17,7 +16,7 @@ local function closeChangePinDialog()
     changePinDialog = nil
 end
 
-local function showChangePinDialog(menu_instance)
+local function showChangePinDialog(opts)
     if changePinDialog then return end
     logger.dbg("ScreenLockPin: create change PIN dialog")
     changePinDialog = ChangePinDialog:new {
@@ -25,12 +24,12 @@ local function showChangePinDialog(menu_instance)
         on_submit = function(next_pin)
             pluginSettings.setPin(next_pin)
             closeChangePinDialog()
-            menu_instance:updateItems()
-            UIManager:nextTick(function()
-                Notification:notify(_("PIN changed."), Notification.SOURCE_DISPATCHER)
-            end)
+            opts.callback(true)
         end,
-        on_close = closeChangePinDialog,
+        on_close = function()
+            closeChangePinDialog()
+            opts.callback(false)
+        end,
     }
     UIManager:show(changePinDialog)
 end

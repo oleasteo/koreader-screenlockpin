@@ -13,6 +13,7 @@ local PluginKeyListener = require("plugin/keylistener")
 local onBootHook = require("plugin/util/onboothook")
 local screensaverUtil = require("plugin/util/screensaverutil")
 local lockscreenCtrl = require("plugin/ui/ctrl/lockscreenctrl")
+local initialSetupCtrl = require("plugin/ui/ctrl/initialsetup")
 
 local ScreenLockPinPlugin = EventListener:extend { stopped = false }
 
@@ -74,6 +75,7 @@ function ScreenLockPinPlugin:init()
         between_remind = pluginSettings.getUpdateReminderInterval(),
     }
 
+    initialSetupCtrl.checkAndRun()
     PluginKeyListener.rewireHotkeys()
 end
 

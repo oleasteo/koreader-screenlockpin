@@ -5,6 +5,44 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 [//]: # (## [Unreleased])
 
+## [2026.09] - 2026-09-12
+
+New community requested options and features!
+
+The major options include always-visible user notes for more obvious contact info presentation and the option to disable frontlight brightness control on lock screen tap (outside the frame).
+
+In addition, the change PIN dialog has been improved, and there was some color glitch in the lock screen PIN frame as well. The new "About" menu item will now always help you to know which plugin version you're using.
+
+For new users, a setup guide is added to ask for consent on github.com requests of the auto-update checker and improves onboarding in general.
+
+Enjoy! 🍂
+
+### Changed
+
+- Change PIN dialog now shows the PIN in plaintext so you can validate correct input.
+- Some plugin options are moved to a new settings tab. The triangle tab is now for auto update
+  options only.
+
+### Fixed
+
+- [#51](https://github.com/oleasteo/koreader-screenlockpin/issues/51)
+  Use proper color / refresh type for pin dots and placeholder texts. Before, some devices chose
+  white, some black for grayscale text (with "fast" refresh type).
+
+### Added
+
+- [#53](https://github.com/oleasteo/koreader-screenlockpin/issues/53)
+  Option to always show a user note preview.
+- [#20](https://github.com/oleasteo/koreader-screenlockpin/issues/20)
+  Option to disable frontlight controls, or have long-press steps instead (accidental touch
+  protection).
+- [#49](https://github.com/oleasteo/koreader-screenlockpin/issues/49)
+  An initial setup guide will now ask for opt in to the auto update checker. This way, no requests
+  to foreign servers will happen without explicit consent.
+- The initial setup will also offer to set a PIN and enable all available hooks once done.
+- New menu item "About" to show plugin version.
+- Change PIN dialog now accepts keyboard input.
+
 ## [2026.05] - 2026-05-02
 
 ### Fixed
