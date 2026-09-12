@@ -3,13 +3,25 @@
 All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## [Unreleased]
+[//]: # (## [Unreleased])
+
+## [2026.09] - 2026-09-12
+
+New community requested options and features!
+
+The major options include always-visible user notes for more obvious contact info presentation and the option to disable frontlight brightness control on lock screen tap (outside the frame).
+
+In addition, the change PIN dialog has been improved, and there was some color glitch in the lock screen PIN frame as well. The new "About" menu item will now always help you to know which plugin version you're using.
+
+For new users, a setup guide is added to ask for consent on github.com requests of the auto-update checker and improves onboarding in general.
+
+Enjoy! 🍂
 
 ### Changed
 
-- Options have been moved from triangle tab to a new settings tab. The triangle tab now contains
-  auto update options only.
 - Change PIN dialog now shows the PIN in plaintext so you can validate correct input.
+- Some plugin options are moved to a new settings tab. The triangle tab is now for auto update
+  options only.
 
 ### Fixed
 
