@@ -10,9 +10,10 @@ local LENGTH_RANGE = {3, 12}
 local PinInputState = EventListener:extend {
     -- configuration
     placeholder = "",
+    obfuscate = true,
 
     -- events
-    on_display_update = nil, -- (display_text)
+    on_display_update = nil, -- (display_text, {placeholder?:bool,throttle?:bool})
     on_update = nil, -- (value)
     on_submit = nil, -- (value)
     on_valid_state = nil, -- (valid)
@@ -51,10 +52,10 @@ function PinInputState:delInput(everything)
     end
 end
 
-function PinInputState:setDisplayText(next_display)
+function PinInputState:setDisplayText(next_display, options)
     if not (self.display == next_display) then
         self.display = next_display
-        if self.on_display_update then self.on_display_update(next_display) end
+        if self.on_display_update then self.on_display_update(next_display, options) end
     end
 end
 
@@ -68,15 +69,23 @@ function PinInputState:reevaluate()
     if self.throttle and self.throttle:isPaused() then
         local next_display = _("Try again in " .. self.throttle:remainingSeconds() .. "s")
         logger.dbg("ScreenLockPin: pininput reevaluate " .. next_display)
-        self:setDisplayText(next_display)
+        self:setDisplayText(next_display, { throttle = true })
         return
     end
 
     -- refresh display
-    local next_display = #self.value > 0 and string.rep("●", #self.value) or self.placeholder
+    local show_placeholder = #self.value == 0
+    local next_display
+    if show_placeholder then
+        next_display = self.placeholder
+    elseif self.obfuscate then
+        next_display = string.rep("●", #self.value)
+    else
+        next_display = self.value
+    end
     --logger.dbg("ScreenLockPin: pininput reevaluate " .. next_display)
     logger.dbg("ScreenLockPin: pininput reevaluate [redacted]")
-    self:setDisplayText(next_display)
+    self:setDisplayText(next_display, { placeholder = show_placeholder })
     -- refresh valid state and check
     local next_valid = #self.value >= LENGTH_RANGE[1] and #self.value <= LENGTH_RANGE[2]
     if next_valid and self.on_update then self.on_update(self.value) end

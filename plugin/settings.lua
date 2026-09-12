@@ -1,3 +1,4 @@
+local Device = require("device")
 local logger = require("logger")
 
 local PluginUpdateMgr = require("plugin/updatemanager")
@@ -16,20 +17,27 @@ local isEnabled, hasPin, isScreensaverDelay, shouldLockOnWakeup,
 local pluginSettingsKeys = {
     "screenlockpin_button_feedback_mode",
     "screenlockpin_cache",
-    "screenlockpin_check_updates_interval",
+    "screenlockpin_setup_version",
     "screenlockpin_enabled",
     "screenlockpin_note_mode",
     "screenlockpin_note_text",
+    "screenlockpin_note_preview_text",
     "screenlockpin_onboot",
     "screenlockpin_onwakeup",
     "screenlockpin_pin",
     "screenlockpin_prevent_screenshots",
+    "screenlockpin_frontlight_mode",
     "screenlockpin_ratelimit",
     "screenlockpin_restore_screensaver_delay",
     "screenlockpin_ui_pos_x",
     "screenlockpin_ui_pos_y",
     "screenlockpin_ui_scale",
+    "screenlockpin_check_updates_interval",
     "screenlockpin_update_reminder_interval",
+
+    "plugin_updater#screenlockpin:checked_at",
+    "plugin_updater#screenlockpin:dismissed_at",
+    "plugin_updater#screenlockpin:dismissed",
 }
 
 local function migrateSettings()
@@ -54,15 +62,14 @@ local function migrateSettings()
             G_reader_settings:saveSetting("screenlockpin_ui_scale", math.floor(uiScale * 100))
         end
     end
-    if G_reader_settings:hasNot("screenlockpin_onwakeup") then
-        local bool = G_reader_settings:readSetting("screensaver_delay") == "plugin:screenlockpin"
-        G_reader_settings:saveSetting("screenlockpin_onwakeup", bool)
-    end
 end
 
 local function mergeDefaultSettings()
     if G_reader_settings:hasNot("screenlockpin_enabled") or not hasPin() then
-        G_reader_settings:saveSetting("screenlockpin_enabled", false)
+        G_reader_settings:makeFalse("screenlockpin_enabled")
+    end
+    if G_reader_settings:hasNot("screenlockpin_setup_version") then
+        G_reader_settings:saveSetting("screenlockpin_setup_version", hasPin() and 1 or 0)
     end
     if G_reader_settings:hasNot("screenlockpin_ui_scale") then
         G_reader_settings:saveSetting("screenlockpin_ui_scale", 40)
@@ -74,10 +81,10 @@ local function mergeDefaultSettings()
         G_reader_settings:saveSetting("screenlockpin_ui_pos_y", 50)
     end
     if G_reader_settings:hasNot("screenlockpin_onboot") then
-        G_reader_settings:makeFalse("screenlockpin_onboot")
+        G_reader_settings:makeTrue("screenlockpin_onboot")
     end
     if G_reader_settings:hasNot("screenlockpin_onwakeup") then
-        G_reader_settings:makeFalse("screenlockpin_onwakeup")
+        G_reader_settings:saveSetting("screenlockpin_onwakeup", Device:canSuspend())
     end
     if G_reader_settings:hasNot("screenlockpin_ratelimit") then
         G_reader_settings:makeTrue("screenlockpin_ratelimit")
@@ -88,14 +95,20 @@ local function mergeDefaultSettings()
     if G_reader_settings:hasNot("screenlockpin_note_text") then
         G_reader_settings:saveSetting("screenlockpin_note_text", "")
     end
+    if G_reader_settings:hasNot("screenlockpin_note_preview_text") then
+        G_reader_settings:saveSetting("screenlockpin_note_preview_text", "")
+    end
     if G_reader_settings:hasNot("screenlockpin_check_updates_interval") then
-        G_reader_settings:saveSetting("screenlockpin_check_updates_interval", 3600 * 24 * 7)
+        G_reader_settings:saveSetting("screenlockpin_check_updates_interval", 0)
     end
     if G_reader_settings:hasNot("screenlockpin_update_reminder_interval") then
         G_reader_settings:saveSetting("screenlockpin_update_reminder_interval", 3600 * 24)
     end
     if G_reader_settings:hasNot("screenlockpin_prevent_screenshots") then
-        G_reader_settings:saveSetting("screenlockpin_prevent_screenshots", true)
+        G_reader_settings:makeTrue("screenlockpin_prevent_screenshots")
+    end
+    if G_reader_settings:hasNot("screenlockpin_frontlight_mode") then
+        G_reader_settings:saveSetting("screenlockpin_frontlight_mode", "on")
     end
     if G_reader_settings:hasNot("screenlockpin_button_feedback_mode") then
         G_reader_settings:saveSetting("screenlockpin_button_feedback_mode", "system")
@@ -136,6 +149,14 @@ local function toggleEnabled()
     setEnabled(not isEnabled())
 end
 
+local function getSetupVersion()
+    return G_reader_settings:readSetting("screenlockpin_setup_version")
+end
+
+local function writeSetupVersion()
+    return G_reader_settings:saveSetting("screenlockpin_setup_version", 1)
+end
+
 --
 -- Cosmetic Options
 --
@@ -168,6 +189,7 @@ local function getNoteSettings()
     return {
         mode = G_reader_settings:readSetting("screenlockpin_note_mode"),
         text = G_reader_settings:readSetting("screenlockpin_note_text"),
+        preview_text = G_reader_settings:readSetting("screenlockpin_note_preview_text"),
     }
 end
 
@@ -177,6 +199,10 @@ end
 
 local function setNoteText(text)
     G_reader_settings:saveSetting("screenlockpin_note_text", text)
+end
+
+local function setNotePreviewText(text)
+    G_reader_settings:saveSetting("screenlockpin_note_preview_text", text)
 end
 
 --
@@ -229,6 +255,18 @@ end
 
 local function setPreventScreenshots(bool)
     G_reader_settings:saveSetting("screenlockpin_prevent_screenshots", bool)
+end
+
+--
+-- Frontlight Control
+--
+
+local function getFrontlightMode()
+    return G_reader_settings:readSetting("screenlockpin_frontlight_mode")
+end
+
+local function setFrontlightMode(mode)
+    G_reader_settings:saveSetting("screenlockpin_frontlight_mode", mode)
 end
 
 --
@@ -350,6 +388,8 @@ return {
     hasPin = hasPin,
     destruct = destruct,
     dropAll = dropAll,
+    getSetupVersion = getSetupVersion,
+    writeSetupVersion = writeSetupVersion,
 
     getEnabled = isEnabled,
     setEnabled = setEnabled,
@@ -362,6 +402,7 @@ return {
     getNoteSettings = getNoteSettings,
     setNoteMode = setNoteMode,
     setNoteText = setNoteText,
+    setNotePreviewText = setNotePreviewText,
 
     getCheckUpdateInterval = getCheckUpdateInterval,
     setCheckUpdateInterval = setCheckUpdateInterval,
@@ -373,6 +414,9 @@ return {
 
     getPreventScreenshots = getPreventScreenshots,
     setPreventScreenshots = setPreventScreenshots,
+
+    getFrontlightMode = getFrontlightMode,
+    setFrontlightMode = setFrontlightMode,
 
     readPin = readPin,
     setPin = setPin,

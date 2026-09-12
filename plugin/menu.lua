@@ -1,8 +1,12 @@
 local _ = require("gettext")
 local Device = require("device")
+local ffiUtil = require("ffi/util")
+local UIManager = require("ui/uimanager")
 local reader_order = require("ui/elements/reader_menu_order")
 local fm_order = require("ui/elements/filemanager_menu_order")
+local InfoMessage = require("ui/widget/infomessage")
 local Notification = require("ui/widget/notification")
+local T = ffiUtil.template
 
 local pluginSettings = require("plugin/settings")
 local pluginApi = require("plugin/publicapi")
@@ -16,6 +20,12 @@ end
 local function change_pin_enabled()
     return pluginSettings.getEnabled() or not pluginSettings.hasPin()
 end
+
+local function getPluginDir()
+    return debug.getinfo(1, "S").source:match("@(.+%.koplugin)/")
+end
+
+local meta_origin = dofile(getPluginDir() .. "/_meta.lua")
 
 local menus = {
     screenlockpin_config = {
@@ -66,7 +76,33 @@ local menus = {
                 text = _("Change PIN"),
                 enabled_func = change_pin_enabled,
                 keep_menu_open = true,
-                callback = settingsCtrl.showChangePinDialog,
+                callback = function(menu_instance)
+                    settingsCtrl.showChangePinDialog({
+                        callback = function (changed)
+                            if changed then
+                                menu_instance:updateItems()
+                                Notification:notify(_("PIN changed."), Notification.SOURCE_DISPATCHER)
+                            end
+                        end,
+                    })
+                end,
+            },
+            {
+                text = _("About"),
+                keep_menu_open = true,
+                callback = function()
+                    local meta = dofile(getPluginDir() .. "/_meta.lua")
+                    local versions = T(_("Version: %1"), meta_origin.version)
+                    if meta.version ~= meta_origin.version then
+                        versions = T(_("Version running: %1"), meta_origin.version) .. "\n" .. T(_("Version on disk: %1"), meta.version)
+                    end
+                    UIManager:show(InfoMessage:new {
+                        text = _("ScreenLockPin — Protect your KOReader with a PIN") .. "\n\n" ..
+                                versions .. "\n" ..
+                                T(_("Author: %1"), meta_origin.author) .. "\n\n" ..
+                                _("Thank you for using this plugin.\nConsider dropping a ⭐ on github.️\n\nEnjoy!"),
+                    })
+                end,
             },
         },
     },

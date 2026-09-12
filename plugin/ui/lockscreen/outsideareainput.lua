@@ -5,6 +5,7 @@ local GestureRange = require("ui/gesturerange")
 local Screen = Device.screen
 
 local mathu = require("plugin/util/math")
+local pluginSettings = require("plugin/settings")
 
 local OutsideAreaInput = InputContainer:extend {
     name = "SLPOutsideArea",
@@ -12,10 +13,13 @@ local OutsideAreaInput = InputContainer:extend {
 }
 
 function OutsideAreaInput:init()
-    if Device:isTouchDevice() then
+    local mode = pluginSettings.getFrontlightMode()
+    if mode ~= "off" and Device:isTouchDevice() then
         -- use a function to adapt to screen resize
         local range = function () return Screen:getSize() end
-        self.ges_events.TapScreen = { GestureRange:new{ ges = "tap", range = range } }
+        if mode ~= "long-press" then
+            self.ges_events.TapScreen = { GestureRange:new{ ges = "tap", range = range } }
+        end
         self.ges_events.HoldScreen = { GestureRange:new{ ges = "hold", range = range } }
     end
     self.screen_mid = Screen:getHeight() / 2
@@ -46,7 +50,11 @@ end
 function OutsideAreaInput:onHoldScreen(_, ges)
     if not ges or not ges.pos or not self.content_region then return false end
     if not mathu.isOutside(ges.pos, self.content_region) then return false end
-    self:maxBrightness(self.screen_mid - ges.pos.y)
+    if pluginSettings.getFrontlightMode() == "long-press" then
+        self:nextBrightness(self.screen_mid - ges.pos.y)
+    else
+        self:maxBrightness(self.screen_mid - ges.pos.y)
+    end
     -- consume event
     return true
 end

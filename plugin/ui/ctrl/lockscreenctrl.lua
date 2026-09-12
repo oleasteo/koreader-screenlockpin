@@ -122,7 +122,7 @@ local function onResume()
     reuseShowOverlay()
 end
 
-local function showNotes()
+local function showNotesOverlay()
     if notes or not overlay then return end
     local text = pluginSettings.getNoteSettings().text or _("No note configured.")
     local scale = pluginSettings.getUiSettings().scale / 100
@@ -177,7 +177,7 @@ local function showOrClearLockScreen(cause)
         onResume = onResume,
         -- LockScreenFrame
         on_unlock = function () unlockScreen("valid_pin") end,
-        on_show_notes = showNotes,
+        on_notes_overlay = showNotesOverlay,
     }
     UIManager:show(overlay, "flashui", overlay:getRefreshRegion())
 end

@@ -20,6 +20,7 @@ local OutsideAreaInput = require("plugin/ui/lockscreen/outsideareainput")
 local HorizontalFlexGroup = require("plugin/ui/horizontalflexgroup")
 local ScreenLockWidget = require("plugin/ui/lockscreen/screenlockwidget")
 local LockScreenStatusText = require("plugin/ui/lockscreen/statustext")
+local NotesAlwaysBox = require("plugin/ui/lockscreen/notesalwaysbox")
 
 local LockScreenFrame = InputContainer:extend {
     name = "SLPLockScreen",
@@ -28,7 +29,7 @@ local LockScreenFrame = InputContainer:extend {
     status_text = nil,
     bottom_row = nil,
     on_unlock = nil,
-    on_show_notes = nil,
+    on_notes_overlay = nil,
     visible = true,
     -- a slightly grown refresh region seems to reduce ghosting a little
     clear_outset = Screen:scaleBySize(2),
@@ -36,7 +37,10 @@ local LockScreenFrame = InputContainer:extend {
     _refresh_region = nil,
     _content_region = nil,
     outside_input = nil,
-    panel = nil,
+
+    vgroup = nil,
+    notes_always = nil,
+    lockpanel_vgroup = nil,
 
     key_events = {
         KbdNumber = { { { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" } } },
@@ -50,9 +54,10 @@ local LockScreenFrame = InputContainer:extend {
 
 function LockScreenFrame:init()
     local uiSettings = pluginSettings.getUiSettings()
+    local scale = uiSettings.scale / 100
     self.lock_widget = ScreenLockWidget:new {
         ui_root = self,
-        scale = uiSettings.scale / 100,
+        scale = scale,
         on_update = function(input)
             local pin = pluginSettings.readPin()
             if pin ~= nil and input ~= pin then
@@ -64,7 +69,7 @@ function LockScreenFrame:init()
         end
     }
     self.status_text = LockScreenStatusText:new {
-        font_size = 13 + math.floor(uiSettings.scale / 100 * 7.1),
+        font_size = 13 + math.floor(scale * 7.1),
         on_change = function ()
             if not self.bottom_row then return end
             self:_resetStatusTextLayout()
@@ -74,14 +79,14 @@ function LockScreenFrame:init()
 
     local note_cfg = pluginSettings.getNoteSettings()
     local action_buttons = WidgetContainer:new {}
-    local icon_padding = math.floor(Size.padding.large * (0.2 + uiSettings.scale / 100))
+    local icon_padding = math.floor(Size.padding.large * (0.2 + scale))
     if note_cfg.mode == "button" then
-        local icon_size = math.floor(Size.item.height_big * (0.75 + uiSettings.scale / 100))
+        local icon_size = math.floor(Size.item.height_big * (0.75 + scale))
         table.insert(action_buttons, IconButton:new {
             icon = "appbar.typeset",
             width = icon_size,
             height = icon_size,
-            callback = self.on_show_notes,
+            callback = self.on_notes_overlay,
             allow_flash = false,
             padding = icon_padding,
         })
@@ -89,7 +94,7 @@ function LockScreenFrame:init()
 
     self.bottom_row = HorizontalFlexGroup:new {
         width = self.lock_widget._width,
-        padding = math.floor(Size.padding.large * (0.2 + uiSettings.scale / 100)),
+        padding = math.floor(Size.padding.large * (0.2 + scale)),
         -- for small panels, the center-align with action buttons looks better,
         -- for big panels, the bottom align looks more adequate
         align = #action_buttons > 0 and uiSettings.scale > 33 and "bottom" or "center",
@@ -109,17 +114,44 @@ function LockScreenFrame:init()
     self.outside_input = OutsideAreaInput:new {
         content_region = nil,
     }
-    self.panel = FrameContainer:new {
+    self.lockpanel_vgroup = VerticalGroup:new { self.lock_widget, self.bottom_row }
+    self.vgroup = VerticalGroup:new { }
+
+    local lockframe = FrameContainer:new {
         background = Blitbuffer.COLOR_WHITE,
         -- half-bright gray border plays nice with most wallpapers and mitigates
         -- ghosting a little
         color = Blitbuffer.COLOR_GRAY_7,
         padding = 0,
 
-        VerticalGroup:new { self.lock_widget, self.bottom_row }
-    }
+        self.lockpanel_vgroup
+    };
+    local spacing = math.floor(Size.padding.large * (1 + 3 * scale))
+    if note_cfg.mode == "below" or note_cfg.mode == "above" then
+        self.notes_always = NotesAlwaysBox:new {
+            ui_root = self,
+            width = self.lock_widget._width,
+            padding_x = spacing,
+            padding_y = spacing * 0.8,
+            font_size = math.floor(16 + 8 * scale),
+            text = note_cfg.preview_text ~= "" and note_cfg.preview_text or note_cfg.text,
+            on_tap = self.on_notes_overlay
+        };
+    end
+    if note_cfg.mode == "above" then
+        table.insert(self.vgroup, self.notes_always)
+        table.insert(self.vgroup, VerticalSpan:new { width = spacing })
+        table.insert(self.vgroup, lockframe)
+    elseif note_cfg.mode == "below" then
+        table.insert(self.vgroup, lockframe)
+        table.insert(self.vgroup, VerticalSpan:new { width = spacing })
+        table.insert(self.vgroup, self.notes_always)
+    else
+        table.insert(self.vgroup, lockframe)
+    end
+
     table.insert(self, self.outside_input)
-    table.insert(self, self.panel)
+    table.insert(self, self.vgroup)
 end
 
 function LockScreenFrame:onKbdNumber(_, evt)
@@ -155,12 +187,14 @@ function LockScreenFrame:paintTo(bb, x, y)
         bb:paintRect(x, y, Screen:getWidth(), Screen:getHeight(), Blitbuffer.COLOR_GRAY_E)
     end
     local region = self:getContentRegion()
-    self.panel:paintTo(bb, x + region.x, y + region.y)
+    self.vgroup:paintTo(bb, x + region.x, y + region.y)
+    --debug content position
+    --bb:paintRect(x + region.x, y + region.y, region.w, region.h, Blitbuffer.COLOR_GRAY_4)
 end
 
 function LockScreenFrame:getRefreshRegion()
     if self._refresh_region then return self._refresh_region end
-    local content_size = self.panel:getSize()
+    local content_size = self.vgroup:getSize()
     local uiSettings = pluginSettings.getUiSettings()
     local pos_x = uiSettings.pos_x / 100
     local pos_y = uiSettings.pos_y / 100
@@ -202,10 +236,12 @@ function LockScreenFrame:relayout(refreshmode)
     logger.dbg("ScreenLockPin: resize overlay (screen: " .. screen_dimen.w .. "x" .. screen_dimen.h .. ")")
     self.lock_widget:onScreenResize(screen_dimen)
     self.bottom_row:setWidth(self.lock_widget._width)
-    self.panel[1]:resetLayout()
+    if self.notes_always ~= nil then self.notes_always:setWidth(self.lock_widget._width) end
     self.outside_input.screen_mid = screen_dimen.h / 2
     self._refresh_region = nil
     self._content_region = nil
+    self.lockpanel_vgroup:resetLayout()
+    self.vgroup:resetLayout()
     UIManager:setDirty(self, refreshmode, self:getRefreshRegion())
 end
 
