@@ -29,6 +29,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   to foreign servers will happen without explicit consent.
 - The initial setup will also offer to set a PIN and enable all available hooks once done.
 - New menu item "About" to show plugin version.
+- Change PIN dialog now accepts keyboard input.
 
 ## [2026.05] - 2026-05-02
 

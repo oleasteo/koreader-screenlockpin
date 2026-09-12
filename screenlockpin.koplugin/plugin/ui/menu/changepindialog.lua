@@ -6,8 +6,9 @@ local Blitbuffer = require("ffi/blitbuffer")
 local Size = require("ui/size")
 local Geom = require("ui/geometry")
 local UIManager = require("ui/uimanager")
-local FocusManager = require("ui/widget/focusmanager")
+local InputContainer = require("ui/widget/container/inputcontainer")
 local ButtonTable = require("ui/widget/buttontable")
+local Notification = require("ui/widget/notification")
 local CenterContainer = require("ui/widget/container/centercontainer")
 local FrameContainer = require("ui/widget/container/framecontainer")
 local GestureRange = require("ui/gesturerange")
@@ -19,7 +20,7 @@ local Screen = Device.screen
 local PinInputState = require("plugin/state/pininput")
 local PinButtonTable = require("plugin/ui/lockscreen/pinbuttontable")
 
-local ChangePinDialog = FocusManager:extend {
+local ChangePinDialog = InputContainer:extend {
     name = "SLPChangePinDialog",
 
     font_size = 16,
@@ -38,11 +39,20 @@ local ChangePinDialog = FocusManager:extend {
     titleGroup = nil,
     dialogContent = nil,
     buttontable = nil,
-    key_events = nil,
     ges_events = nil,
 
     on_submit = nil,
     on_close = nil,
+
+    key_events = {
+        KbdNumber = { { { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" } } },
+        KbdDel = {
+            { "Ctrl", "Del" }, { "Shift", "Del" },
+            { "Ctrl", "Backspace" }, { "Shift", "Backspace" },
+            { { "Del", "Backspace" } },
+        },
+        KbdReturn = { { { "Press" } } },
+    },
 }
 
 function ChangePinDialog:init()
@@ -145,6 +155,22 @@ function ChangePinDialog:setTitle(title)
     self.titleGroup:resetLayout()
     self.dialogContent:resetLayout()
     UIManager:setDirty(self, "fast")
+end
+
+function ChangePinDialog:onKbdNumber(_, evt)
+    self.state:appendInput(evt.key)
+end
+
+function ChangePinDialog:onKbdDel(_, evt)
+    self.state:delInput(evt.Ctrl or evt.Shift)
+end
+
+function ChangePinDialog:onKbdReturn()
+    if self.state.valid then
+        self.state.on_submit(self.state.value)
+    else
+        Notification:notify(_("PIN must have at least three digits."), Notification.SOURCE_DISPATCHER)
+    end
 end
 
 function ChangePinDialog:onShow()
