@@ -94,7 +94,7 @@ local menus = {
                     local meta = dofile(getPluginDir() .. "/_meta.lua")
                     local versions = T(_("Version: %1"), meta_origin.version)
                     if meta.version ~= meta_origin.version then
-                        versions = T(_("Version running: %1"), meta_origin.version) .. "\n" .. T(_("Version on disk: %1"), meta_origin.version)
+                        versions = T(_("Version running: %1"), meta_origin.version) .. "\n" .. T(_("Version on disk: %1"), meta.version)
                     end
                     UIManager:show(InfoMessage:new {
                         text = _("ScreenLockPin — Protect your KOReader with a PIN") .. "\n\n" ..
