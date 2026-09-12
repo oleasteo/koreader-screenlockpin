@@ -14,7 +14,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ### Added
 
 - [#53](https://github.com/oleasteo/koreader-screenlockpin/issues/53)
-  Option to always show the user note (preview).
+  Option to always show a user note preview.
 
 ## [2026.05] - 2026-05-02
 

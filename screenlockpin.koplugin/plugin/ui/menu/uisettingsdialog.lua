@@ -79,18 +79,26 @@ local UiSettingsDialog = ConfigDialog:extend {
             icon = "appbar.typeset",
             options = {
                 {
-                    name = "note_mode",
-                    name_text = _("Show notes"),
-                    toggle = { C_("Lock screen notes", "off"), C_("Lock screen notes", "button"), C_("Lock screen notes", "below"), C_("Lock screen notes", "above") },
-                    args = { "disabled", "button", "below", "above" },
-                    values = { "disabled", "button", "below", "above" },
-                    event = "SetNoteMode",
+                    name = "note_preview_text",
+                    name_text = _("Preview text"),
+                    item_text = { _("Edit…") },
+                    event = "EditNotePreviewText",
+                    condition = function(opts) return opts.note_mode == "below" or opts.note_mode == "above" end,
                 },
                 {
                     name = "note_text",
                     name_text = _("Notes text"),
                     item_text = { _("Edit…") },
                     event = "EditNoteText",
+                    condition = function(opts) return opts.note_mode ~= "disabled" end,
+                },
+                {
+                    name = "note_mode",
+                    name_text = _("Show notes"),
+                    toggle = { C_("Lock screen notes", "off"), C_("Lock screen notes", "button"), C_("Lock screen notes", "below"), C_("Lock screen notes", "above") },
+                    args = { "disabled", "button", "below", "above" },
+                    values = { "disabled", "button", "below", "above" },
+                    event = "SetNoteMode",
                 },
             },
         },
@@ -104,6 +112,7 @@ local UiSettingsDialog = ConfigDialog:extend {
                     args = { "prevent", "allow" },
                     values = { "prevent", "allow" },
                     event = "SetScreenshotsMode",
+                    condition = function() return not (Device:isDesktop() or Device:isAndroid()) end,
                 },
                 {
                     name = "button_feedback_mode",
@@ -180,9 +189,8 @@ if DEBUG_OPTIONS then
     insertToggle(dismiss_reminder, "15 s", 15)
 end
 
-if Device:isDesktop() or Device:isAndroid() then
-    -- screenshot prevention doesn't make sense here
-    table.remove(triangleOpts, 1)
+for _, obj in ipairs(UiSettingsDialog.config_options) do
+    obj.__options_schema = obj.options
 end
 
 function UiSettingsDialog:init()
@@ -196,12 +204,38 @@ function UiSettingsDialog:init()
         ui_pos_y = 100 - uiSettings.pos_y,
         note_mode = noteSettings.mode,
         note_text = noteSettings.text,
+        note_preview_text = noteSettings.preview_text,
         button_feedback_mode = pluginSettings.getButtonFeedback(),
         screenshots_mode = prevent_screenshots and "prevent" or "allow",
         check_update_interval = pluginSettings.getCheckUpdateInterval(),
         update_reminder_interval = pluginSettings.getUpdateReminderInterval(),
     }
+    self:refreshConditionals()
     ConfigDialog.init(self)
+end
+
+function UiSettingsDialog:refreshConditionals()
+    local ui_refresh = false
+
+    for _, obj in ipairs(UiSettingsDialog.config_options) do
+        local schema = obj.__options_schema
+        local prev = obj.options
+        local next = {}
+        for _, option in ipairs(schema) do
+            local render = true
+            if type(option.condition) == "function" then
+                render = option.condition(self.configurable)
+            end
+            if render then table.insert(next, option) end
+        end
+        obj.options = next
+        if #next < #prev then ui_refresh = true end
+    end
+
+    if self.dialog_frame ~= nil and ui_refresh then
+        local UIManager = require("ui/uimanager")
+        UIManager:setDirty("all", "ui", self.dialog_frame.dimen)
+    end
 end
 
 function UiSettingsDialog:onSetPositionX(value)
@@ -222,12 +256,6 @@ function UiSettingsDialog:onSetScale(value)
     return true
 end
 
-function UiSettingsDialog:onSetNoteMode(value)
-    pluginSettings.setNoteMode(value)
-    self.configurable.note_mode = value
-    return true
-end
-
 function UiSettingsDialog:onSetCheckUpdateInterval(value)
     pluginSettings.setCheckUpdateInterval(value)
     self.configurable.check_update_interval = value
@@ -240,14 +268,44 @@ function UiSettingsDialog:onSetUpdateReminderInterval(value)
     return true
 end
 
+function UiSettingsDialog:onSetNoteMode(value)
+    pluginSettings.setNoteMode(value)
+    self.configurable.note_mode = value
+    self:refreshConditionals()
+    return true
+end
+
 function UiSettingsDialog:onEditNoteText()
+    self:openTextInputPopup({
+        config_key = "note_text",
+        title = _("Lock screen notes (emergency info / contact / etc.)"),
+        on_save = pluginSettings.setNoteText,
+    });
+    return true;
+end
+
+function UiSettingsDialog:onEditNotePreviewText()
+    self:openTextInputPopup({
+        config_key = "note_preview_text",
+        title = _("Lock screen preview notes (empty = full notes; max 5 lines visible)"),
+        on_save = pluginSettings.setNotePreviewText,
+    });
+    return true;
+end
+
+-- opts: { config_key: string; title: string; on_save(text: string):void }
+function UiSettingsDialog:openTextInputPopup(opts)
+    local config_key = opts.config_key;
+    local title = opts.title;
+    local on_save = opts.on_save;
+
     local InputDialog = require("ui/widget/inputdialog")
     local UIManager = require("ui/uimanager")
     local Screen = require("device").screen
 
-    local current = self.configurable.note_text or ""
-    self._note_input_dialog = InputDialog:new{
-        title = _("Lock screen notes (emergency info / contact / etc.)"),
+    local current = self.configurable[config_key] or ""
+    self._text_input_popup = InputDialog:new{
+        title = title,
         input = current,
         scroll = true,
         allow_newline = true,
@@ -258,27 +316,26 @@ function UiSettingsDialog:onEditNoteText()
                     text = _("Cancel"),
                     id = "close",
                     callback = function()
-                        UIManager:close(self._note_input_dialog)
-                        self._note_input_dialog = nil
+                        UIManager:close(self._text_input_popup)
+                        self._text_input_popup = nil
                     end,
                 },
                 {
                     text = _("Save"),
                     is_enter_default = true,
                     callback = function()
-                        local text = self._note_input_dialog:getInputText() or ""
-                        pluginSettings.setNoteText(text)
-                        self.configurable.note_text = text
-                        UIManager:close(self._note_input_dialog)
-                        self._note_input_dialog = nil
+                        local text = self._text_input_popup:getInputText() or ""
+                        on_save(text)
+                        self.configurable[config_key] = text
+                        UIManager:close(self._text_input_popup)
+                        self._text_input_popup = nil
                     end,
                 },
             },
         },
     }
-    UIManager:show(self._note_input_dialog)
-    self._note_input_dialog:onShowKeyboard()
-    return true
+    UIManager:show(self._text_input_popup)
+    self._text_input_popup:onShowKeyboard()
 end
 
 function UiSettingsDialog:onSetScreenshotsMode(mode)

@@ -20,6 +20,7 @@ local pluginSettingsKeys = {
     "screenlockpin_enabled",
     "screenlockpin_note_mode",
     "screenlockpin_note_text",
+    "screenlockpin_note_preview_text",
     "screenlockpin_onboot",
     "screenlockpin_onwakeup",
     "screenlockpin_pin",
@@ -87,6 +88,9 @@ local function mergeDefaultSettings()
     end
     if G_reader_settings:hasNot("screenlockpin_note_text") then
         G_reader_settings:saveSetting("screenlockpin_note_text", "")
+    end
+    if G_reader_settings:hasNot("screenlockpin_note_preview_text") then
+        G_reader_settings:saveSetting("screenlockpin_note_preview_text", "")
     end
     if G_reader_settings:hasNot("screenlockpin_check_updates_interval") then
         G_reader_settings:saveSetting("screenlockpin_check_updates_interval", 3600 * 24 * 7)
@@ -168,6 +172,7 @@ local function getNoteSettings()
     return {
         mode = G_reader_settings:readSetting("screenlockpin_note_mode"),
         text = G_reader_settings:readSetting("screenlockpin_note_text"),
+        preview_text = G_reader_settings:readSetting("screenlockpin_note_preview_text"),
     }
 end
 
@@ -177,6 +182,10 @@ end
 
 local function setNoteText(text)
     G_reader_settings:saveSetting("screenlockpin_note_text", text)
+end
+
+local function setNotePreviewText(text)
+    G_reader_settings:saveSetting("screenlockpin_note_preview_text", text)
 end
 
 --
@@ -362,6 +371,7 @@ return {
     getNoteSettings = getNoteSettings,
     setNoteMode = setNoteMode,
     setNoteText = setNoteText,
+    setNotePreviewText = setNotePreviewText,
 
     getCheckUpdateInterval = getCheckUpdateInterval,
     setCheckUpdateInterval = setCheckUpdateInterval,
