@@ -34,6 +34,10 @@ local pluginSettingsKeys = {
     "screenlockpin_ui_scale",
     "screenlockpin_check_updates_interval",
     "screenlockpin_update_reminder_interval",
+
+    "plugin_updater#screenlockpin:checked_at",
+    "plugin_updater#screenlockpin:dismissed_at",
+    "plugin_updater#screenlockpin:dismissed",
 }
 
 local function migrateSettings()
