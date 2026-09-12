@@ -3,6 +3,7 @@ local _ = require("gettext")
 return {
     -- KOReader meta information
     name = "screenlockpin",
+    author = "Ole Asteo",
     fullname = _("ScreenLock PIN"),
     description = _([[Protect your device privacy with a PIN.]]),
 
