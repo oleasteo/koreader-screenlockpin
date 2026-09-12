@@ -130,7 +130,7 @@ local UiSettingsDialog = ConfigDialog:extend {
                 },
                 {
                     name = "update_reminder_interval",
-                    name_text = _("Dismissed update reminder"),
+                    name_text = _("Reminder interval"),
                     toggle = {
                         C_("Check for updates", "off"),
                         C_("Check for updates", "1 day"),
