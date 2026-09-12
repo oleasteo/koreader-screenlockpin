@@ -5,6 +5,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Changed
+
+- Options have been moved from triangle tab to a new settings tab. The triangle tab now contains
+  auto update options only.
+
 ### Fixed
 
 - [#51](https://github.com/oleasteo/koreader-screenlockpin/issues/51)
@@ -15,6 +20,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 - [#53](https://github.com/oleasteo/koreader-screenlockpin/issues/53)
   Option to always show a user note preview.
+- [#20](https://github.com/oleasteo/koreader-screenlockpin/issues/20)
+  Option to disable frontlight controls, or have long-press steps instead (accidental touch
+  protection).
 
 ## [2026.05] - 2026-05-02
 

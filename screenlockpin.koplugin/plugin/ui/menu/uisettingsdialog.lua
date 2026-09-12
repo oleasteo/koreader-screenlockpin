@@ -106,23 +106,6 @@ local UiSettingsDialog = ConfigDialog:extend {
             icon = "triangle",
             options = {
                 {
-                    name = "screenshots_mode",
-                    name_text = _("Screenshots"),
-                    toggle = { C_("Lock screen screenshots", "prevent"), C_("Lock screen screenshots", "allow") },
-                    args = { "prevent", "allow" },
-                    values = { "prevent", "allow" },
-                    event = "SetScreenshotsMode",
-                    condition = function() return not (Device:isDesktop() or Device:isAndroid()) end,
-                },
-                {
-                    name = "button_feedback_mode",
-                    name_text = _("Flash buttons"),
-                    toggle = { C_("Flash buttons", "off"), C_("Lock screen screenshots", "system") },
-                    args = { "off", "system" },
-                    values = { "off", "system" },
-                    event = "SetButtonFeedbackMode",
-                },
-                {
                     name = "check_update_interval",
                     name_text = _("Check for updates"),
                     toggle = {
@@ -170,6 +153,36 @@ local UiSettingsDialog = ConfigDialog:extend {
                 },
             },
         },
+        {
+            icon = "appbar.settings",
+            options = {
+                {
+                    name = "screenshots_mode",
+                    name_text = _("Screenshots"),
+                    toggle = { C_("Lock screen screenshots", "prevent"), C_("Lock screen screenshots", "allow") },
+                    args = { "prevent", "allow" },
+                    values = { "prevent", "allow" },
+                    event = "SetScreenshotsMode",
+                    condition = function() return not (Device:isDesktop() or Device:isAndroid()) end,
+                },
+                {
+                    name = "button_feedback_mode",
+                    name_text = _("Flash buttons"),
+                    toggle = { C_("Flash buttons", "off"), C_("Flash buttons", "system") },
+                    args = { "off", "system" },
+                    values = { "off", "system" },
+                    event = "SetButtonFeedbackMode",
+                },
+                {
+                    name = "frontlight_mode",
+                    name_text = _("Frontlight control"),
+                    toggle = { C_("Frontlight control", "off"), C_("Frontlight control", "long press only"), C_("Frontlight control", "on") },
+                    args = { "off", "long-press", "on" },
+                    values = { "off", "long-press", "on" },
+                    event = "SetFrontlightMode",
+                },
+            },
+        },
     },
 }
 
@@ -183,8 +196,8 @@ if DEBUG_OPTIONS then
         table.insert(config.args, pos, value)
     end
 
-    local update_interval = triangleOpts[3]
-    local dismiss_reminder = triangleOpts[4]
+    local update_interval = triangleOpts[1]
+    local dismiss_reminder = triangleOpts[2]
     insertToggle(update_interval, "15 s", 15)
     insertToggle(dismiss_reminder, "15 s", 15)
 end
@@ -207,6 +220,7 @@ function UiSettingsDialog:init()
         note_preview_text = noteSettings.preview_text,
         button_feedback_mode = pluginSettings.getButtonFeedback(),
         screenshots_mode = prevent_screenshots and "prevent" or "allow",
+        frontlight_mode = pluginSettings.getFrontlightMode(),
         check_update_interval = pluginSettings.getCheckUpdateInterval(),
         update_reminder_interval = pluginSettings.getUpdateReminderInterval(),
     }
@@ -354,6 +368,12 @@ function UiSettingsDialog:onSetButtonFeedbackMode(mode)
         info_text = _("Flash on button tap as per system: Screen / E-Ink settings")
     end
     Notification:notify(info_text, Notification.SOURCE_DISPATCHER)
+    return true
+end
+
+function UiSettingsDialog:onSetFrontlightMode(mode)
+    pluginSettings.setFrontlightMode(mode)
+    self.configurable.frontlight_mode = mode
     return true
 end
 

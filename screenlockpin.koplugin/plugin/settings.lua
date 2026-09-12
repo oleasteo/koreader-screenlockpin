@@ -25,6 +25,7 @@ local pluginSettingsKeys = {
     "screenlockpin_onwakeup",
     "screenlockpin_pin",
     "screenlockpin_prevent_screenshots",
+    "screenlockpin_frontlight_mode",
     "screenlockpin_ratelimit",
     "screenlockpin_restore_screensaver_delay",
     "screenlockpin_ui_pos_x",
@@ -100,6 +101,9 @@ local function mergeDefaultSettings()
     end
     if G_reader_settings:hasNot("screenlockpin_prevent_screenshots") then
         G_reader_settings:saveSetting("screenlockpin_prevent_screenshots", true)
+    end
+    if G_reader_settings:hasNot("screenlockpin_frontlight_mode") then
+        G_reader_settings:saveSetting("screenlockpin_frontlight_mode", "on")
     end
     if G_reader_settings:hasNot("screenlockpin_button_feedback_mode") then
         G_reader_settings:saveSetting("screenlockpin_button_feedback_mode", "system")
@@ -238,6 +242,18 @@ end
 
 local function setPreventScreenshots(bool)
     G_reader_settings:saveSetting("screenlockpin_prevent_screenshots", bool)
+end
+
+--
+-- Frontlight Control
+--
+
+local function getFrontlightMode()
+    return G_reader_settings:readSetting("screenlockpin_frontlight_mode")
+end
+
+local function setFrontlightMode(mode)
+    G_reader_settings:saveSetting("screenlockpin_frontlight_mode", mode)
 end
 
 --
@@ -383,6 +399,9 @@ return {
 
     getPreventScreenshots = getPreventScreenshots,
     setPreventScreenshots = setPreventScreenshots,
+
+    getFrontlightMode = getFrontlightMode,
+    setFrontlightMode = setFrontlightMode,
 
     readPin = readPin,
     setPin = setPin,
