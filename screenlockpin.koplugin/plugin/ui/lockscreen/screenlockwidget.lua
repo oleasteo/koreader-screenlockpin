@@ -28,6 +28,7 @@ function ScreenLockWidget:init()
     self._width = scaling.width
     self.state = PinInputState:new {
         placeholder = _("Enter PIN"),
+        obfuscate = true,
         on_display_update = function(text, options)
             local textbox = self[1];
             if not textbox then return end

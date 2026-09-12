@@ -49,6 +49,7 @@ function ChangePinDialog:init()
     local ready = false
     self.state = PinInputState:new {
         placeholder = _("Enter new PIN"),
+        obfuscate = false,
         on_submit = self.on_submit,
         on_update = self.on_update,
         on_display_update = function(title)

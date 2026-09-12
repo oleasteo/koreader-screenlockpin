@@ -10,6 +10,7 @@ local LENGTH_RANGE = {3, 12}
 local PinInputState = EventListener:extend {
     -- configuration
     placeholder = "",
+    obfuscate = true,
 
     -- events
     on_display_update = nil, -- (display_text, {placeholder?:bool,throttle?:bool})
@@ -74,7 +75,14 @@ function PinInputState:reevaluate()
 
     -- refresh display
     local show_placeholder = #self.value == 0
-    local next_display = show_placeholder and self.placeholder or string.rep("●", #self.value)
+    local next_display
+    if show_placeholder then
+        next_display = self.placeholder
+    elseif self.obfuscate then
+        next_display = string.rep("●", #self.value)
+    else
+        next_display = self.value
+    end
     --logger.dbg("ScreenLockPin: pininput reevaluate " .. next_display)
     logger.dbg("ScreenLockPin: pininput reevaluate [redacted]")
     self:setDisplayText(next_display, { placeholder = show_placeholder })

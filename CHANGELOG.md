@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 - Options have been moved from triangle tab to a new settings tab. The triangle tab now contains
   auto update options only.
+- Change PIN dialog now shows the PIN in plaintext so you can validate correct input.
 
 ### Fixed
 
