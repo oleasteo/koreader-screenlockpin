@@ -11,6 +11,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   Use proper color / refresh type for pin dots and placeholder texts. Before, some devices chose
   white, some black for grayscale text (with "fast" refresh type).
 
+### Added
+
+- [#53](https://github.com/oleasteo/koreader-screenlockpin/issues/53)
+  Option to always show the user note (preview).
+
 ## [2026.05] - 2026-05-02
 
 ### Fixed

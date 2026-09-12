@@ -81,9 +81,9 @@ local UiSettingsDialog = ConfigDialog:extend {
                 {
                     name = "note_mode",
                     name_text = _("Show notes"),
-                    toggle = { C_("Lock screen notes", "off"), C_("Lock screen notes", "button") },
-                    args = { "disabled", "button" },
-                    values = { "disabled", "button" },
+                    toggle = { C_("Lock screen notes", "off"), C_("Lock screen notes", "button"), C_("Lock screen notes", "below"), C_("Lock screen notes", "above") },
+                    args = { "disabled", "button", "below", "above" },
+                    values = { "disabled", "button", "below", "above" },
                     event = "SetNoteMode",
                 },
                 {
