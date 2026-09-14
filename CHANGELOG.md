@@ -3,7 +3,15 @@
 All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## [Unreleased]
+[//]: # (## [Unreleased])
+
+## [2026.09-1] - 2026-09-14
+
+**Important** If you're on koreader v2026.07, the updater will crash trying to install this update.
+This hotfix will fix it for future updates. For now, you'll have to install the newest version by
+hand.
+
+Sorry!
 
 ### Fixed
 
