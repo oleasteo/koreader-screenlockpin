@@ -5,6 +5,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 [//]: # (## [Unreleased])
 
+## [2026.09-1] - 2026-09-14
+
+**Important** If you're on koreader v2026.07, the updater will crash trying to install this update.
+This hotfix will fix it for future updates. For now, you'll have to install the newest version by
+hand.
+
+Sorry!
+
+### Fixed
+
+- [#55](https://github.com/oleasteo/koreader-screenlockpin/issues/55)
+  Updater compatibility with koreader 2026.07.
+
 ## [2026.09] - 2026-09-12
 
 New community requested options and features!
