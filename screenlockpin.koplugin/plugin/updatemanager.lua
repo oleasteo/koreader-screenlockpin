@@ -29,6 +29,9 @@ to get notified on updates.
 
 # Changelog
 
+## [v5] - 2026-09-14
+- Fixed missing `Device.unpackArchive` (dropped in koreader 2026.07)
+
 ## [v4] - 2026-05-02
 - Added `PluginUpdateMgr.dropPluginCache` function. This can be used to drop any cache remnants on
   the device, e.g. within the new
@@ -39,7 +42,7 @@ to get notified on updates.
   lifecycle. Prior to this, it caused KOReader exit / restart not to work in all
   cases (UIManager shutdown is only complete once all widgets are closed).
 --]]
-local UPDATER_VERSION = 4
+local UPDATER_VERSION = 5
 
 --[[
 

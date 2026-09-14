@@ -31,6 +31,8 @@ local socket = require("socket")
 local ffiUtil = require("ffi/util")
 local Device = require("device")
 local socketutil = require("socketutil")
+local Archiver = require("ffi/archiver")
+local Bidi = require("ui/bidi")
 local UIManager = require("ui/uimanager")
 local NetworkMgr = require("ui/network/manager")
 local ConfirmBox = require("ui/widget/confirmbox")
@@ -154,6 +156,22 @@ end
 local function moveFile(src, dest)
     local mv_bin = Device:isAndroid() and "/system/bin/mv" or "/bin/mv"
     return ffiUtil.execute(mv_bin, src, dest) == 0
+end
+
+local function unpackArchiveStripRoot(archive, extract_to)
+    local reader = Archiver.Reader:new()
+    if not reader:open(archive) then
+        return false, T(_("Extracting archive failed:\n\n%1"), Bidi.filepath(archive))..string.format("\n\n(%s)", reader.err)
+    end
+    for node in reader:iterate() do
+        local unwrapped_path = node.path and node.path:match("^[^/]*/(.*)$")
+        if unwrapped_path and unwrapped_path ~= "" then
+            if not reader:extractToPath(node.path, extract_to .. "/" .. unwrapped_path) then
+                return false, T(_("Extracting archive failed:\n\n%1"), Bidi.filepath(archive))..string.format("\n\n(%s)", reader.err or "no error info")
+            end
+        end
+    end
+    return true
 end
 
 --endregion
@@ -326,7 +344,7 @@ function PluginUpdater:checkNow(args)
         local extract_dir = state.plugin_dir .. "_" .. state.fetched_info.version
         lfs.mkdir(extract_dir)
         dbg("Unpacking plugin archive " .. state.archive_file .. " to " .. extract_dir)
-        local ok, err = Device:unpackArchive(state.archive_file, extract_dir, true)
+        local ok, err = unpackArchiveStripRoot(state.archive_file, extract_dir)
         if not ok then
             state.error = "Failed to extract update file; " .. err; warn(state.error)
             UIManager:show(InfoMessage:new {
