@@ -55,12 +55,7 @@ function ScreenLockPinPlugin:init()
         device    = true,
         separator = true,
     })
-    self.ui.menu:registerToMainMenu({
-        addToMainMenu = function(_, menu_items)
-            logger.dbg("ScreenLockPin: adding menu items")
-            for key, menu in pairs(pluginMenus) do menu_items[key] = menu end
-        end
-    })
+    self.ui.menu:registerToMainMenu(self)
 
     self.public_api = ScreenLockPinPublicApi
     PluginShare.screen_lock_pin = self.public_api
@@ -77,6 +72,13 @@ function ScreenLockPinPlugin:init()
 
     initialSetupCtrl.checkAndRun()
     PluginKeyListener.rewireHotkeys()
+end
+
+function ScreenLockPinPlugin:addToMainMenu(menu_items)
+    logger.dbg("ScreenLockPin: adding menu items")
+    for key, menu in pairs(pluginMenus) do
+        menu_items[key] = menu
+    end
 end
 
 -- KOReader dispatcher actions (registered in ScreenLockPinPlugin:init)

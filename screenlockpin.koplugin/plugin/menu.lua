@@ -140,10 +140,12 @@ end
 
 local function insert_order_item(category, pos_item, rel, ...)
     if not category then return end
-    local idx = index_of(category, pos_item) + rel
     for _, name in ipairs(table.pack(...)) do
-        idx = idx + 1
-        table.insert(category, idx, name)
+        if index_of(category, name) == 0 then
+            local pos_idx = index_of(category, pos_item)
+            local idx = pos_idx > 0 and (pos_idx + rel) or #category
+            table.insert(category, idx + 1, name)
+        end
     end
 end
 
