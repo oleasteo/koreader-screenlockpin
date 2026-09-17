@@ -29,6 +29,7 @@ local JSON = require("json")
 local ltn12 = require("ltn12")
 local socket = require("socket")
 local ffiUtil = require("ffi/util")
+local T = ffiUtil.template
 local Device = require("device")
 local socketutil = require("socketutil")
 local Archiver = require("ffi/archiver")
