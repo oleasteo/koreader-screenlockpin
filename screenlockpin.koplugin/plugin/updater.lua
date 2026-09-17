@@ -46,10 +46,16 @@ local pluginSettings = require("plugin/settings")
 -- plugin meta
 
 local function getPluginDir()
-    return debug.getinfo(1, "S").source:match("@(.+%.koplugin)/")
+    local src = debug.getinfo(1, "S").source or ""
+    local dir = src:match("@?(.*%.koplugin)") or src:match("@?(.*)/plugin") or src:match("@?(.*)/") or "."
+    return dir
 end
 
-local meta = dofile(getPluginDir() .. "/_meta.lua")
+local meta = { name = "screenlockpin", version = "2026.09-1", author = "Ole Asteo", fullname = "ScreenLock PIN" }
+pcall(function()
+    local loaded = dofile(getPluginDir() .. "/_meta.lua")
+    if type(loaded) == "table" then meta = loaded end
+end)
 
 -- logging
 

@@ -22,10 +22,16 @@ local function change_pin_enabled()
 end
 
 local function getPluginDir()
-    return debug.getinfo(1, "S").source:match("@(.+%.koplugin)/")
+    local src = debug.getinfo(1, "S").source or ""
+    local dir = src:match("@?(.*%.koplugin)") or src:match("@?(.*)/plugin") or src:match("@?(.*)/") or "."
+    return dir
 end
 
-local meta_origin = dofile(getPluginDir() .. "/_meta.lua")
+local meta_origin = { name = "screenlockpin", version = "2026.09-1", author = "Ole Asteo", fullname = _("ScreenLock PIN") }
+pcall(function()
+    local loaded = dofile(getPluginDir() .. "/_meta.lua")
+    if type(loaded) == "table" then meta_origin = loaded end
+end)
 
 local menus = {
     screenlockpin_config = {
@@ -91,7 +97,11 @@ local menus = {
                 text = _("About"),
                 keep_menu_open = true,
                 callback = function()
-                    local meta = dofile(getPluginDir() .. "/_meta.lua")
+                    local meta = meta_origin
+                    pcall(function()
+                        local loaded = dofile(getPluginDir() .. "/_meta.lua")
+                        if type(loaded) == "table" then meta = loaded end
+                    end)
                     local versions = T(_("Version: %1"), meta_origin.version)
                     if meta.version ~= meta_origin.version then
                         versions = T(_("Version running: %1"), meta_origin.version) .. "\n" .. T(_("Version on disk: %1"), meta.version)
