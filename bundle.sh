@@ -21,3 +21,4 @@ cp "$root_dir/LICENSE" "$root_dir/README.md" "$root_dir/CHANGELOG.md" "$target_d
 cd "$target_dir/bundle"
 tar -czf ../release/"$id.tar.gz" *
 zip -qr ../release/"$id.zip" *
+zip -qr ../release/"$name.zip" *
