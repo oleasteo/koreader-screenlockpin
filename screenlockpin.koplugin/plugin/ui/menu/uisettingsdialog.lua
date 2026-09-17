@@ -151,11 +151,30 @@ local UiSettingsDialog = ConfigDialog:extend {
                     },
                     event = "SetUpdateReminderInterval",
                 },
+                {
+                    name = "update_channel",
+                    name_text = _("Release source"),
+                    toggle = {
+                        C_("Check for updates", "main maintainer"),
+                        C_("Check for updates", "WhoosLizi's fork"),
+                    },
+                    values = { "main", "fork_whooslizi" },
+                    args = { "main", "fork_whooslizi" },
+                    event = "SetUpdateChannel",
+                },
             },
         },
         {
             icon = "appbar.settings",
             options = {
+                {
+                    name = "ratelimit_mode",
+                    name_text = _("Security lockout"),
+                    toggle = { C_("Security lockout", "cooldown (lockout)"), C_("Security lockout", "no limit (unlimited)") },
+                    args = { "enabled", "off" },
+                    values = { "enabled", "off" },
+                    event = "SetRateLimitMode",
+                },
                 {
                     name = "screenshots_mode",
                     name_text = _("Screenshots"),
@@ -221,8 +240,10 @@ function UiSettingsDialog:init()
         button_feedback_mode = pluginSettings.getButtonFeedback(),
         screenshots_mode = prevent_screenshots and "prevent" or "allow",
         frontlight_mode = pluginSettings.getFrontlightMode(),
+        ratelimit_mode = pluginSettings.shouldRateLimit() and "enabled" or "off",
         check_update_interval = pluginSettings.getCheckUpdateInterval(),
         update_reminder_interval = pluginSettings.getUpdateReminderInterval(),
+        update_channel = pluginSettings.getUpdateChannel(),
     }
     self:refreshConditionals()
     ConfigDialog.init(self)
@@ -279,6 +300,14 @@ end
 function UiSettingsDialog:onSetUpdateReminderInterval(value)
     pluginSettings.setUpdateReminderInterval(value)
     self.configurable.update_reminder_interval = value
+    return true
+end
+
+function UiSettingsDialog:onSetUpdateChannel(value)
+    pluginSettings.setUpdateChannel(value)
+    self.configurable.update_channel = value
+    local info_text = (value == "fork_whooslizi") and _("Release source set to WhoosLizi's fork.") or _("Release source set to Main maintainer.")
+    Notification:notify(info_text, Notification.SOURCE_DISPATCHER)
     return true
 end
 
@@ -374,6 +403,20 @@ end
 function UiSettingsDialog:onSetFrontlightMode(mode)
     pluginSettings.setFrontlightMode(mode)
     self.configurable.frontlight_mode = mode
+    return true
+end
+
+function UiSettingsDialog:onSetRateLimitMode(mode)
+    local enable = (mode == "enabled")
+    pluginSettings.setRateLimit(enable)
+    self.configurable.ratelimit_mode = mode
+    local info_text
+    if enable then
+        info_text = _("Security lockout enabled (cooldown timer after repeated wrong attempts)")
+    else
+        info_text = _("Security lockout disabled (unlimited PIN attempts without delay)")
+    end
+    Notification:notify(info_text, Notification.SOURCE_DISPATCHER)
     return true
 end
 

@@ -96,9 +96,12 @@ local menus = {
                     if meta.version ~= meta_origin.version then
                         versions = T(_("Version running: %1"), meta_origin.version) .. "\n" .. T(_("Version on disk: %1"), meta.version)
                     end
+                    local channel = pluginSettings.getUpdateChannel()
+                    local source_name = channel == "fork_whooslizi" and "WhoosLizi's fork" or "Main maintainer (Ole Asteo)"
                     UIManager:show(InfoMessage:new {
                         text = _("ScreenLockPin — Protect your KOReader with a PIN") .. "\n\n" ..
                                 versions .. "\n" ..
+                                T(_("Release source: %1"), source_name) .. "\n" ..
                                 T(_("Author: %1"), meta_origin.author) .. "\n\n" ..
                                 _("Thank you for using this plugin.\nConsider dropping a ⭐ on github.️\n\nEnjoy!"),
                     })

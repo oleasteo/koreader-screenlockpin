@@ -34,6 +34,7 @@ local pluginSettingsKeys = {
     "screenlockpin_ui_scale",
     "screenlockpin_check_updates_interval",
     "screenlockpin_update_reminder_interval",
+    "screenlockpin_update_channel",
 
     "plugin_updater#screenlockpin:checked_at",
     "plugin_updater#screenlockpin:dismissed_at",
@@ -112,6 +113,9 @@ local function mergeDefaultSettings()
     end
     if G_reader_settings:hasNot("screenlockpin_button_feedback_mode") then
         G_reader_settings:saveSetting("screenlockpin_button_feedback_mode", "system")
+    end
+    if G_reader_settings:hasNot("screenlockpin_update_channel") then
+        G_reader_settings:saveSetting("screenlockpin_update_channel", "main")
     end
 end
 
@@ -233,6 +237,25 @@ local function setUpdateReminderInterval(seconds)
     end
 end
 
+local function getUpdateChannel()
+    return G_reader_settings:readSetting("screenlockpin_update_channel") or "main"
+end
+
+local function setUpdateChannel(channel)
+    G_reader_settings:saveSetting("screenlockpin_update_channel", channel)
+    if PluginUpdateMgr.instance then
+        PluginUpdateMgr.instance:ping()
+    end
+end
+
+local function getUpdateUrl()
+    local channel = getUpdateChannel()
+    if channel == "fork_whooslizi" then
+        return "https://api.github.com/repos/whooslizi/koreader-screenlockpin/releases/latest"
+    end
+    return "https://api.github.com/repos/oleasteo/koreader-screenlockpin/releases/latest"
+end
+
 --
 -- Suppress Button Feedback
 --
@@ -282,10 +305,15 @@ function hasPin()
 end
 
 local function setPin(next_pin)
+    if type(next_pin) ~= "string" or #next_pin < 3 or #next_pin > 12 or not next_pin:match("^%d+$") then
+        logger.warn("ScreenLockPin: attempt to set invalid PIN ignored")
+        return false
+    end
     --logger.dbg("ScreenLockPin: updating PIN to " .. next_pin)
     logger.dbg("ScreenLockPin: updating PIN to [redacted]")
     G_reader_settings:saveSetting("screenlockpin_pin", next_pin)
     enable()
+    return true
 end
 
 --
@@ -370,6 +398,10 @@ local function shouldRateLimit()
     return G_reader_settings:isTrue("screenlockpin_ratelimit")
 end
 
+local function setRateLimit(bool)
+    G_reader_settings:saveSetting("screenlockpin_ratelimit", bool)
+end
+
 --
 -- Cleanup
 --
@@ -408,6 +440,9 @@ return {
     setCheckUpdateInterval = setCheckUpdateInterval,
     getUpdateReminderInterval = getUpdateReminderInterval,
     setUpdateReminderInterval = setUpdateReminderInterval,
+    getUpdateChannel = getUpdateChannel,
+    setUpdateChannel = setUpdateChannel,
+    getUpdateUrl = getUpdateUrl,
 
     getButtonFeedback = getButtonFeedback,
     setButtonFeedback = setButtonFeedback,
@@ -427,6 +462,7 @@ return {
     shouldLockOnBoot = shouldLockOnBoot,
     shouldLockOnWakeup = shouldLockOnWakeup,
     shouldRateLimit = shouldRateLimit,
+    setRateLimit = setRateLimit,
 
     toggleLockOnBoot = toggleLockOnBoot,
     toggleLockOnWakeup = toggleLockOnWakeup,

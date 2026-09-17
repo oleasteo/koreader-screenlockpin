@@ -22,7 +22,8 @@ local PinInputState = EventListener:extend {
     value = "",
     display = "",
     valid = false,
-    rate_limit = nil
+    rate_limit = nil,
+    error_text = nil,
 }
 
 function PinInputState:init()
@@ -36,6 +37,10 @@ end
 
 function PinInputState:appendInput(val)
     if self.throttle and self.throttle:isPaused() then return end
+    if not val:match("^%d+$") then return end
+    if self.error_text then
+        self.error_text = nil
+    end
     if #self.value < LENGTH_RANGE[2] then
         self.value = self.value .. val
         self:reevaluate()
@@ -44,6 +49,9 @@ end
 
 function PinInputState:delInput(everything)
     if self.throttle and self.throttle:isPaused() then return end
+    if self.error_text then
+        self.error_text = nil
+    end
     if everything then
         self:clear()
     else
@@ -77,7 +85,7 @@ function PinInputState:reevaluate()
     local show_placeholder = #self.value == 0
     local next_display
     if show_placeholder then
-        next_display = self.placeholder
+        next_display = self.error_text or self.placeholder
     elseif self.obfuscate then
         next_display = string.rep("●", #self.value)
     else
@@ -85,7 +93,7 @@ function PinInputState:reevaluate()
     end
     --logger.dbg("ScreenLockPin: pininput reevaluate " .. next_display)
     logger.dbg("ScreenLockPin: pininput reevaluate [redacted]")
-    self:setDisplayText(next_display, { placeholder = show_placeholder })
+    self:setDisplayText(next_display, { placeholder = show_placeholder, error = self.error_text ~= nil })
     -- refresh valid state and check
     local next_valid = #self.value >= LENGTH_RANGE[1] and #self.value <= LENGTH_RANGE[2]
     if next_valid and self.on_update then self.on_update(self.value) end
@@ -97,6 +105,13 @@ end
 
 function PinInputState:clear()
     self.value = ""
+    self.error_text = nil
+    self:reevaluate()
+end
+
+function PinInputState:clearWithError(error_text)
+    self.value = ""
+    self.error_text = error_text
     self:reevaluate()
 end
 

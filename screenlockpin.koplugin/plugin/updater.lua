@@ -39,7 +39,7 @@ local ConfirmBox = require("ui/widget/confirmbox")
 local InfoMessage = require("ui/widget/infomessage")
 local Notification = require("ui/widget/notification")
 local EventListener = require("ui/widget/eventlistener")
-local T = ffiUtil.template
+local pluginSettings = require("plugin/settings")
 
 --region Utilities
 
@@ -240,7 +240,8 @@ function PluginUpdater:checkNow(args)
     end
 
     local function checkForUpdates()
-        local json = fetchJson({ url = meta.update_url, method = "GET" })
+        local update_url = pluginSettings.getUpdateUrl and pluginSettings.getUpdateUrl() or meta.update_url
+        local json = fetchJson({ url = update_url, method = "GET" })
         if not json then
             state.error = "Fetch failed"; warn(state.error)
             if not silent then

@@ -49,6 +49,7 @@ local LockScreenFrame = InputContainer:extend {
             { "Ctrl", "Backspace" }, { "Shift", "Backspace" },
             { { "Del", "Backspace" } },
         },
+        KbdReturn = { { { "Press" } } },
     },
 }
 
@@ -60,12 +61,19 @@ function LockScreenFrame:init()
         scale = scale,
         on_update = function(input)
             local pin = pluginSettings.readPin()
-            if pin ~= nil and input ~= pin then
-                self.lock_widget.state:incFailedCount()
+            if pin == nil then return end
+            if input == pin then
+                logger.dbg("ScreenLockPin: unlock")
+                self.on_unlock()
                 return
             end
-            logger.dbg("ScreenLockPin: unlock")
-            self.on_unlock()
+            if #input >= #pin or #input >= 12 then
+                logger.dbg("ScreenLockPin: incorrect PIN entered")
+                self.lock_widget.state:incFailedCount()
+                if not (self.lock_widget.state.throttle and self.lock_widget.state.throttle:isPaused()) then
+                    self.lock_widget.state:clearWithError(_("Incorrect PIN"))
+                end
+            end
         end
     }
     self.status_text = LockScreenStatusText:new {
@@ -160,6 +168,22 @@ end
 
 function LockScreenFrame:onKbdDel(_, evt)
     self.lock_widget.state:delInput(evt.Ctrl or evt.Shift)
+end
+
+function LockScreenFrame:onKbdReturn()
+    local pin = pluginSettings.readPin()
+    if pin == nil then return end
+    local input = self.lock_widget.state.value
+    if input == pin then
+        logger.dbg("ScreenLockPin: unlock via Return")
+        self.on_unlock()
+    else
+        logger.dbg("ScreenLockPin: incorrect PIN on Return")
+        self.lock_widget.state:incFailedCount()
+        if not (self.lock_widget.state.throttle and self.lock_widget.state.throttle:isPaused()) then
+            self.lock_widget.state:clearWithError(_("Incorrect PIN"))
+        end
+    end
 end
 
 function LockScreenFrame:_resetStatusTextLayout()

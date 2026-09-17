@@ -15,8 +15,10 @@ local GestureRange = require("ui/gesturerange")
 local LineWidget = require("ui/widget/linewidget")
 local TextWidget = require("ui/widget/textwidget")
 local VerticalGroup = require("ui/widget/verticalgroup")
+local logger = require("logger")
 local Screen = Device.screen
 
+local pluginSettings = require("plugin/settings")
 local PinInputState = require("plugin/state/pininput")
 local PinButtonTable = require("plugin/ui/lockscreen/pinbuttontable")
 
@@ -33,6 +35,9 @@ local ChangePinDialog = InputContainer:extend {
     width_factor = 0.9,
     title_padding = Size.padding.large,
     title_margin = Size.margin.title,
+
+    step = "ENTER_NEW",
+    new_pin_candidate = nil,
 
     state = nil,
     titleWidget = nil,
@@ -57,10 +62,17 @@ local ChangePinDialog = InputContainer:extend {
 
 function ChangePinDialog:init()
     local ready = false
+    local has_existing_pin = pluginSettings.hasPin()
+    self.step = has_existing_pin and "VERIFY_CURRENT" or "ENTER_NEW"
+    local initial_placeholder = has_existing_pin and _("Enter current PIN") or _("Enter new PIN")
+    local initial_obfuscate = has_existing_pin
+
     self.state = PinInputState:new {
-        placeholder = _("Enter new PIN"),
-        obfuscate = false,
-        on_submit = self.on_submit,
+        placeholder = initial_placeholder,
+        obfuscate = initial_obfuscate,
+        on_submit = function(value)
+            self:handleStepSubmit(value)
+        end,
         on_update = self.on_update,
         on_display_update = function(title)
             if not ready then return end
@@ -69,7 +81,9 @@ function ChangePinDialog:init()
         on_valid_state = function(valid)
             if not ready then return end
             local submit = self:getButtonById("submit")
-            if valid then submit:enable() else submit:disable() end
+            if submit then
+                if valid then submit:enable() else submit:disable() end
+            end
         end,
     }
 
@@ -77,6 +91,7 @@ function ChangePinDialog:init()
 
     if Device:hasKeys() then
         local back_group = util.tableDeepCopy(Device.input.group.Back)
+        table.insert(back_group, "Escape")
         if Device:hasFewKeys() then
             table.insert(back_group, "Left")
             self.key_events.Close = { { back_group } }
@@ -84,6 +99,8 @@ function ChangePinDialog:init()
             table.insert(back_group, "Menu")
             self.key_events.Close = { { back_group } }
         end
+    else
+        self.key_events.Close = { { "Escape" } }
     end
 
     if Device:isTouchDevice() then
@@ -145,6 +162,50 @@ function ChangePinDialog:init()
     ready = true
 end
 
+function ChangePinDialog:handleStepSubmit(value)
+    if not self.state.valid then
+        Notification:notify(_("PIN must have at least three digits."), Notification.SOURCE_DISPATCHER)
+        return
+    end
+
+    if self.step == "VERIFY_CURRENT" then
+        local current_pin = pluginSettings.readPin()
+        if current_pin ~= nil and value ~= current_pin then
+            logger.dbg("ScreenLockPin: incorrect current PIN in dialog")
+            self.state:incFailedCount()
+            Notification:notify(_("Incorrect current PIN."), Notification.SOURCE_DISPATCHER)
+            self.state:clearWithError(_("Incorrect current PIN"))
+            return
+        end
+        self.step = "ENTER_NEW"
+        self.state.placeholder = _("Enter new PIN")
+        self.state.obfuscate = false
+        self.state:clear()
+
+    elseif self.step == "ENTER_NEW" then
+        self.new_pin_candidate = value
+        self.step = "CONFIRM_NEW"
+        self.state.placeholder = _("Confirm new PIN")
+        self.state.obfuscate = false
+        self.state:clear()
+
+    elseif self.step == "CONFIRM_NEW" then
+        if value ~= self.new_pin_candidate then
+            logger.dbg("ScreenLockPin: PIN confirmation mismatch in dialog")
+            Notification:notify(_("PINs do not match. Please try again."), Notification.SOURCE_DISPATCHER)
+            self.new_pin_candidate = nil
+            self.step = "ENTER_NEW"
+            self.state.placeholder = _("Enter new PIN")
+            self.state.obfuscate = false
+            self.state:clearWithError(_("PINs do not match"))
+            return
+        end
+        if self.on_submit then
+            self.on_submit(value)
+        end
+    end
+end
+
 function ChangePinDialog:getButtonById(id)
     return self.buttontable:getButtonById(id)
 end
@@ -166,11 +227,7 @@ function ChangePinDialog:onKbdDel(_, evt)
 end
 
 function ChangePinDialog:onKbdReturn()
-    if self.state.valid then
-        self.state.on_submit(self.state.value)
-    else
-        Notification:notify(_("PIN must have at least three digits."), Notification.SOURCE_DISPATCHER)
-    end
+    self:handleStepSubmit(self.state.value)
 end
 
 function ChangePinDialog:onShow()
