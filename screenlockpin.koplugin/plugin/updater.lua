@@ -39,7 +39,6 @@ local ConfirmBox = require("ui/widget/confirmbox")
 local InfoMessage = require("ui/widget/infomessage")
 local Notification = require("ui/widget/notification")
 local EventListener = require("ui/widget/eventlistener")
-local pluginSettings = require("plugin/settings")
 
 --region Utilities
 
@@ -246,6 +245,7 @@ function PluginUpdater:checkNow(args)
     end
 
     local function checkForUpdates()
+        local pluginSettings = require("plugin/settings")
         local update_url = pluginSettings.getUpdateUrl and pluginSettings.getUpdateUrl() or meta.update_url
         local json = fetchJson({ url = update_url, method = "GET" })
         if not json then

@@ -1,8 +1,6 @@
 local Device = require("device")
 local logger = require("logger")
 
-local PluginUpdateMgr = require("plugin/updatemanager")
-
 --
 -- Hoisting
 --
@@ -217,9 +215,14 @@ local function getCheckUpdateInterval()
     return G_reader_settings:readSetting("screenlockpin_check_updates_interval")
 end
 
+local function getPluginUpdateMgr()
+    return require("plugin/updatemanager")
+end
+
 local function setCheckUpdateInterval(seconds)
     G_reader_settings:saveSetting("screenlockpin_check_updates_interval", seconds)
-    if PluginUpdateMgr.instance then
+    local PluginUpdateMgr = getPluginUpdateMgr()
+    if PluginUpdateMgr and PluginUpdateMgr.instance then
         PluginUpdateMgr.instance.between_checks = seconds
         PluginUpdateMgr.instance:ping()
     end
@@ -231,7 +234,8 @@ end
 
 local function setUpdateReminderInterval(seconds)
     G_reader_settings:saveSetting("screenlockpin_update_reminder_interval", seconds)
-    if PluginUpdateMgr.instance then
+    local PluginUpdateMgr = getPluginUpdateMgr()
+    if PluginUpdateMgr and PluginUpdateMgr.instance then
         PluginUpdateMgr.instance.between_remind = seconds
         PluginUpdateMgr.instance:ping()
     end
@@ -243,7 +247,8 @@ end
 
 local function setUpdateChannel(channel)
     G_reader_settings:saveSetting("screenlockpin_update_channel", channel)
-    if PluginUpdateMgr.instance then
+    local PluginUpdateMgr = getPluginUpdateMgr()
+    if PluginUpdateMgr and PluginUpdateMgr.instance then
         PluginUpdateMgr.instance:ping()
     end
 end
