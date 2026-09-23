@@ -34,6 +34,7 @@ local pluginSettingsKeys = {
     "screenlockpin_ui_scale",
     "screenlockpin_check_updates_interval",
     "screenlockpin_update_reminder_interval",
+    "screenlockpin_short_suspend_threshold",
 
     "plugin_updater#screenlockpin:checked_at",
     "plugin_updater#screenlockpin:dismissed_at",
@@ -112,6 +113,9 @@ local function mergeDefaultSettings()
     end
     if G_reader_settings:hasNot("screenlockpin_button_feedback_mode") then
         G_reader_settings:saveSetting("screenlockpin_button_feedback_mode", "system")
+    end
+    if G_reader_settings:hasNot("screenlockpin_short_suspend_threshold") then
+        G_reader_settings:saveSetting("screenlockpin_short_suspend_threshold", 30)
     end
 end
 
@@ -351,6 +355,18 @@ local function toggleLockOnWakeup()
 end
 
 --
+-- Short Suspend
+--
+
+local function getShortSuspendThreshold()
+    return G_reader_settings:readSetting("screenlockpin_short_suspend_threshold")
+end
+
+local function setShortSuspendThreshold(seconds)
+    G_reader_settings:saveSetting("screenlockpin_short_suspend_threshold", seconds)
+end
+
+--
 -- Lock on boot
 --
 
@@ -420,6 +436,9 @@ return {
 
     readPin = readPin,
     setPin = setPin,
+
+    getShortSuspendThreshold = getShortSuspendThreshold,
+    setShortSuspendThreshold = setShortSuspendThreshold,
 
     readPersistentCache = readPersistentCache,
     putPersistentCache = putPersistentCache,

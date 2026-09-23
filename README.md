@@ -26,6 +26,7 @@ and more…
 - 🔆 **Frontlight control** — easily turn on the screen light in a dark environment
 - 🪃 **Lightweight design** — optimized for performance
 - 🗽 **PIN length** — 3 to 12 digits
+- ⏱️ **Short suspend grace period** — avoids re-locking after very brief sleep/wake interruptions
 
 This plugin is designed for **privacy and casual protection**, not cryptographic
 security.

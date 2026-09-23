@@ -19,6 +19,7 @@ local LockScreenFrame = require("plugin/ui/lockscreen/lockscreenframe")
 
 local overlay
 local notes
+local last_suspend_ts
 
 local function relayout(refreshmode)
     overlay:relayout(nil)
@@ -95,6 +96,8 @@ local function unlockScreen(cause)
 end
 
 local function onSuspend()
+    last_suspend_ts = os.time()
+
     if notes then
         UIManager:close(notes)
         notes = nil
@@ -118,6 +121,16 @@ local function onResume()
         unlockScreen("plugin_disabled")
         return
     end
+
+    if last_suspend_ts ~= nil then
+        local elapsed = os.difftime(os.time(), last_suspend_ts)
+        local threshold = pluginSettings.getShortSuspendThreshold()
+        -- Skip relocating when the device wakes up before the configured short-suspend threshold.
+        if elapsed < threshold then
+            return
+        end
+    end
+
     Device.screen_saver_lock = true
     reuseShowOverlay()
 end
