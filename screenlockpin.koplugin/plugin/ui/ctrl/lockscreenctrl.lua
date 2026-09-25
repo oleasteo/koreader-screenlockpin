@@ -122,12 +122,15 @@ local function onResume()
         return
     end
 
-    if last_suspend_ts ~= nil then
+    if last_suspend_ts ~= nil then  
         local elapsed = os.difftime(os.time(), last_suspend_ts)
         local threshold = pluginSettings.getShortSuspendThreshold()
-        -- Skip relocating when the device wakes up before the configured short-suspend threshold.
-        if elapsed < threshold then
-            return
+        -- Guard against threshold <= 0 (disabled) or negative time jumps (NTP)
+        if threshold <= 0 or elapsed >= threshold then
+            -- do not skip lock
+        else
+            logger.dbg("lockscreenctrl", "skipping lock due to short suspend, elapsed: ", elapsed, "threshold: ", threshold)
+            return false, "skip lock"
         end
     end
 

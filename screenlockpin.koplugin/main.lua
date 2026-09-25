@@ -146,8 +146,6 @@ function ScreenLockPinPlugin:onResume()
     -- any unknown values will be interpreted as "tap to exit from screensaver"
     -- this enables us to create a lock screen first before closing the
     -- screensaver. We get the responsibility to close the widget later…
-    -- Ignore brief suspends: if the device resumed too quickly, dont't relock.
-    -- This avoids PIN prompts after very short sleeps or quick wake-ups.
     lockscreenCtrl.showOrClearLockScreen("resume")
 end
 

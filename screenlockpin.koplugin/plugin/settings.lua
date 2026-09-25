@@ -115,7 +115,7 @@ local function mergeDefaultSettings()
         G_reader_settings:saveSetting("screenlockpin_button_feedback_mode", "system")
     end
     if G_reader_settings:hasNot("screenlockpin_short_suspend_threshold") then
-        G_reader_settings:saveSetting("screenlockpin_short_suspend_threshold", 30)
+        G_reader_settings:saveSetting("screenlockpin_short_suspend_threshold", 0)
     end
 end
 

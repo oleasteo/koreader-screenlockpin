@@ -181,6 +181,25 @@ local UiSettingsDialog = ConfigDialog:extend {
                     values = { "off", "long-press", "on" },
                     event = "SetFrontlightMode",
                 },
+                {
+                    name = "short_suspend_threshold",
+                    name_text = _("Short suspend threshold"),
+                    toggle = { _("Off"), _("5 s"), _("15 s"), _("30 s") },
+                    values = { 0, 5, 15, 30 },
+                    args = { 0, 5, 15, 30 },
+                    event = "SetShortSuspendThreshold",
+                    more_options = true,
+                    more_options_param = {
+                        value_min = 0,
+                        value_max = 300,
+                        value_step = 5,
+                        value_hold_step = 15,
+                        unit = "s",
+                        name = "short_suspend_threshold",
+                        name_text = _("Set short suspend threshold in seconds (0 = off)"),
+                        event = "SetShortSuspendThreshold",
+                    },
+                },
             },
         },
     },
@@ -223,6 +242,7 @@ function UiSettingsDialog:init()
         frontlight_mode = pluginSettings.getFrontlightMode(),
         check_update_interval = pluginSettings.getCheckUpdateInterval(),
         update_reminder_interval = pluginSettings.getUpdateReminderInterval(),
+        short_suspend_threshold = pluginSettings.getShortSuspendThreshold(),
     }
     self:refreshConditionals()
     ConfigDialog.init(self)
@@ -374,6 +394,12 @@ end
 function UiSettingsDialog:onSetFrontlightMode(mode)
     pluginSettings.setFrontlightMode(mode)
     self.configurable.frontlight_mode = mode
+    return true
+end
+
+function UiSettingsDialog:onSetShortSuspendThreshold(value)
+    pluginSettings.setShortSuspendThreshold(value)
+    self.configurable.short_suspend_threshold = value
     return true
 end
 
