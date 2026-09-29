@@ -134,6 +134,14 @@ function ScreenLockPinPlugin:deletePluginSettings()
     PluginUpdateMgr.dropPluginCache()
 end
 
+-- KOReader plugin hook (on suspend)
+
+function ScreenLockPinPlugin:onSuspend()
+    if not lockscreenctrl.isActive()
+        local last_suspend_ts = os.time()
+    end
+end
+
 -- KOReader plugin hook (on wakeup after suspend)
 
 function ScreenLockPinPlugin:onResume()
@@ -141,6 +149,13 @@ function ScreenLockPinPlugin:onResume()
     if not pluginSettings.getEnabled() or not pluginSettings.shouldLockOnWakeup() then
         PluginUpdateMgr.instance:ping()
         return
+    end
+    local elapsed = os.difftime(os.time(), last_suspend_ts)
+    local threshold = pluginSettings.getShortSuspendThreshold()
+    -- Guard against threshold <= 0 (disabled) or negative time jumps (NTP)
+    if threshold > 0 and elapsed <= threshold then
+        logger.dbg("ScreenLockPin: skipping lock due to short suspend, elapsed: ", elapsed, "threshold: ", threshold)
+        return -- early return skips the lock screen
     end
     -- we hijacked the screensaver_delay (property of ui/screensaver.lua)
     -- any unknown values will be interpreted as "tap to exit from screensaver"
