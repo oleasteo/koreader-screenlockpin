@@ -206,6 +206,7 @@ local UiSettingsDialog = ConfigDialog:extend {
                         name_text = _("Set short suspend threshold in seconds (0 = off)"),
                         event = "SetShortSuspendThreshold",
                     },
+                    condition = function() return Device:canSuspend() end,
                 },
             },
         },
