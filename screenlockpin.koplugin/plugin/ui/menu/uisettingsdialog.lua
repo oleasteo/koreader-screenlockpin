@@ -184,9 +184,16 @@ local UiSettingsDialog = ConfigDialog:extend {
                 {
                     name = "short_suspend_threshold",
                     name_text = _("Lockless Suspend"),
-                    toggle = { _("Off"), _("30 s"), _("5 min"), _(" 20 min") },
+                    toggle = { C_("Lockless Suspend", "off"), C_("Lockless Suspend", "30 s"), C_("Lockless Suspend", "5 min"), C_("Lockless Suspend", "20 min") },
                     values = { 0, 30, 300, 1200 },
                     args = { 0, 30, 300, 1200 },
+                    current_func = function()
+                        local val = pluginSettings.getShortSuspendThreshold()
+                        if val == 0 then return 0 end
+                        -- ensure that "off" is only "active" for threshold exactly 0
+                        if val <= 30 then return 30 end
+                        return val
+                    end,
                     event = "SetShortSuspendThreshold",
                     more_options = true,
                     more_options_param = {
