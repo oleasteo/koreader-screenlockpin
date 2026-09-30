@@ -19,7 +19,6 @@ local LockScreenFrame = require("plugin/ui/lockscreen/lockscreenframe")
 
 local overlay
 local notes
-local last_suspend_ts
 
 local function relayout(refreshmode)
     overlay:relayout(nil)

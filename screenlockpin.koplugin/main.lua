@@ -14,6 +14,7 @@ local onBootHook = require("plugin/util/onboothook")
 local screensaverUtil = require("plugin/util/screensaverutil")
 local lockscreenCtrl = require("plugin/ui/ctrl/lockscreenctrl")
 local initialSetupCtrl = require("plugin/ui/ctrl/initialsetup")
+local last_suspend_ts = 0 
 
 local ScreenLockPinPlugin = EventListener:extend { stopped = false }
 
@@ -138,7 +139,7 @@ end
 
 function ScreenLockPinPlugin:onSuspend()
     if not lockscreenctrl.isActive()
-        local last_suspend_ts = os.time()
+        last_suspend_ts = os.time()
     end
 end
 
