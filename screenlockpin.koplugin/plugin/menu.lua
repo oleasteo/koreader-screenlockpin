@@ -1,6 +1,8 @@
 local _ = require("gettext")
+local logger = require("logger")
 local Device = require("device")
 local ffiUtil = require("ffi/util")
+local Event = require("ui/event")
 local UIManager = require("ui/uimanager")
 local reader_order = require("ui/elements/reader_menu_order")
 local fm_order = require("ui/elements/filemanager_menu_order")
@@ -107,7 +109,20 @@ local menus = {
         },
     },
 
-    screenlockpin_action = {
+    screenlockpin_action_reboot_nolock = {
+        sorting_hint = "exit_menu",
+        text = _("Restart KOReader (skip lock screen)"),
+        enabled_func = function()
+            return options_enabled() and pluginSettings.shouldLockOnBoot()
+        end,
+        callback = function()
+            logger.dbg("ScreenLockPin: set to disable next (via reboot menu)")
+            pluginSettings.setDisableNext(true)
+            UIManager:broadcastEvent(Event:new("Restart"))
+        end
+    },
+
+    screenlockpin_action_lock = {
         sorting_hint = "exit_menu",
         text = _("Lock"),
         enabled_func = options_enabled,
@@ -147,16 +162,22 @@ end
 insert_order_item(reader_order.screen, "screensaver", 0, "screenlockpin_config")
 insert_order_item(fm_order.screen, "screensaver", 0, "screenlockpin_config")
 
--- on android the exit menu isn't available, as it's just an exit button
-if not reader_order.exit_menu then
-    insert_order_item(reader_order.main, "exit_menu", -1, "screenlockpin_action")
-else
-    insert_order_item(reader_order.exit_menu, "sleep", -1, "screenlockpin_action")
+local function insertExitSettings(menu)
+    if menu.exit_menu then
+        if Device:canRestart() then
+            insert_order_item(menu.exit_menu, "restart_koreader", 0, "screenlockpin_action_reboot_nolock")
+        end
+        insert_order_item(menu.exit_menu, "sleep", -1, "screenlockpin_action_lock")
+    else
+        -- on android the exit menu isn't available, as it's just an exit button
+        if Device:canRestart() then
+            insert_order_item(menu.main, "restart_koreader", 0, "screenlockpin_action_reboot_nolock")
+        end
+        insert_order_item(menu.main, "exit_menu", -1, "screenlockpin_action_lock")
+    end
 end
-if not fm_order.exit_menu then
-    insert_order_item(fm_order.main, "exit_menu", -1, "screenlockpin_action")
-else
-    insert_order_item(fm_order.exit_menu, "sleep", -1, "screenlockpin_action")
-end
+
+insertExitSettings(reader_order)
+insertExitSettings(fm_order)
 
 return menus

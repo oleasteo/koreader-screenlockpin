@@ -166,7 +166,7 @@ local function getSetupVersion()
 end
 
 local function writeSetupVersion()
-    return G_reader_settings:saveSetting("screenlockpin_setup_version", 1)
+    G_reader_settings:saveSetting("screenlockpin_setup_version", 1)
 end
 
 --
@@ -408,6 +408,10 @@ local function toggleDisableNext()
     return G_reader_settings:readSetting("screenlockpin_disable_next")
 end
 
+local function setDisableNext(bool)
+    G_reader_settings:saveSetting("screenlockpin_disable_next", bool)
+end
+
 local function useDisableNext()
     local bool = G_reader_settings:readSetting("screenlockpin_disable_next")
     if bool then
@@ -473,6 +477,7 @@ return {
     setShortSuspendThreshold = setShortSuspendThreshold,
 
     toggleDisableNext = toggleDisableNext,
+    setDisableNext = setDisableNext,
     useDisableNext = useDisableNext,
 
     readPersistentCache = readPersistentCache,

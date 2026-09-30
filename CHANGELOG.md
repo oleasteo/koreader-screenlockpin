@@ -18,6 +18,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   (@tecnolgd)
 - Dispatcher action to disable the lock screen for the very next sleep / reboot only.
 - Note preview text alignment can be configured in plugin settings.
+- New exit menu "Restart KOReader" variant that skips the lock screen for convenience.
 
 ## [2026.09-1] - 2026-09-14
 
