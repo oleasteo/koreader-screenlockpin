@@ -37,6 +37,12 @@ function ScreenLockPinPlugin:init()
         title     = _("Disable lock screen"),
         device    = true,
     })
+    Dispatcher:registerAction("screenlockpin_disable_next", {
+        category  = "none",
+        event     = "DisableNextLockScreen",
+        title     = _("Disable lock screen once"),
+        device    = true,
+    })
     Dispatcher:registerAction("screenlockpin_toggle", {
         category  = "none",
         event     = "ToggleLockScreenEnabled",
@@ -91,6 +97,15 @@ end
 function ScreenLockPinPlugin:onDisableLockScreen()
     self.public_api:disable("event")
     Notification:notify(_("Lock Screen Disabled."), Notification.SOURCE_DISPATCHER)
+    return true
+end
+
+function ScreenLockPinPlugin:onDisableNextLockScreen()
+    if self.public_api:disableNext("event") then
+        Notification:notify(_("Next Lock Screen will be skipped."), Notification.SOURCE_DISPATCHER)
+    else
+        Notification:notify(_("Lock Screen skip revoked."), Notification.SOURCE_DISPATCHER)
+    end
     return true
 end
 
@@ -161,7 +176,7 @@ function ScreenLockPinPlugin:onResume()
         PluginUpdateMgr.instance:ping()
         return
     end
-    if isShortSuspend() then
+    if isShortSuspend() or pluginSettings.useDisableNext() then
         lockscreenCtrl.skipLock()
         return
     end
@@ -175,7 +190,7 @@ end
 -- Monkey-patched hook (registered via onBootHook)
 
 function ScreenLockPinPlugin.onBoot()
-    if not pluginSettings.getEnabled() or not pluginSettings.shouldLockOnBoot() then
+    if not pluginSettings.getEnabled() or not pluginSettings.shouldLockOnBoot() or pluginSettings.useDisableNext() then
         if PluginUpdateMgr.instance then PluginUpdateMgr.instance:ping() end
         return
     end

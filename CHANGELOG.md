@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - [#58](https://github.com/oleasteo/koreader-screenlockpin/issues/58)
   Skip lock screen if device was suspended shorter than configured threshold (feature is disabled by default).
   (@tecnolgd)
+- Dispatcher action to disable the lock screen for the very next sleep / reboot only.
 
 ## [2026.09-1] - 2026-09-14
 

@@ -35,6 +35,7 @@ local pluginSettingsKeys = {
     "screenlockpin_check_updates_interval",
     "screenlockpin_update_reminder_interval",
     "screenlockpin_short_suspend_threshold",
+    "screenlockpin_disable_next",
 
     "plugin_updater#screenlockpin:checked_at",
     "plugin_updater#screenlockpin:dismissed_at",
@@ -116,6 +117,9 @@ local function mergeDefaultSettings()
     end
     if G_reader_settings:hasNot("screenlockpin_short_suspend_threshold") then
         G_reader_settings:saveSetting("screenlockpin_short_suspend_threshold", 0)
+    end
+    if G_reader_settings:hasNot("screenlockpin_disable_next") then
+        G_reader_settings:makeFalse("screenlockpin_disable_next")
     end
 end
 
@@ -387,6 +391,24 @@ local function shouldRateLimit()
 end
 
 --
+-- Disable Next Feature
+--
+
+local function toggleDisableNext()
+    G_reader_settings:toggle("screenlockpin_disable_next")
+    return G_reader_settings:readSetting("screenlockpin_disable_next")
+end
+
+local function useDisableNext()
+    local bool = G_reader_settings:readSetting("screenlockpin_disable_next")
+    if bool then
+        logger.dbg("ScreenLockPin: Skip the lock screen due to disable next feature")
+        G_reader_settings:makeFalse("screenlockpin_disable_next")
+    end
+    return bool
+end
+
+--
 -- Cleanup
 --
 
@@ -439,6 +461,9 @@ return {
 
     getShortSuspendThreshold = getShortSuspendThreshold,
     setShortSuspendThreshold = setShortSuspendThreshold,
+
+    toggleDisableNext = toggleDisableNext,
+    useDisableNext = useDisableNext,
 
     readPersistentCache = readPersistentCache,
     putPersistentCache = putPersistentCache,

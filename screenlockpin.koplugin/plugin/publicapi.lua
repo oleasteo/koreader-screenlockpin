@@ -36,6 +36,16 @@ function ScreenLockPinPublicApi:disable(cause)
     pluginSettings.setEnabled(false)
 end
 
+function ScreenLockPinPublicApi:disableNext(cause)
+    local bool = pluginSettings.toggleDisableNext()
+    if bool then
+        logger.dbg("ScreenLockPin: set to disable next (via " .. cause .. ")")
+    else
+        logger.dbg("ScreenLockPin: revoked disable next (via " .. cause .. ")")
+    end
+    return bool
+end
+
 function ScreenLockPinPublicApi:toggleEnabled(cause)
     if pluginSettings.getEnabled() then
         self:disable(cause)
