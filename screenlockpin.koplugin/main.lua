@@ -16,6 +16,7 @@ local lockscreenCtrl = require("plugin/ui/ctrl/lockscreenctrl")
 local initialSetupCtrl = require("plugin/ui/ctrl/initialsetup")
 
 local ScreenLockPinPlugin = EventListener:extend { stopped = false }
+local last_suspend_ts = 0
 
 pluginSettings.init()
 
@@ -134,12 +135,34 @@ function ScreenLockPinPlugin:deletePluginSettings()
     PluginUpdateMgr.dropPluginCache()
 end
 
--- KOReader plugin hook (on wakeup after suspend)
+-- KOReader plugin hooks
+
+function ScreenLockPinPlugin:onSuspend()
+    if not lockscreenCtrl.isActive() then
+        last_suspend_ts = os.time()
+        logger.dbg("ScreenLockPin: suspend timestamp", last_suspend_ts)
+    end
+end
+
+local function isShortSuspend()
+    local threshold = pluginSettings.getShortSuspendThreshold()
+    if threshold == 0 then return false end
+    local elapsed = os.difftime(os.time(), last_suspend_ts)
+    if elapsed >= 0 and elapsed <= threshold then
+        logger.dbg("ScreenLockPin: detected short suspend [" .. elapsed .. " seconds] below threshold (" .. threshold .. " seconds)")
+        return true
+    end
+    return false
+end
 
 function ScreenLockPinPlugin:onResume()
     if self.stopped then return end
     if not pluginSettings.getEnabled() or not pluginSettings.shouldLockOnWakeup() then
         PluginUpdateMgr.instance:ping()
+        return
+    end
+    if isShortSuspend() then
+        lockscreenCtrl.skipLock()
         return
     end
     -- we hijacked the screensaver_delay (property of ui/screensaver.lua)

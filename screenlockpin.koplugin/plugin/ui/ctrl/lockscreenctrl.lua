@@ -60,9 +60,8 @@ local function formatAttempts()
     return str
 end
 
-local function unlockScreen(cause)
-    if not overlay then return false end
-    logger.dbg("ScreenLockPin: close lock screen (" .. cause .. ")")
+local function teardownScreensaverOrLockscreen()
+    logger.dbg("ScreenLockPin: screensaver / lockscreen teardown")
     screensaverUtil.unfreezeScreensaverAbi()
     -- decide upon refresh type depending on if we unlock to reader UI
     local hasReaderUi = uiManagerUtil.findTopMostWidget(function(widget)
@@ -71,16 +70,28 @@ local function unlockScreen(cause)
     if hasReaderUi then
         logger.dbg("ScreenLockPin: Reader detected; full refresh")
         screensaverUtil.totalCleanup()
-        UIManager:close(overlay)
+        if overlay ~= nil then UIManager:close(overlay) end
         UIManager:setDirty("all", "full")
     else
         logger.dbg("ScreenLockPin: No reader detected; partial refresh should suffice")
         screensaverUtil.totalCleanup("flashui")
-        UIManager:close(overlay, "flashui", overlay:getRefreshRegion())
+        if overlay ~= nil then
+            UIManager:close(overlay, "flashui", overlay:getRefreshRegion())
+        else
+            UIManager:setDirty("all", "flashui")
+        end
     end
     screenshoterUtil.unfreezeScreenshoterAbi()
-    overlay:free()
-    overlay = nil
+    if overlay ~= nil then
+        overlay:free()
+        overlay = nil
+    end
+end
+
+local function unlockScreen(cause)
+    if not overlay then return false end
+    logger.dbg("ScreenLockPin: close lock screen (" .. cause .. ")")
+    teardownScreensaverOrLockscreen()
     local throttled_times = pluginSettings.readPersistentCache("throttled_times") or 0
     if throttled_times >= 2 then
         UIManager:show(InfoMessage:new{
@@ -185,5 +196,6 @@ end
 return {
     showOrClearLockScreen = showOrClearLockScreen,
     unlockScreen = unlockScreen,
+    skipLock = teardownScreensaverOrLockscreen,
     isActive = function () return overlay ~= nil end,
 }

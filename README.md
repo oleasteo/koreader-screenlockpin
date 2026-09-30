@@ -26,6 +26,7 @@ and more…
 - 🔆 **Frontlight control** — easily turn on the screen light in a dark environment
 - 🪃 **Lightweight design** — optimized for performance
 - 🗽 **PIN length** — 3 to 12 digits
+- ⏱️ **Deferred locking** — bypass lockscreen for short sleep periods
 
 This plugin is designed for **privacy and casual protection**, not cryptographic
 security.
