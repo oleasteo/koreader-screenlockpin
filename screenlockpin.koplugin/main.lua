@@ -172,12 +172,20 @@ end
 
 function ScreenLockPinPlugin:onResume()
     if self.stopped then return end
-    if not pluginSettings.getEnabled() or not pluginSettings.shouldLockOnWakeup() then
+    if not pluginSettings.shouldLockOnWakeup() then
         PluginUpdateMgr.instance:ping()
         return
     end
-    if isShortSuspend() or pluginSettings.useDisableNext() then
+    -- make sure to use up disable next with higher priority than other disables
+    local tmp_disabled = pluginSettings.useDisableNext()
+    if not tmp_disabled and not pluginSettings.getEnabled() then
+        PluginUpdateMgr.instance:ping()
+        return
+    end
+    if tmp_disabled or isShortSuspend() then
         lockscreenCtrl.skipLock()
+        -- no update manager ping as those temporary disables suggest the user doesn't want any
+        -- disruptions
         return
     end
     -- we hijacked the screensaver_delay (property of ui/screensaver.lua)
@@ -190,8 +198,19 @@ end
 -- Monkey-patched hook (registered via onBootHook)
 
 function ScreenLockPinPlugin.onBoot()
-    if not pluginSettings.getEnabled() or not pluginSettings.shouldLockOnBoot() or pluginSettings.useDisableNext() then
+    if not pluginSettings.shouldLockOnBoot() then
         if PluginUpdateMgr.instance then PluginUpdateMgr.instance:ping() end
+        return
+    end
+    -- make sure to use up disable next with higher priority than other disables
+    local tmp_disabled = pluginSettings.useDisableNext()
+    if not tmp_disabled and not pluginSettings.getEnabled() then
+        if PluginUpdateMgr.instance then PluginUpdateMgr.instance:ping() end
+        return
+    end
+    if tmp_disabled then
+        -- no update manager ping as those temporary disables suggest the user doesn't want any
+        -- disruptions
         return
     end
     logger.dbg("ScreenLockPin: lock on boot")
