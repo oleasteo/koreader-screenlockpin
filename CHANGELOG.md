@@ -3,7 +3,13 @@
 All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-[//]: # (## [Unreleased])
+## [Unreleased]
+
+### Added
+
+- [#58](https://github.com/oleasteo/koreader-screenlockpin/issues/58)
+  Skip lock screen if device was suspended shorter than configured threshold (feature is disabled by default).
+  (@tecnolgd)
 
 ## [2026.09-1] - 2026-09-14
 
