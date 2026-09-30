@@ -14,9 +14,9 @@ local onBootHook = require("plugin/util/onboothook")
 local screensaverUtil = require("plugin/util/screensaverutil")
 local lockscreenCtrl = require("plugin/ui/ctrl/lockscreenctrl")
 local initialSetupCtrl = require("plugin/ui/ctrl/initialsetup")
-local last_suspend_ts = 0 
 
 local ScreenLockPinPlugin = EventListener:extend { stopped = false }
+local last_suspend_ts = 0
 
 pluginSettings.init()
 
@@ -135,15 +135,25 @@ function ScreenLockPinPlugin:deletePluginSettings()
     PluginUpdateMgr.dropPluginCache()
 end
 
--- KOReader plugin hook (on suspend)
+-- KOReader plugin hooks
 
 function ScreenLockPinPlugin:onSuspend()
-    if not lockscreenctrl.isActive()
+    if not lockscreenCtrl.isActive() then
         last_suspend_ts = os.time()
+        logger.dbg("ScreenLockPin: suspend timestamp", last_suspend_ts)
     end
 end
 
--- KOReader plugin hook (on wakeup after suspend)
+local function isShortSuspend()
+    local threshold = pluginSettings.getShortSuspendThreshold()
+    if threshold == 0 then return false end
+    local elapsed = os.difftime(os.time(), last_suspend_ts)
+    if elapsed >= 0 and elapsed <= threshold then
+        logger.dbg("ScreenLockPin: detected short suspend [" .. elapsed .. " seconds] below threshold (" .. threshold .. " seconds)")
+        return true
+    end
+    return false
+end
 
 function ScreenLockPinPlugin:onResume()
     if self.stopped then return end
@@ -151,12 +161,9 @@ function ScreenLockPinPlugin:onResume()
         PluginUpdateMgr.instance:ping()
         return
     end
-    local elapsed = os.difftime(os.time(), last_suspend_ts)
-    local threshold = pluginSettings.getShortSuspendThreshold()
-    -- Guard against threshold <= 0 (disabled) or negative time jumps (NTP)
-    if threshold > 0 and elapsed <= threshold then
-        logger.dbg("ScreenLockPin: skipping lock due to short suspend, elapsed: ", elapsed, "threshold: ", threshold)
-        return -- early return skips the lock screen
+    if isShortSuspend() then
+        lockscreenCtrl.skipLock()
+        return
     end
     -- we hijacked the screensaver_delay (property of ui/screensaver.lua)
     -- any unknown values will be interpreted as "tap to exit from screensaver"
