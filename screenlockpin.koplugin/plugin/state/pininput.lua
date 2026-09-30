@@ -34,8 +34,15 @@ function PinInputState:init()
     self:reevaluate()
 end
 
+--- Whether the rate limit blocks input; refreshes the countdown on the way out.
+function PinInputState:_isThrottled()
+    if not (self.throttle and self.throttle:isPaused()) then return false end
+    self:reevaluate()
+    return true
+end
+
 function PinInputState:appendInput(val)
-    if self.throttle and self.throttle:isPaused() then return end
+    if self:_isThrottled() then return end
     if #self.value < LENGTH_RANGE[2] then
         self.value = self.value .. val
         self:reevaluate()
@@ -43,7 +50,7 @@ function PinInputState:appendInput(val)
 end
 
 function PinInputState:delInput(everything)
-    if self.throttle and self.throttle:isPaused() then return end
+    if self:_isThrottled() then return end
     if everything then
         self:clear()
     else
