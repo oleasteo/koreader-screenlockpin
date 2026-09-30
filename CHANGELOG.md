@@ -3,7 +3,11 @@
 All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-[//]: # (## [Unreleased])
+## [Unreleased]
+
+### Added
+
+- Update the countdown on rate limit with any button press (@ghepting)
 
 ## [2026.09-1] - 2026-09-14
 
