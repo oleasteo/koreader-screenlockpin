@@ -79,6 +79,15 @@ local UiSettingsDialog = ConfigDialog:extend {
             icon = "appbar.typeset",
             options = {
                 {
+                    name = "note_preview_align",
+                    name_text = _("Preview text align"),
+                    toggle = { C_("Text alignment", "left"), C_("Text alignment", "center"), C_("Text alignment", "right") },
+                    args = { "left", "center", "right" },
+                    values = { "left", "center", "right" },
+                    event = "SetNotePreviewAlign",
+                    condition = function(opts) return opts.note_mode == "below" or opts.note_mode == "above" end,
+                },
+                {
                     name = "note_preview_text",
                     name_text = _("Preview text"),
                     item_text = { _("Edit…") },
@@ -245,6 +254,7 @@ function UiSettingsDialog:init()
         note_mode = noteSettings.mode,
         note_text = noteSettings.text,
         note_preview_text = noteSettings.preview_text,
+        note_preview_align = noteSettings.preview_align,
         button_feedback_mode = pluginSettings.getButtonFeedback(),
         screenshots_mode = prevent_screenshots and "prevent" or "allow",
         frontlight_mode = pluginSettings.getFrontlightMode(),
@@ -332,6 +342,12 @@ function UiSettingsDialog:onEditNotePreviewText()
         title = _("Lock screen preview notes (empty = full notes; max 5 lines visible)"),
         on_save = pluginSettings.setNotePreviewText,
     });
+    return true;
+end
+
+function UiSettingsDialog:onSetNotePreviewAlign(value)
+    pluginSettings.setNotePreviewAlign(value)
+    self.configurable.note_preview_align = value
     return true;
 end
 

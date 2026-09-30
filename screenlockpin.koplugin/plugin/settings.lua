@@ -22,6 +22,7 @@ local pluginSettingsKeys = {
     "screenlockpin_note_mode",
     "screenlockpin_note_text",
     "screenlockpin_note_preview_text",
+    "screenlockpin_note_preview_align",
     "screenlockpin_onboot",
     "screenlockpin_onwakeup",
     "screenlockpin_pin",
@@ -99,6 +100,9 @@ local function mergeDefaultSettings()
     end
     if G_reader_settings:hasNot("screenlockpin_note_preview_text") then
         G_reader_settings:saveSetting("screenlockpin_note_preview_text", "")
+    end
+    if G_reader_settings:hasNot("screenlockpin_note_preview_align") then
+        G_reader_settings:saveSetting("screenlockpin_note_preview_align", "center")
     end
     if G_reader_settings:hasNot("screenlockpin_check_updates_interval") then
         G_reader_settings:saveSetting("screenlockpin_check_updates_interval", 0)
@@ -198,6 +202,7 @@ local function getNoteSettings()
         mode = G_reader_settings:readSetting("screenlockpin_note_mode"),
         text = G_reader_settings:readSetting("screenlockpin_note_text"),
         preview_text = G_reader_settings:readSetting("screenlockpin_note_preview_text"),
+        preview_align = G_reader_settings:readSetting("screenlockpin_note_preview_align"),
     }
 end
 
@@ -211,6 +216,10 @@ end
 
 local function setNotePreviewText(text)
     G_reader_settings:saveSetting("screenlockpin_note_preview_text", text)
+end
+
+local function setNotePreviewAlign(value)
+    G_reader_settings:saveSetting("screenlockpin_note_preview_align", value)
 end
 
 --
@@ -441,6 +450,7 @@ return {
     setNoteMode = setNoteMode,
     setNoteText = setNoteText,
     setNotePreviewText = setNotePreviewText,
+    setNotePreviewAlign = setNotePreviewAlign,
 
     getCheckUpdateInterval = getCheckUpdateInterval,
     setCheckUpdateInterval = setCheckUpdateInterval,

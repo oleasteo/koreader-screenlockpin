@@ -12,6 +12,7 @@ local NotesAlwaysBox = InputContainer:extend {
     ui_root = nil,
     width = nil,
     text = nil,
+    align = nil,
     padding_x = nil,
     padding_y = nil,
     font_size = nil,
@@ -31,6 +32,7 @@ function NotesAlwaysBox:init()
     local textbox = TextBoxWidget:new {
         dialog = self.ui_root,
         text = text,
+        alignment = self.align,
         height = 0,
         height_overflow_show_ellipsis = true,
         face = face,
@@ -68,8 +70,10 @@ function NotesAlwaysBox:setWidth(width)
     self.dimen = nil;
     -- FrameContainer caches dimensions
     self[1].dimen = nil;
+    -- TextBoxWidget needs to re-layout; the update function does not sufficiently re-calculate
+    self[1][1]:free();
     self[1][1].width = self.width - 2 * self.padding_x;
-    self[1][1]:update();
+    self[1][1]:init();
 end
 
 return NotesAlwaysBox;

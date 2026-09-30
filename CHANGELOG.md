@@ -5,6 +5,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Changed
+
+- The note preview text is now center-aligned by default.
+
 ### Added
 
 - Update the countdown on rate limit with any button press.
@@ -13,6 +17,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   Skip lock screen if device was suspended shorter than configured threshold (feature is disabled by default).
   (@tecnolgd)
 - Dispatcher action to disable the lock screen for the very next sleep / reboot only.
+- Note preview text alignment can be configured in plugin settings.
 
 ## [2026.09-1] - 2026-09-14
 
