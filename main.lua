@@ -16,6 +16,7 @@ local lockscreenCtrl = require("plugin/ui/ctrl/lockscreenctrl")
 local initialSetupCtrl = require("plugin/ui/ctrl/initialsetup")
 
 local ScreenLockPinPlugin = EventListener:extend { stopped = false }
+local last_suspend_ts = 0
 
 pluginSettings.init()
 
@@ -34,6 +35,12 @@ function ScreenLockPinPlugin:init()
         category  = "none",
         event     = "DisableLockScreen",
         title     = _("Disable lock screen"),
+        device    = true,
+    })
+    Dispatcher:registerAction("screenlockpin_disable_next", {
+        category  = "none",
+        event     = "DisableNextLockScreen",
+        title     = _("Disable lock screen once"),
         device    = true,
     })
     Dispatcher:registerAction("screenlockpin_toggle", {
@@ -93,6 +100,15 @@ function ScreenLockPinPlugin:onDisableLockScreen()
     return true
 end
 
+function ScreenLockPinPlugin:onDisableNextLockScreen()
+    if self.public_api:disableNext("event") then
+        Notification:notify(_("Next Lock Screen will be skipped."), Notification.SOURCE_DISPATCHER)
+    else
+        Notification:notify(_("Lock Screen skip revoked."), Notification.SOURCE_DISPATCHER)
+    end
+    return true
+end
+
 function ScreenLockPinPlugin:onToggleLockScreenEnabled()
     if pluginSettings.getEnabled() then
         self:onDisableLockScreen()
@@ -134,12 +150,42 @@ function ScreenLockPinPlugin:deletePluginSettings()
     PluginUpdateMgr.dropPluginCache()
 end
 
--- KOReader plugin hook (on wakeup after suspend)
+-- KOReader plugin hooks
+
+function ScreenLockPinPlugin:onSuspend()
+    if not lockscreenCtrl.isActive() then
+        last_suspend_ts = os.time()
+        logger.dbg("ScreenLockPin: suspend timestamp", last_suspend_ts)
+    end
+end
+
+local function isShortSuspend()
+    local threshold = pluginSettings.getShortSuspendThreshold()
+    if threshold == 0 then return false end
+    local elapsed = os.difftime(os.time(), last_suspend_ts)
+    if elapsed >= 0 and elapsed <= threshold then
+        logger.dbg("ScreenLockPin: detected short suspend [" .. elapsed .. " seconds] below threshold (" .. threshold .. " seconds)")
+        return true
+    end
+    return false
+end
 
 function ScreenLockPinPlugin:onResume()
     if self.stopped then return end
-    if not pluginSettings.getEnabled() or not pluginSettings.shouldLockOnWakeup() then
+    if not pluginSettings.shouldLockOnWakeup() then
         PluginUpdateMgr.instance:ping()
+        return
+    end
+    -- make sure to use up disable next with higher priority than other disables
+    local tmp_disabled = pluginSettings.useDisableNext()
+    if not tmp_disabled and not pluginSettings.getEnabled() then
+        PluginUpdateMgr.instance:ping()
+        return
+    end
+    if tmp_disabled or isShortSuspend() then
+        lockscreenCtrl.skipLock()
+        -- no update manager ping as those temporary disables suggest the user doesn't want any
+        -- disruptions
         return
     end
     -- we hijacked the screensaver_delay (property of ui/screensaver.lua)
@@ -152,8 +198,19 @@ end
 -- Monkey-patched hook (registered via onBootHook)
 
 function ScreenLockPinPlugin.onBoot()
-    if not pluginSettings.getEnabled() or not pluginSettings.shouldLockOnBoot() then
+    if not pluginSettings.shouldLockOnBoot() then
         if PluginUpdateMgr.instance then PluginUpdateMgr.instance:ping() end
+        return
+    end
+    -- make sure to use up disable next with higher priority than other disables
+    local tmp_disabled = pluginSettings.useDisableNext()
+    if not tmp_disabled and not pluginSettings.getEnabled() then
+        if PluginUpdateMgr.instance then PluginUpdateMgr.instance:ping() end
+        return
+    end
+    if tmp_disabled then
+        -- no update manager ping as those temporary disables suggest the user doesn't want any
+        -- disruptions
         return
     end
     logger.dbg("ScreenLockPin: lock on boot")

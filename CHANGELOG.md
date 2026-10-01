@@ -3,7 +3,37 @@
 All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-[//]: # (## [Unreleased])
+## [Unreleased]
+
+## [2026.10] - 2026-10-01
+
+This update comes with some temporary lock screen bypass options. A new dispatcher action makes it
+convenient to just bypass the very next lock screen, in case you're the planning type. It can now be
+assigned in the Gesture Manager. Secondly, a configurable time-based threshold allows to delay
+locking the device during sleep to bypass the lock on short sleep durations (disabled by default).
+
+Some UI finishing and more goodies are included as well.
+
+A big thank you to our two new contributors: @ghepting and @tecnolgd. Very much appreciated!
+
+We're also closing in fast on 100 ⭐ on GitHub, and the first commit anniversary is due soon 🎉🎉🎉
+
+Enjoy October! 🍂🌠
+
+### Changed
+
+- The note preview text is now center-aligned by default.
+
+### Added
+
+- Update the countdown on rate limit with any button press.
+  (@ghepting)
+- [#58](https://github.com/oleasteo/koreader-screenlockpin/issues/58)
+  Skip lock screen if device was suspended shorter than configured threshold (feature is disabled by default).
+  (@tecnolgd)
+- Dispatcher action to disable the lock screen for the very next sleep / reboot only.
+- Note preview text alignment can be configured in plugin settings.
+- New exit menu "Restart KOReader" variant that skips the lock screen for convenience.
 
 ## [2026.09-1] - 2026-09-14
 

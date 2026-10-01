@@ -79,6 +79,15 @@ local UiSettingsDialog = ConfigDialog:extend {
             icon = "appbar.typeset",
             options = {
                 {
+                    name = "note_preview_align",
+                    name_text = _("Preview text align"),
+                    toggle = { C_("Text alignment", "left"), C_("Text alignment", "center"), C_("Text alignment", "right") },
+                    args = { "left", "center", "right" },
+                    values = { "left", "center", "right" },
+                    event = "SetNotePreviewAlign",
+                    condition = function(opts) return opts.note_mode == "below" or opts.note_mode == "above" end,
+                },
+                {
                     name = "note_preview_text",
                     name_text = _("Preview text"),
                     item_text = { _("Edit…") },
@@ -181,6 +190,33 @@ local UiSettingsDialog = ConfigDialog:extend {
                     values = { "off", "long-press", "on" },
                     event = "SetFrontlightMode",
                 },
+                {
+                    name = "short_suspend_threshold",
+                    name_text = _("Lockless Suspend"),
+                    toggle = { C_("Lockless Suspend", "off"), C_("Lockless Suspend", "30 s"), C_("Lockless Suspend", "5 min"), C_("Lockless Suspend", "20 min") },
+                    values = { 0, 30, 300, 1200 },
+                    args = { 0, 30, 300, 1200 },
+                    current_func = function()
+                        local val = pluginSettings.getShortSuspendThreshold()
+                        if val == 0 then return 0 end
+                        -- ensure that "off" is only "active" for threshold exactly 0
+                        if val <= 30 then return 30 end
+                        return val
+                    end,
+                    event = "SetShortSuspendThreshold",
+                    more_options = true,
+                    more_options_param = {
+                        value_min = 0,
+                        value_max = 3600 * 24,
+                        value_step = 5,
+                        value_hold_step = 15,
+                        unit = "s",
+                        name = "short_suspend_threshold",
+                        name_text = _("Set short suspend threshold in seconds (0 = off)"),
+                        event = "SetShortSuspendThreshold",
+                    },
+                    condition = function() return Device:canSuspend() end,
+                },
             },
         },
     },
@@ -218,11 +254,13 @@ function UiSettingsDialog:init()
         note_mode = noteSettings.mode,
         note_text = noteSettings.text,
         note_preview_text = noteSettings.preview_text,
+        note_preview_align = noteSettings.preview_align,
         button_feedback_mode = pluginSettings.getButtonFeedback(),
         screenshots_mode = prevent_screenshots and "prevent" or "allow",
         frontlight_mode = pluginSettings.getFrontlightMode(),
         check_update_interval = pluginSettings.getCheckUpdateInterval(),
         update_reminder_interval = pluginSettings.getUpdateReminderInterval(),
+        short_suspend_threshold = pluginSettings.getShortSuspendThreshold(),
     }
     self:refreshConditionals()
     ConfigDialog.init(self)
@@ -307,6 +345,12 @@ function UiSettingsDialog:onEditNotePreviewText()
     return true;
 end
 
+function UiSettingsDialog:onSetNotePreviewAlign(value)
+    pluginSettings.setNotePreviewAlign(value)
+    self.configurable.note_preview_align = value
+    return true;
+end
+
 -- opts: { config_key: string; title: string; on_save(text: string):void }
 function UiSettingsDialog:openTextInputPopup(opts)
     local config_key = opts.config_key;
@@ -374,6 +418,12 @@ end
 function UiSettingsDialog:onSetFrontlightMode(mode)
     pluginSettings.setFrontlightMode(mode)
     self.configurable.frontlight_mode = mode
+    return true
+end
+
+function UiSettingsDialog:onSetShortSuspendThreshold(value)
+    pluginSettings.setShortSuspendThreshold(value)
+    self.configurable.short_suspend_threshold = value
     return true
 end
 

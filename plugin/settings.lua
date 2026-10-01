@@ -22,6 +22,7 @@ local pluginSettingsKeys = {
     "screenlockpin_note_mode",
     "screenlockpin_note_text",
     "screenlockpin_note_preview_text",
+    "screenlockpin_note_preview_align",
     "screenlockpin_onboot",
     "screenlockpin_onwakeup",
     "screenlockpin_pin",
@@ -34,6 +35,8 @@ local pluginSettingsKeys = {
     "screenlockpin_ui_scale",
     "screenlockpin_check_updates_interval",
     "screenlockpin_update_reminder_interval",
+    "screenlockpin_short_suspend_threshold",
+    "screenlockpin_disable_next",
 
     "plugin_updater#screenlockpin:checked_at",
     "plugin_updater#screenlockpin:dismissed_at",
@@ -98,6 +101,9 @@ local function mergeDefaultSettings()
     if G_reader_settings:hasNot("screenlockpin_note_preview_text") then
         G_reader_settings:saveSetting("screenlockpin_note_preview_text", "")
     end
+    if G_reader_settings:hasNot("screenlockpin_note_preview_align") then
+        G_reader_settings:saveSetting("screenlockpin_note_preview_align", "center")
+    end
     if G_reader_settings:hasNot("screenlockpin_check_updates_interval") then
         G_reader_settings:saveSetting("screenlockpin_check_updates_interval", 0)
     end
@@ -112,6 +118,12 @@ local function mergeDefaultSettings()
     end
     if G_reader_settings:hasNot("screenlockpin_button_feedback_mode") then
         G_reader_settings:saveSetting("screenlockpin_button_feedback_mode", "system")
+    end
+    if G_reader_settings:hasNot("screenlockpin_short_suspend_threshold") then
+        G_reader_settings:saveSetting("screenlockpin_short_suspend_threshold", 0)
+    end
+    if G_reader_settings:hasNot("screenlockpin_disable_next") then
+        G_reader_settings:makeFalse("screenlockpin_disable_next")
     end
 end
 
@@ -154,7 +166,7 @@ local function getSetupVersion()
 end
 
 local function writeSetupVersion()
-    return G_reader_settings:saveSetting("screenlockpin_setup_version", 1)
+    G_reader_settings:saveSetting("screenlockpin_setup_version", 1)
 end
 
 --
@@ -190,6 +202,7 @@ local function getNoteSettings()
         mode = G_reader_settings:readSetting("screenlockpin_note_mode"),
         text = G_reader_settings:readSetting("screenlockpin_note_text"),
         preview_text = G_reader_settings:readSetting("screenlockpin_note_preview_text"),
+        preview_align = G_reader_settings:readSetting("screenlockpin_note_preview_align"),
     }
 end
 
@@ -203,6 +216,10 @@ end
 
 local function setNotePreviewText(text)
     G_reader_settings:saveSetting("screenlockpin_note_preview_text", text)
+end
+
+local function setNotePreviewAlign(value)
+    G_reader_settings:saveSetting("screenlockpin_note_preview_align", value)
 end
 
 --
@@ -351,6 +368,18 @@ local function toggleLockOnWakeup()
 end
 
 --
+-- Short Suspend
+--
+
+local function getShortSuspendThreshold()
+    return G_reader_settings:readSetting("screenlockpin_short_suspend_threshold")
+end
+
+local function setShortSuspendThreshold(seconds)
+    G_reader_settings:saveSetting("screenlockpin_short_suspend_threshold", seconds)
+end
+
+--
 -- Lock on boot
 --
 
@@ -368,6 +397,28 @@ end
 
 local function shouldRateLimit()
     return G_reader_settings:isTrue("screenlockpin_ratelimit")
+end
+
+--
+-- Disable Next Feature
+--
+
+local function toggleDisableNext()
+    G_reader_settings:toggle("screenlockpin_disable_next")
+    return G_reader_settings:readSetting("screenlockpin_disable_next")
+end
+
+local function setDisableNext(bool)
+    G_reader_settings:saveSetting("screenlockpin_disable_next", bool)
+end
+
+local function useDisableNext()
+    local bool = G_reader_settings:readSetting("screenlockpin_disable_next")
+    if bool then
+        logger.dbg("ScreenLockPin: Skip the lock screen due to disable next feature")
+        G_reader_settings:makeFalse("screenlockpin_disable_next")
+    end
+    return bool
 end
 
 --
@@ -403,6 +454,7 @@ return {
     setNoteMode = setNoteMode,
     setNoteText = setNoteText,
     setNotePreviewText = setNotePreviewText,
+    setNotePreviewAlign = setNotePreviewAlign,
 
     getCheckUpdateInterval = getCheckUpdateInterval,
     setCheckUpdateInterval = setCheckUpdateInterval,
@@ -420,6 +472,13 @@ return {
 
     readPin = readPin,
     setPin = setPin,
+
+    getShortSuspendThreshold = getShortSuspendThreshold,
+    setShortSuspendThreshold = setShortSuspendThreshold,
+
+    toggleDisableNext = toggleDisableNext,
+    setDisableNext = setDisableNext,
+    useDisableNext = useDisableNext,
 
     readPersistentCache = readPersistentCache,
     putPersistentCache = putPersistentCache,

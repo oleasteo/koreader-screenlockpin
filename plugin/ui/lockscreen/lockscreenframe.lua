@@ -135,6 +135,7 @@ function LockScreenFrame:init()
             padding_y = spacing * 0.8,
             font_size = math.floor(16 + 8 * scale),
             text = note_cfg.preview_text ~= "" and note_cfg.preview_text or note_cfg.text,
+            align = note_cfg.preview_align,
             on_tap = self.on_notes_overlay
         };
     end
