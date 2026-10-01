@@ -5,6 +5,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [2026.10] - 2026-10-01
+
+This update comes with some temporary lock screen bypass options. A new dispatcher action makes it
+convenient to just bypass the very next lock screen, in case you're the planning type. It can now be
+assigned in the Gesture Manager. Secondly, a configurable time-based threshold allows to delay
+locking the device during sleep to bypass the lock on short sleep durations (disabled by default).
+
+Some UI finishing and more goodies are included as well.
+
+A big thank you to our two new contributors: @ghepting and @tecnolgd. Very much appreciated!
+
+We're also closing in fast on 100 ⭐ on GitHub, and the first commit anniversary is due soon 🎉🎉🎉
+
+Enjoy October! 🍂🌠
+
 ### Changed
 
 - The note preview text is now center-aligned by default.
